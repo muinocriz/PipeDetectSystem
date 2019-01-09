@@ -1,0 +1,64 @@
+﻿<Controls:MetroWindow x:Class="MvvmLight4.View.TrainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MvvmLight4.View"
+        xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+        mc:Ignorable="d"
+        DataContext="{Binding Source={StaticResource Locator},Path=Train}"
+        Title="训练" Height="600" Width="460" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" >
+    <Grid DataContext="{Binding Model}">
+        <StackPanel Margin="5">
+            <StackPanel Margin="0 0 0 10">
+                <StackPanel HorizontalAlignment="Left">
+                    <Label FontSize="16" Content="训练设置" Width="100"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                    <Label Content="样本位置：" Width="80"/>
+                    <TextBox Margin="0 0 10 0" Width="250" Text="{Binding Simple}"/>
+                    <Button Width="80"  Content="浏览" Command="{Binding Train.FolderBrowserCmd}" CommandParameter="S" DataContext="{Binding Source={StaticResource Locator}}"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                    <Label Content="模型输出：" Width="80"/>
+                    <TextBox Margin="0 0 10 0" Width="250" Text="{Binding Location}"/>
+                    <Button Width="80"  Content="浏览" Command="{Binding Train.FolderBrowserCmd}" CommandParameter="O" DataContext="{Binding Source={StaticResource Locator}}"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                    <Label Content="模型命名：" Width="80"/>
+                    <TextBox Margin="0 0 10 0" Width="250" Text="{Binding ModelName}"/>
+
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                    <Label Content="学习率：" Width="80"/>
+                    <TextBox Margin="0 0 10 0" Width="250" Text="{Binding Rate}"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                    <Label Content="迭代次数：" Width="80"/>
+                    <TextBox Margin="0 0 10 0" Width="250" Text="{Binding Lteration}"/>
+                </StackPanel>
+            </StackPanel>
+
+            <StackPanel Margin="0 0 0 10">
+                <StackPanel HorizontalAlignment="Left">
+                    <Label FontSize="16" Content="模型设置" Width="100"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                    <Label Content="加载模型：" Width="80"/>
+                    <CheckBox IsThreeState="False" Name="ModelCB" Content="加载已有模型" Checked="ModelCB_Checked" Unchecked="ModelCB_Unchecked"/>
+                </StackPanel>
+                <StackPanel Name="SP" Orientation="Horizontal" Margin="0 5 0 0" Visibility="Visible">
+                    <Label Content="模型位置：" Width="80"/>
+                    <TextBox Margin="0 0 10 0" Width="250" Text="{Binding SourceModel}"/>
+                    <Button Width="80"  Content="浏览" Command="{Binding Train.OpenFileCmd}" CommandParameter="M" DataContext="{Binding Source={StaticResource Locator}}"/>
+                </StackPanel>
+            </StackPanel>
+            <StackPanel HorizontalAlignment="Right" DataContext="{Binding Source={StaticResource Locator}}">
+                <Button Width="80" Margin="0 0 22 0" Style="{StaticResource AccentedSquareButtonStyle}" Content="训练" Command="{Binding Train.TrainCmd}" />
+            </StackPanel>
+            <StackPanel Margin="0 20 0 0">
+                <TextBox Height="200" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"></TextBox>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Controls:MetroWindow>

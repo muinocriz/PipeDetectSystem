@@ -1,0 +1,42 @@
+﻿<Controls:MetroWindow x:Class="MvvmLight4.View.MarkFileChooseWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:common="clr-namespace:MvvmLight4.Common"
+        xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:local="clr-namespace:MvvmLight4.View"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:mvvm="http://www.galasoft.ch/mvvmlight"
+        mc:Ignorable="d"
+        DataContext="{Binding Source={StaticResource Locator},Path=MarkFileChoose}"
+        Title="选择标注文件" Height="180" Width="500" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
+    <StackPanel Margin="5">
+        <StackPanel.Resources>
+            <common:IntToBoolConverter x:Key="itbc"/>
+        </StackPanel.Resources>
+        <StackPanel Margin="0 0 0 10">
+            <StackPanel HorizontalAlignment="Left">
+                <Label FontSize="16" Content="基本设置" Width="100"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label Content="视频选择：" Width="100"/>
+                <ComboBox Width="250" ItemsSource="{Binding CombboxList}" SelectedItem="{Binding CombboxItem}" DisplayMemberPath="Text" SelectedValuePath="Key">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="DropDownClosed">
+                            <mvvm:EventToCommand Command="{Binding VideoSelectCmd}" CommandParameter="{Binding ElementName=TypeCB,Path=SelectedItem }"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </ComboBox>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                <Label Content="输出位置：" Width="100"/>
+                <TextBox Width="250" Margin="0 0 10 0" Text="{Binding SavePath}"/>
+                <Button Width="80" Content="浏览" Command="{Binding FolderBrowserCmd}"/>
+            </StackPanel>
+        </StackPanel>
+        <StackPanel HorizontalAlignment="Right">
+            <Button Margin="0 10 40 0" Width="80" Style="{StaticResource AccentedSquareButtonStyle}" Content="开始标注" Command="{Binding SubmitCmd}"/>
+        </StackPanel>
+    </StackPanel>
+</Controls:MetroWindow>

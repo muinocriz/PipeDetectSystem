@@ -1,0 +1,39 @@
+﻿<Controls:MetroWindow x:Class="MvvmLight4.View.DetectWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:local="clr-namespace:MvvmLight4.View"
+        mc:Ignorable="d"
+        DataContext="{Binding Source={StaticResource Locator},Path=Detect}"
+        Title="检测" Height="450" Width="460" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
+    <Grid>
+        <StackPanel Margin="5">
+            <StackPanel Margin="0 0 0 10">
+                <StackPanel HorizontalAlignment="Left">
+                    <Label FontSize="16" Content="基础设置" Width="100"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                    <Label Content="视频选择：" Width="80"/>
+                    <Button Width="250" Content="{Binding ReceiveStr}" FontSize="12" FontFamily="Microsoft YaHei UI" Command="{Binding OpenVSC}"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                    <Label Content="模型选择：" Width="80"/>
+                    <ComboBox Width="250" ItemsSource="{Binding ModelList}" SelectedItem="{Binding ModelItem}" DisplayMemberPath="ModelModel.ModelName" SelectedValuePath="Id">
+                    </ComboBox>
+                </StackPanel>
+            </StackPanel>
+            <StackPanel HorizontalAlignment="Right">
+                <Button Width="80" Margin="0 0 22 0" Style="{StaticResource AccentedSquareButtonStyle}" Content="检测"/>
+            </StackPanel>
+            <StackPanel Margin="10 20">
+                <TextBox Height="200" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"></TextBox>
+            </StackPanel>
+            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                <Button Width="80" Margin="0 0 22 0" Style="{StaticResource AccentedSquareButtonStyle}" Content="人工回溯" Command="{Binding OpenBTC}"/>
+                <Button Width="80" Margin="0 0 22 0" Style="{StaticResource AccentedSquareButtonStyle}" Content="导出" Command="{Binding OpenEC}"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Controls:MetroWindow>

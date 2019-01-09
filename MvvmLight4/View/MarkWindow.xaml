@@ -1,0 +1,117 @@
+﻿<Controls:MetroWindow
+    x:Class="MvvmLight4.View.MarkWindow"
+    xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls" 
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:mvvm="http://www.galasoft.ch/mvvmlight"
+        xmlns:common="clr-namespace:MvvmLight4.Common"
+        xmlns:local="clr-namespace:MvvmLight4.View"
+        mc:Ignorable="d"
+        DataContext="{Binding Source={StaticResource Locator},Path=Mark}"
+         Title="标注" Height="420" Width="800" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Closing">
+            <mvvm:EventToCommand Command="{Binding WinClosedCmd}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+    <Grid>
+        <Grid.Resources>
+            <common:IntToBoolConverter x:Key="itbc"/>
+        </Grid.Resources>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="140.8"/>
+            <ColumnDefinition Width="9.6"/>
+        </Grid.ColumnDefinitions>
+        <!--视频展示-->
+        <Grid Margin="0,0,0.2,0.4">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="70"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" Height="297" Width="640" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="5 0" Background="#d5d5d5">
+                <Image Name="Img" Height="297" Source="{Binding ImgSource}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="MouseUp">
+                            <mvvm:EventToCommand Command="{Binding MarkCmd}" CommandParameter="{Binding ElementName=Img}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Image>
+            </Grid>
+            <StackPanel Margin="0 10 0 0" Grid.Row="1">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 2 0 0">
+                    <Button Command="{Binding RewCmd}" Name="Rew" Width="40" Height="40" Padding="0">
+                        <Image Source="/Image/快退.png" Margin="5,6"></Image>
+                    </Button>
+                    <Grid Width="10"/>
+                    <Button Command="{Binding PlayCmd}" Name="Start" Width="40" Height="40" Padding="0">
+                        <Image Source="/Image/开始.png" Margin="5,6"></Image>
+                    </Button>
+                    <Grid Width="10"/>
+                    <Button Command="{Binding PauseCmd}" Name="Pause" Width="40" Height="40">
+                        <Image Source="/Image/暂停.png"></Image>
+                    </Button>
+                    <Grid Width="10"/>
+                    <Button Command="{Binding FFCmd}" Name="FF" Width="40" Height="40">
+                        <Image Source="/Image/快进.png"></Image>
+                    </Button>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+        <!--控制-->
+        <Grid Width="150" Grid.ColumnSpan="3" Margin="643,0,0.6,0.4">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+                <RowDefinition/>
+                <RowDefinition Height="100"/>
+            </Grid.RowDefinitions>
+            <!--标题-->
+            <Grid Grid.Row="0">
+                <Label  VerticalAlignment="Center" HorizontalContentAlignment="Center" FontSize="14" Content="异常类型" FontWeight="Bold"/>
+            </Grid>
+            <!--类型-->
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="80"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <RadioButton Visibility="Collapsed" GroupName="AbnormalType" Grid.Row="0" Grid.Column="0" Content="1" IsChecked="{Binding CurrentAbnormalType,Converter={StaticResource itbc},ConverterParameter=0}"/>
+                <Label Visibility="Collapsed" VerticalContentAlignment="Center" Grid.Row="0" Grid.Column="1" HorizontalContentAlignment="Right" Content="{Binding AbnormalNums[0]}"/>
+                <RadioButton GroupName="AbnormalType" Grid.Row="0" Grid.Column="0" Content="1" IsChecked="{Binding CurrentAbnormalType,Converter={StaticResource itbc},ConverterParameter=1}"/>
+                <Label VerticalContentAlignment="Center" Grid.Row="0" Grid.Column="1" HorizontalContentAlignment="Right" Content="{Binding AbnormalNums[1]}"/>
+                <RadioButton GroupName="AbnormalType" Grid.Row="1" Grid.Column="0" Content="2" IsChecked="{Binding CurrentAbnormalType,Converter={StaticResource itbc},ConverterParameter=2}"/>
+                <Label VerticalContentAlignment="Center" Grid.Row="1" Grid.Column="1" HorizontalContentAlignment="Right" Content="{Binding AbnormalNums[2]}"/>
+                <RadioButton GroupName="AbnormalType" Grid.Row="2" Grid.Column="0" Content="3" IsChecked="{Binding CurrentAbnormalType,Converter={StaticResource itbc},ConverterParameter=3}"/>
+                <Label VerticalContentAlignment="Center" Grid.Row="2" Grid.Column="1" HorizontalContentAlignment="Right" Content="{Binding AbnormalNums[3]}"/>
+                <RadioButton GroupName="AbnormalType" Grid.Row="3" Grid.Column="0" Content="4" IsChecked="{Binding CurrentAbnormalType,Converter={StaticResource itbc},ConverterParameter=4}"/>
+                <Label VerticalContentAlignment="Center" Grid.Row="3" Grid.Column="1" HorizontalContentAlignment="Right" Content="{Binding AbnormalNums[4]}"/>
+                <RadioButton GroupName="AbnormalType" Grid.Row="4" Grid.Column="0" Content="5" IsChecked="{Binding CurrentAbnormalType,Converter={StaticResource itbc},ConverterParameter=5}"/>
+                <Label VerticalContentAlignment="Center" Grid.Row="4" Grid.Column="1" HorizontalContentAlignment="Right" Content="{Binding AbnormalNums[5]}"/>
+            </Grid>
+            <!--操作-->
+            <StackPanel Grid.Row="2" Margin="5 0 5 5" Background="#d5d5d5">
+                <Image Source="{Binding CurrentThumbnailPathNew}" Height="50" Margin="0 5 0 0"/>
+                <Grid Height="6"/>
+                <Button Width="90" Command="{Binding CancelCmd}">
+                    <Button.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <Image Height="15" Width="15" Source="/MvvmLight4;component/Image/撤销.png"/>
+                            <Label Content="撤销" Padding="0" FontFamily="/System1;component/Font/#Source Han Sans CN"/>
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Controls:MetroWindow>

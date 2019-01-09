@@ -1,0 +1,68 @@
+﻿<Controls:MetroWindow x:Class="MvvmLight4.View.ImportWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MvvmLight4.View"
+        xmlns:common="clr-namespace:MvvmLight4.Common"
+        xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        DataContext="{Binding Source={StaticResource Locator},Path=Import}"
+        mc:Ignorable="d"
+        Title="导入" Height="415" Width="450" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
+    <Grid DataContext="{Binding Meta}">
+        <Grid.Resources>
+            <common:IntToBoolConverter x:Key="itbc"/>
+        </Grid.Resources>
+        <StackPanel Margin="5">
+            <!--file choose-->
+            <StackPanel Margin="0 0 0 10">
+                <StackPanel HorizontalAlignment="Left">
+                    <Label FontSize="16" Content="导入视频" Width="100"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                    <Label Content="视频位置：" Width="80"/>
+                    <TextBox Margin="0 0 10 0" Width="250" Name="txtViewPath" Text="{Binding VideoPath}"/>
+                    <Button Command="{Binding Import.OpenFileDialogCmd}" Width="80"  Content="浏览" DataContext="{Binding Source={StaticResource Locator}}" />
+
+                </StackPanel>
+            </StackPanel>
+            <!--Meta info-->
+            <StackPanel>
+                <StackPanel HorizontalAlignment="Left">
+                    <Label FontSize="16" Content="元信息" Width="100"/>
+                </StackPanel>
+                <StackPanel >
+                    <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                        <Label Content="管道编号：" Width="80" Name="txtPipeType"/>
+                        <TextBox Width="250" Text="{Binding PipeCode}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                        <Label Width="80" Content="任务编号："/>
+                        <TextBox Width="250" Name="txtTaskCodel" Text="{Binding TaskCode}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                        <Label Width="80" Content="管道类型："/>
+                        <RadioButton GroupName="PipeType" Content="污水管道" IsChecked="{Binding PipeType,Converter={StaticResource itbc},ConverterParameter=0}"/>
+                        <RadioButton GroupName="PipeType" Content="雨水管道" IsChecked="{Binding PipeType,Converter={StaticResource itbc},ConverterParameter=1}" Margin="53 0 0 0"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                        <Label Width="80" Content="地址："/>
+                        <TextBox Width="250" Name="txtAddress" Text="{Binding Address}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                        <Label Width="80" Content="负责人："/>
+                        <TextBox Width="250" Name="txtCharge" Text="{Binding Charge}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                        <Label Width="80" Content="时间段："/>
+                        <Controls:DateTimePicker ToolTip="开始时间" SelectedTimeFormat="Short" Width="123" SelectedDateTime="{Binding StartTime}" Name="txtBeginTime" Margin="0 0 4 0"/>
+                        <Controls:DateTimePicker ToolTip="结束时间" SelectedTimeFormat="Short" Width="123" SelectedDateTime="{Binding EndTime}" Name="txtEndTime"/>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+            <StackPanel Margin="0 50 0 0" VerticalAlignment="Bottom" HorizontalAlignment="Right" DataContext="{Binding Source={StaticResource Locator}}">
+                <Button Command="{Binding Import.SubmitCmd}" Width="80" Margin="0 0 14 0" Style="{StaticResource AccentedSquareButtonStyle}" Content="导入"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Controls:MetroWindow>

@@ -16,5 +16,6 @@ namespace MvvmLight4.Service
         ObservableCollection<MetaViewModel> SelectAll();
         List<ComplexInfoModel> QueryVideoFramed();
         string QueryFramePathById(int id);
+        int HasVideoPath(string path);
     }
 }

@@ -24,7 +24,6 @@ namespace MvvmLight4.View
         {
             InitializeComponent();
             this.Unloaded += (sender, e) => Messenger.Default.Unregister(this);
-
         }
     }
 }

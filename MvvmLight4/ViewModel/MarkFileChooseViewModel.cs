@@ -97,6 +97,7 @@ namespace MvvmLight4.ViewModel
             StringMessage[1] = SavePath;
 
             MarkWindow mark = new MarkWindow();
+            Console.WriteLine(mark.GetHashCode());
             mark.Show();
             Messenger.Default.Send<String[]>(StringMessage, "MFSVM2MVM");
 

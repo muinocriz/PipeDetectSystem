@@ -7,7 +7,7 @@
         xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
         mc:Ignorable="d"
         DataContext="{Binding Source={StaticResource Locator},Path=Train}"
-        Title="训练" Height="600" Width="460" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" >
+        Title="训练" Height="400" Width="460" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" >
     <Grid DataContext="{Binding Model}">
         <StackPanel Margin="5">
             <StackPanel Margin="0 0 0 10">
@@ -57,7 +57,8 @@
                 <Button Width="80" Margin="0 0 22 0" Style="{StaticResource AccentedSquareButtonStyle}" Content="训练" Command="{Binding Train.TrainCmd}" />
             </StackPanel>
             <StackPanel Margin="0 20 0 0">
-                <TextBox Height="200" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"></TextBox>
+                <!--<TextBox Height="200" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"></TextBox>-->
+                <ProgressBar HorizontalAlignment="Left" Margin="80 0 0 0" Width="250" IsIndeterminate="True"/>
             </StackPanel>
         </StackPanel>
     </Grid>

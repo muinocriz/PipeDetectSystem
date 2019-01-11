@@ -78,7 +78,7 @@ namespace MvvmLight4.ViewModel
                 default:
                     {
                         //选中->未选中
-                        MessageBox.Show("选中->未选中");
+                        //MessageBox.Show("选中->未选中");
                         if (SelectList.Contains(p))
                             SelectList.Remove(p);
                         break;
@@ -106,7 +106,7 @@ namespace MvvmLight4.ViewModel
 
         private void ExecuteChooseCmd()
         {
-            MessageBox.Show("" + SelectList.Count);
+            //MessageBox.Show("" + SelectList.Count);
             Messenger.Default.Send<ObservableCollection<MetaViewModel>>(selectList, "VideosChooseMessage");
         }
 

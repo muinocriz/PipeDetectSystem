@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace MvvmLight4.ViewModel
 {
@@ -107,7 +108,7 @@ namespace MvvmLight4.ViewModel
             get
             {
                 if (frameCmd == null)
-                    return new RelayCommand(() => ExecuteFrameCmd());
+                    return new RelayCommand(() => ExecuteFrameCmd(), CanExecuteFrameCmd);
                 return frameCmd;
             }
             set
@@ -115,12 +116,25 @@ namespace MvvmLight4.ViewModel
                 FrameCmd = value;
             }
         }
+
+        private bool CanExecuteFrameCmd()
+        {
+            return !string.IsNullOrEmpty(SourcePath) && !string.IsNullOrEmpty(TargetPath);
+        }
+
         /// <summary>
         /// 存储分帧间隔
         /// 开始分帧
         /// </summary>
         private void ExecuteFrameCmd()
         {
+            int hasData = MetaService.GetService().HasVideoPath(SourcePath);
+            if(hasData<=0)
+            {
+                MessageBox.Show("该文件未导入，请重新选择");
+                SourcePath = "";
+                return;
+            }
             //存储分帧间隔
             //根据模型路径，设置该模型的分帧间隔
             int result = MetaService.GetService().UpdateInterval(SourcePath, Convert.ToInt32(CombboxItem.Key));
@@ -138,6 +152,7 @@ namespace MvvmLight4.ViewModel
               new ComplexInfoModel(){ Key="20",Text="1/20" },
               new ComplexInfoModel(){ Key="25",Text="1/25" },
             };
+            CombboxItem = CombboxList[3];
         }
         #endregion
 

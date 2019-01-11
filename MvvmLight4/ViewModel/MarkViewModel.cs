@@ -25,6 +25,7 @@ namespace MvvmLight4.ViewModel
     {
         public MarkViewModel()
         {
+            Console.WriteLine("MarkViewModel OK");
             Messenger.Default.Register<string[]>(this, "MFSVM2MVM", message =>
             {
                 FolderPath = message[0];
@@ -52,7 +53,7 @@ namespace MvvmLight4.ViewModel
             DispatcherHelper.Initialize();
             InitWorker();
 
-            Messenger.Default.Send<bool>(true, "CloseMarkFileChooseWindow");
+            //Messenger.Default.Send<bool>(true, "CloseMarkFileChooseWindow");
         }
         #region 属性
         public BackgroundWorker worker;
@@ -138,7 +139,9 @@ namespace MvvmLight4.ViewModel
                 if (pauseCmd == null)
                     return new RelayCommand(() =>
                     {
-                        manualReset.Reset();
+                        //manualReset.Reset();
+                        Thread.Sleep(500);
+                        worker.CancelAsync();
                     });
                 return pauseCmd;
             }
@@ -310,6 +313,7 @@ namespace MvvmLight4.ViewModel
                 if (winClosedCmd == null)
                     return new RelayCommand(() =>
                     {
+                        manualReset.Set();
                         worker.CancelAsync();
                         if (CurrentFramePosition != imagePath.Count - 1)
                             MessageBox.Show("您并未完全标注视频");

@@ -20,6 +20,18 @@ namespace MvvmLight4.Service
         {
             return metaService;
         }
+
+        public int HasVideoPath(string path)
+        {
+            using (IDbConnection conn = SqlHelper.GetConnection())
+            {
+                conn.Open();
+                var sql = @"SELECT COUNT(*) AS COUNT FROM TB_METADATA WHERE VIDEOPATH==@path;";
+                int Count = Convert.ToInt32(conn.Query(sql, new { path = path }).FirstOrDefault().COUNT);
+                return Count;
+            }
+        }
+
         public int InsertData(MetaModel meta)
         {
             int insertedRows = 0;

@@ -7,7 +7,7 @@
         xmlns:local="clr-namespace:MvvmLight4.View"
         mc:Ignorable="d"
         DataContext="{Binding Source={StaticResource Locator},Path=Frame}"
-        Title="分帧" Height="260" Width="470" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
+        Title="分帧" Height="200" Width="470" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
     <StackPanel Margin="5">
         <!--basic settings-->
         <StackPanel Margin="0 0 0 10">
@@ -25,7 +25,7 @@
                 <Button Width="80" Content="浏览" Command="{Binding FolderBrowserDialogCmd}" CommandParameter="Target"/>
             </StackPanel>
         </StackPanel>
-        <StackPanel >
+        <StackPanel Visibility="Collapsed">
             <StackPanel HorizontalAlignment="Left">
                 <Label FontSize="16" Content="分帧间隔（秒）" Width="120"/>
             </StackPanel>
@@ -34,9 +34,9 @@
             </StackPanel>
         </StackPanel>
         <StackPanel HorizontalAlignment="Right">
-            <Button Margin="0 0 10 0" Width="80" Style="{StaticResource AccentedSquareButtonStyle}" Content="分帧" Command="{Binding FrameCmd}"/>
+            <Button Margin="0 0 18 0" Width="80" Style="{StaticResource AccentedSquareButtonStyle}" Content="分帧" Command="{Binding FrameCmd}"/>
         </StackPanel>
-        <StackPanel Margin="10">
+        <StackPanel Margin="10" Visibility="Collapsed">
             <ProgressBar Width="420" Height="12" Value="45"/>
         </StackPanel>
     </StackPanel>

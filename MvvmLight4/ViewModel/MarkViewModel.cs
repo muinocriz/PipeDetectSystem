@@ -23,15 +23,16 @@ namespace MvvmLight4.ViewModel
 {
     public class MarkViewModel : ViewModelBase
     {
-        public MarkViewModel()
+        public MarkViewModel(string _folderPath,string _savePath)
         {
-            Console.WriteLine("MarkViewModel OK");
+            FolderPath = _folderPath;
+            SavePath = _savePath;
             Messenger.Default.Register<string[]>(this, "MFSVM2MVM", message =>
             {
                 FolderPath = message[0];
                 SavePath = message[1];
 
-                InitSaveDirectory();
+                
                 player = new PlayerModel();
                 DirectoryInfo root = new DirectoryInfo(FolderPath);
                 FileInfo[] files = root.GetFiles("*.png");
@@ -46,18 +47,22 @@ namespace MvvmLight4.ViewModel
                 //加载之后自动开始进程
                 worker.RunWorkerAsync(player);
                 //暂停，让用户手动点击开始
-                manualReset.Reset();
-            });
+                //manualReset.Reset();
+            }); 
 
+            InitSaveDirectory();
             InitData();
-            DispatcherHelper.Initialize();
+            InitPlayer();
             InitWorker();
+            DispatcherHelper.Initialize();
 
             //Messenger.Default.Send<bool>(true, "CloseMarkFileChooseWindow");
         }
+
+
         #region 属性
         public BackgroundWorker worker;
-        private ManualResetEvent manualReset = new ManualResetEvent(true);
+        //private ManualResetEvent manualReset = new ManualResetEvent(true);
         public PlayerModel player;
         public List<string> imagePath = new List<string>();
         public string FolderPath { get; set; }
@@ -108,6 +113,7 @@ namespace MvvmLight4.ViewModel
         public string ImgSource { get => imgSource; set { imgSource = value; RaisePropertyChanged(() => ImgSource); } }
         #endregion
         #region 命令
+        #region 播放
         private RelayCommand playCmd;
         /// <summary>
         /// 播放
@@ -119,7 +125,8 @@ namespace MvvmLight4.ViewModel
                 if (playCmd == null)
                     return new RelayCommand(() =>
                     {
-                        manualReset.Set();
+                        if(!worker.IsBusy)
+                            worker.RunWorkerAsync(player);
                     });
                 return playCmd;
             }
@@ -128,6 +135,8 @@ namespace MvvmLight4.ViewModel
                 PlayCmd = value;
             }
         }
+        #endregion
+        #region 暂停
         private RelayCommand pauseCmd;
         /// <summary>
         /// 暂停
@@ -139,8 +148,6 @@ namespace MvvmLight4.ViewModel
                 if (pauseCmd == null)
                     return new RelayCommand(() =>
                     {
-                        //manualReset.Reset();
-                        Thread.Sleep(500);
                         worker.CancelAsync();
                     });
                 return pauseCmd;
@@ -150,6 +157,8 @@ namespace MvvmLight4.ViewModel
                 pauseCmd = value;
             }
         }
+        #endregion
+        #region 快进
         private RelayCommand ffCmd;
         /// <summary>
         /// 快进
@@ -171,6 +180,8 @@ namespace MvvmLight4.ViewModel
                 ffCmd = value;
             }
         }
+        #endregion
+        #region 快退
         private RelayCommand rewCmd;
         /// <summary>
         /// 快退
@@ -194,6 +205,8 @@ namespace MvvmLight4.ViewModel
                 rewCmd = value;
             }
         }
+        #endregion
+        #region 撤销
         private RelayCommand cancelCmd;
         /// <summary>
         /// 撤销
@@ -250,7 +263,8 @@ namespace MvvmLight4.ViewModel
                 File.Delete(p);
             
         }
-
+        #endregion
+        #region 标注
         private RelayCommand<Image> markCmd;
         /// <summary>
         /// 点击标注
@@ -302,6 +316,8 @@ namespace MvvmLight4.ViewModel
             });
             AbnormalNums[mark.Type]++;
         }
+        #endregion
+        #region 关闭窗口
         private RelayCommand winClosedCmd;
         /// <summary>
         /// 退出
@@ -313,14 +329,7 @@ namespace MvvmLight4.ViewModel
                 if (winClosedCmd == null)
                     return new RelayCommand(() =>
                     {
-                        manualReset.Set();
                         worker.CancelAsync();
-                        if (CurrentFramePosition != imagePath.Count - 1)
-                            MessageBox.Show("您并未完全标注视频");
-                        //if (System.Windows.MessageBox.Show("确定关闭吗?", "", MessageBoxButton.OKCancel, MessageBoxImage.Information, MessageBoxResult.Cancel) == MessageBoxResult.OK)
-                        //{
-                        //    worker.CancelAsync();
-                        //}
                     });
                 return winClosedCmd;
             }
@@ -329,7 +338,7 @@ namespace MvvmLight4.ViewModel
                 winClosedCmd = value;
             }
         }
-
+        #endregion
         #endregion
         #region 辅助函数
 
@@ -337,19 +346,37 @@ namespace MvvmLight4.ViewModel
 
         public void InitData()
         {
-
-
+            //当前异常类型
             currentAbnormalType = 1;
+            //初始帧号
             currentFramePosition = 0;
+            //各类异常数目
             AbnormalNums = new ObservableCollection<int>();
             for (int i = 0; i < 6; i++)
             {
                 AbnormalNums.Add(0);
             }
+            //当前右下角缩略图路径
             CurrentThumbnailPath = @"../Image/default.png";
             CurrentThumbnailPathNew = BitmapFrame.Create(new Uri("../../Image/default.png", UriKind.Relative), BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
-
+            //新建标记类
             Marks = new ObservableCollection<MarkModel>();
+        }
+
+
+        private void InitPlayer()
+        {
+            player = new PlayerModel();
+            DirectoryInfo root = new DirectoryInfo(FolderPath);
+            FileInfo[] files = root.GetFiles("*.png");
+            files = files.OrderBy(y => y.Name, new FileComparer()).ToArray();
+            foreach (var item in files)
+            {
+                string name = item.FullName;
+                imagePath.Add(name);
+            }
+            player.StartNum = 0;
+            player.EndNum = imagePath.Count - 1;
         }
 
         public void InitWorker()
@@ -364,12 +391,13 @@ namespace MvvmLight4.ViewModel
 
         }
 
+        #region Worker相关函数
         private void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             if (e.Cancelled)
-                MessageBox.Show("任务已取消");
+                Console.WriteLine("任务已取消");
             else
-                MessageBox.Show("本视频标注完成");
+                Console.WriteLine("本视频标注完成");
         }
 
         private void worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -383,9 +411,8 @@ namespace MvvmLight4.ViewModel
         private void worker_DoWork(object sender, DoWorkEventArgs e)
         {
             PlayerModel p = (PlayerModel)e.Argument;
-            int start = p.StartNum;
-            int end = p.EndNum;
-            while (currentFramePosition < end)
+            int End = p.EndNum;
+            while (currentFramePosition < End)
             {
                 if (worker.CancellationPending)
                 {
@@ -394,12 +421,13 @@ namespace MvvmLight4.ViewModel
                     return;
                 }
 
-                manualReset.WaitOne();
+                //manualReset.WaitOne();
 
                 worker.ReportProgress(currentFramePosition++);
                 Thread.Sleep(p.Speed);
             }
         }
+        #endregion
         private void InitSaveDirectory()
         {
             //为5类异常新建文件夹

@@ -95,11 +95,12 @@ namespace MvvmLight4.ViewModel
             string framePath = MetaService.GetService().QueryFramePathById(Convert.ToInt32(CombboxItem.Key));
             StringMessage[0] = framePath;
             StringMessage[1] = SavePath;
-
+            ViewModelLocator.FolderPath = StringMessage[0];
+            ViewModelLocator.SavePath = StringMessage[1];
             MarkWindow mark = new MarkWindow();
-            Console.WriteLine(mark.GetHashCode());
+            
             mark.Show();
-            Messenger.Default.Send<String[]>(StringMessage, "MFSVM2MVM");
+            //Messenger.Default.Send<String[]>(StringMessage, "MFSVM2MVM");
 
 
         }
@@ -115,6 +116,8 @@ namespace MvvmLight4.ViewModel
             }
 
             StringMessage = new string[2];
+            //默认保存路径为桌面
+            SavePath= Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory); 
         }
         #endregion
     }

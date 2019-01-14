@@ -1,4 +1,5 @@
 ﻿using GalaSoft.MvvmLight.Messaging;
+using MvvmLight4.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;

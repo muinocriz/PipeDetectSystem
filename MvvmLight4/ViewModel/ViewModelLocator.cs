@@ -25,6 +25,8 @@ namespace MvvmLight4.ViewModel
     /// </summary>
     public class ViewModelLocator
     {
+        public static string FolderPath;
+        public static string SavePath;
         static ViewModelLocator()
         {
             ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
@@ -125,7 +127,8 @@ namespace MvvmLight4.ViewModel
         {
             get
             {
-                return ServiceLocator.Current.GetInstance<MarkViewModel>();
+                //return ServiceLocator.Current.GetInstance<MarkViewModel>();
+                return new MarkViewModel(FolderPath, SavePath);
             }
         }
         public MarkFileChooseViewModel MarkFileChoose

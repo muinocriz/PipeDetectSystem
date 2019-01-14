@@ -15,7 +15,7 @@ namespace MvvmLight4.Common
             if(value==null)
             { return null; }
             int data = (int)value;
-            Console.WriteLine("data: " + data + "  parameter: " +  "   return: " + (data == System.Convert.ToInt32(parameter)));
+            //Console.WriteLine("data: " + data + "  parameter: " +  "   return: " + (data == System.Convert.ToInt32(parameter)));
             return data == System.Convert.ToInt32(parameter);
         }
 

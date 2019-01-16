@@ -13,7 +13,7 @@ namespace MvvmLight4.Service
     {
         int InsertData(MetaModel meta);
         int UpdateInterval(string path, int i);
-        ObservableCollection<MetaViewModel> SelectAll();
+        ObservableCollection<MetaViewModel> SelectAllFramed();
         List<ComplexInfoModel> QueryVideoFramed();
         string QueryFramePathById(int id);
         int HasVideoPath(string path);

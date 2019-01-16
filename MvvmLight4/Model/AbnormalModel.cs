@@ -9,6 +9,13 @@ namespace MvvmLight4.Model
 {
     public class AbnormalModel : ObservableObject
     {
+        public AbnormalModel() { }
+        public AbnormalModel(int _videoId,string _position,int _type)
+        {
+            VideoId = _videoId;
+            Position = _position;
+            Type = _type;
+        }
         private int videoId;
         /// <summary>
         /// 异常所属于的视频的Id

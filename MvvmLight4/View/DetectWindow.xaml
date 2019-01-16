@@ -5,9 +5,16 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:local="clr-namespace:MvvmLight4.View"
+        xmlns:mvvm="http://www.galasoft.ch/mvvmlight"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         mc:Ignorable="d"
         DataContext="{Binding Source={StaticResource Locator},Path=Detect}"
-        Title="检测" Height="450" Width="460" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
+        Title="检测" Height="460" Width="460" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <mvvm:EventToCommand Command="{Binding LoadedCmd}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
     <Grid>
         <StackPanel Margin="5">
             <StackPanel Margin="0 0 0 10">
@@ -25,10 +32,11 @@
                 </StackPanel>
             </StackPanel>
             <StackPanel HorizontalAlignment="Right">
-                <Button Width="80" Margin="0 0 22 0" Style="{StaticResource AccentedSquareButtonStyle}" Content="检测"/>
+                <Button Width="80" Margin="0 0 22 0" Style="{StaticResource AccentedSquareButtonStyle}" Content="检测" Command="{Binding DetectCmd}"/>
             </StackPanel>
-            <StackPanel Margin="10 20">
-                <TextBox Height="200" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"></TextBox>
+            <StackPanel Margin="15 10">
+                <ProgressBar Visibility="{Binding DetectProgVb}" Value="{Binding DetectProgNum}"/>
+                <TextBox Name="LogTB" Height="200" TextChanged="LogTB_TextChanged" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" IsReadOnly="True" Text="{Binding LogText}"></TextBox>
             </StackPanel>
             <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
                 <Button Width="80" Margin="0 0 22 0" Style="{StaticResource AccentedSquareButtonStyle}" Content="人工回溯" Command="{Binding OpenBTC}"/>

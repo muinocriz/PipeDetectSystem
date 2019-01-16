@@ -18,7 +18,7 @@ namespace MvvmLight4.ViewModel
         public ModelManageViewModel()
         {
             //Models = ModelService.GetService().LoadData();
-            Models = ModelService.GetService().LoadData();
+            
         }
 
         private ObservableCollection<ModelViewModel> models;
@@ -35,6 +35,24 @@ namespace MvvmLight4.ViewModel
             {
                 models = value;
                 RaisePropertyChanged(() => Models);
+            }
+        }
+
+        private RelayCommand loadedCmd;
+        public RelayCommand LoadedCmd
+        {
+            get
+            {
+                if (loadedCmd == null)
+                    return new RelayCommand(() =>
+                    {
+                        Models = ModelService.GetService().LoadData();
+                    });
+                return loadedCmd;
+            }
+            set
+            {
+                loadedCmd = value;
             }
         }
 

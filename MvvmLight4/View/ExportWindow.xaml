@@ -11,6 +11,11 @@
         xmlns:common="clr-namespace:MvvmLight4.Common"
         DataContext="{Binding Source={StaticResource Locator},Path=Export}"
         Title="输出" Height="550" Width="500" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <mvvm:EventToCommand Command="{Binding LoadedCmd}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
     <Grid>
         <Grid.Resources>
             <common:IntToBoolConverter x:Key="itbc"/>

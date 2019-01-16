@@ -26,7 +26,7 @@ namespace MvvmLight4.Service
         /// 获得要显示在人工回溯界面的所有异常
         /// </summary>
         /// <returns></returns>
-        public ObservableCollection<AbnormalViewModel> SelectAll(int[] a)
+        public ObservableCollection<AbnormalViewModel> SelectAll(List<int> list)
         {
             ObservableCollection<AbnormalViewModel> avms = new ObservableCollection<AbnormalViewModel>();
             using (IDbConnection conn = SqlHelper.GetConnection())
@@ -35,7 +35,7 @@ namespace MvvmLight4.Service
                 var sql = @"SELECT ADDR,PIPECODE,PIPETYPE,STARTTIME,ABNORMALTYPE,FRAMEPOSITION,TB_ABNORMAL.ID AS TID,VIDEOID AS VID
                             FROM TB_ABNORMAL,TB_METADATA 
                             WHERE TB_METADATA.ID IN @ids AND TB_ABNORMAL.VIDEOID = TB_METADATA.ID;";
-                IEnumerable<dynamic> dynamics = conn.Query(sql, new { ids = a });
+                IEnumerable<dynamic> dynamics = conn.Query(sql, new { ids = list.ToArray() });
                 foreach (var item in dynamics)
                 {
                     MetaModel mm = new MetaModel();
@@ -143,6 +143,26 @@ namespace MvvmLight4.Service
                 }
             }
             return list;
+        }
+
+        /// <summary>
+        /// 将检测界面获得的异常批量存入数据库
+        /// </summary>
+        /// <param name="abnormalModels">异常类型</param>
+        /// <returns>存入数量</returns>
+        public int AddAbnormal(List<AbnormalModel> abnormalModels)
+        {
+            using (IDbConnection conn = SqlHelper.GetConnection())
+            {
+                conn.Open();
+                using (var trans = conn.BeginTransaction())
+                {
+                    var sql = @"INSERT INTO TB_ABNORMAL(VIDEOID,FRAMEPOSITION,ABNORMALTYPE) VALUES(@VideoId,@Position,@Type);";
+                    var executeResult =  conn.Execute(sql,abnormalModels,trans);
+                    trans.Commit();
+                    return executeResult;
+                }
+            }
         }
     }
 }

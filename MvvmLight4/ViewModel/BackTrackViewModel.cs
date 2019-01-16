@@ -24,6 +24,10 @@ namespace MvvmLight4.ViewModel
     {
         public BackTrackViewModel()
         {
+            Messenger.Default.Register<List<int>>(this, "DVM2BTVM", msg=>
+            {
+                VideoIds = msg;
+            });
             InitCombobox();
             InitData();
             DispatcherHelper.Initialize();
@@ -36,7 +40,7 @@ namespace MvvmLight4.ViewModel
         }
 
         public List<string> imagePath = new List<string>();
-
+        public List<int> VideoIds = new List<int>();
         public BackgroundWorker worker;
         private ManualResetEvent manualReset = new ManualResetEvent(true);
 
@@ -112,6 +116,32 @@ namespace MvvmLight4.ViewModel
             set { combboxItem = value; RaisePropertyChanged(() => CombboxItem); }
         }
         #endregion
+        private RelayCommand loadedCmd;
+        /// <summary>
+        /// 加载函数
+        /// </summary>
+        public RelayCommand LoadedCmd
+        {
+            get
+            {
+                if (loadedCmd == null)
+                    return new RelayCommand(() =>
+                    {
+                        AbnormalVMs = AbnormalService.GetService().SelectAll(VideoIds);
+                        ErrorNum = 0;
+                        foreach (var item in AbnormalVMs)
+                        {
+                            if (item.Abnormal.Type != 0)
+                                ErrorNum++;
+                        }
+                    });
+                return loadedCmd;
+            }
+            set
+            {
+                loadedCmd = value;
+            }
+        }
         #region 选择了DataGrid的某一项
         private RelayCommand<AbnormalViewModel> selectCommand;
         /// <summary>
@@ -260,20 +290,6 @@ namespace MvvmLight4.ViewModel
         #region 辅助方法
         void InitData()
         {
-            int[] a = new int[4];
-            a[0] = 3;
-            a[1] = 4;
-            a[2] = 5;
-            a[3] = 6;
-            abnormalVMs = AbnormalService.GetService().SelectAll(a);
-
-            ErrorNum = 0;
-            foreach (var item in abnormalVMs)
-            {
-                if (item.Abnormal.Type != 0)
-                    ErrorNum++;
-            }
-
             ChangeNum = 0;
         }
 

@@ -36,8 +36,8 @@
         <StackPanel HorizontalAlignment="Right">
             <Button Margin="0 0 18 0" Width="80" Style="{StaticResource AccentedSquareButtonStyle}" Content="分帧" Command="{Binding FrameCmd}"/>
         </StackPanel>
-        <StackPanel Margin="10" Visibility="Collapsed">
-            <ProgressBar Width="420" Height="12" Value="45"/>
+        <StackPanel Margin="10">
+            <ProgressBar Visibility="{Binding ProgV}" Width="420" Height="12" IsIndeterminate="True"/>
         </StackPanel>
     </StackPanel>
 </Controls:MetroWindow>

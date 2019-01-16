@@ -106,7 +106,8 @@ namespace MvvmLight4.ViewModel
         {
             get
             {
-                return ServiceLocator.Current.GetInstance<DetectViewModel>();
+                //return ServiceLocator.Current.GetInstance<DetectViewModel>();
+                return new DetectViewModel();
             }
         }
         public VideoViewModel Video

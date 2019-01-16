@@ -35,5 +35,10 @@ namespace MvvmLight4.View
             if (b == true)
                 this.Close();
         }
+
+        private void LogTB_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            LogTB.ScrollToEnd();
+        }
     }
 }

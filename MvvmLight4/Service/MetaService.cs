@@ -108,13 +108,13 @@ namespace MvvmLight4.Service
             return l;
         }
 
-        public ObservableCollection<MetaViewModel> SelectAll()
+        public ObservableCollection<MetaViewModel> SelectAllFramed()
         {
             ObservableCollection<MetaViewModel> mvms=new ObservableCollection<MetaViewModel>();
             using (IDbConnection conn = SqlHelper.GetConnection())
             {
                 conn.Open();
-                var sql = @"SELECT * FROM TB_METADATA ORDER BY ID DESC";
+                var sql = @"SELECT * FROM TB_METADATA WHERE FRAMEPATH IS NOT NULL ORDER BY ID DESC;";
                 IEnumerable<dynamic> dynamics=conn.Query(sql);
                 foreach (var item in dynamics)
                 {
@@ -125,6 +125,7 @@ namespace MvvmLight4.Service
                     mm.Address = item.ADDR;
                     mm.TaskCode = item.TASKCODE;
                     mm.StartTime = item.STARTTIME;
+                    mm.FramePath = item.FRAMEPATH;
                     mvm.Meta = mm;
                     mvms.Add(mvm);
                 }

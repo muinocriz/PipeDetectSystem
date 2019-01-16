@@ -10,6 +10,11 @@
         xmlns:mvvm="http://www.galasoft.ch/mvvmlight"
         DataContext="{Binding Source={StaticResource Locator},Path=ModelManage}"
         Title="模型管理" Height="450" Width="590" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <mvvm:EventToCommand Command="{Binding LoadedCmd}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
     <Grid Margin="5" FocusManager.FocusedElement="{Binding ElementName=ModelDG}">
         <Grid.RowDefinitions>
             <RowDefinition/>

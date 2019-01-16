@@ -1,9 +1,14 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
+using MvvmLight4.Common;
 using MvvmLight4.Model;
 using MvvmLight4.Service;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Configuration;
+using System.Diagnostics;
+using System.IO.Pipes;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,6 +21,24 @@ namespace MvvmLight4.ViewModel
         public FrameViewModel()
         {
             InitCombbox();
+            ProgV = Visibility.Collapsed;
+        }
+        public BackgroundWorker worker;
+        public NamedPipeServerStream pipeReader;
+
+        private Visibility progV;
+        //进度条可视状态
+        public Visibility ProgV
+        {
+            get
+            {
+                return progV;
+            }
+            set
+            {
+                progV = value;
+                RaisePropertyChanged(() => ProgV);
+            }
         }
 
         private string sourcePath;
@@ -138,7 +161,84 @@ namespace MvvmLight4.ViewModel
             //存储分帧间隔
             //根据模型路径，设置该模型的分帧间隔
             int result = MetaService.GetService().UpdateInterval(SourcePath, Convert.ToInt32(CombboxItem.Key));
-            Console.WriteLine(result);
+
+            //分帧逻辑
+            //使用cmd运行Python
+            string cmdString = ConfigurationManager.ConnectionStrings["FrameCmdString"].ConnectionString;
+            CmdHelper.RunCmd(cmdString);
+
+            //新建后台进程
+            worker = new BackgroundWorker();
+            worker.WorkerReportsProgress = true;
+            worker.DoWork += Worker_DoWork;
+            worker.ProgressChanged += Worker_ProgressChanged;
+            worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
+            worker.RunWorkerAsync();
+        }
+
+        private void Worker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            pipeReader = new NamedPipeServerStream("SamplePipe", PipeDirection.InOut);
+            Console.WriteLine("byte reader connecting");
+            pipeReader.WaitForConnection();
+            Console.WriteLine("byte reader connected");
+            ProgV = Visibility.Visible;
+
+            bool completed = false;
+            int progress = 0;
+            const int BUFFERSIZE = 256;
+
+            while (!completed)
+            {
+                byte[] buffer = new byte[BUFFERSIZE];
+                int nRead = pipeReader.Read(buffer, 0, BUFFERSIZE);
+                string line = Encoding.UTF8.GetString(buffer, 0, nRead);
+                Console.WriteLine("line: " + line);
+                string[] messages = line.Split('_');
+                switch (Convert.ToInt32(messages[0]))
+                {
+                    case 0:
+                        break;
+                    case 1:
+                        //收到进度
+                        if(messages.Length==2 && int.TryParse(messages[1], out progress))
+                        {
+                            Console.WriteLine(messages[1]);
+                            worker.ReportProgress(progress);
+                        }
+                        break;
+                    case 2:
+                        break;
+                    case 4:
+                        //普通消息
+                        if (messages.Length == 2 && "Done".Equals(messages[1]))
+                        {
+                            completed = true;
+                        }
+                        break;
+                    case 8:
+                        break;
+                    case 16:
+                        break;
+                    case 32:
+                        break;
+                    case 64:
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            return;
+        }
+
+        private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            pipeReader.Close();
+            ProgV = Visibility.Collapsed;
         }
         #region 辅助函数
         /// <summary>

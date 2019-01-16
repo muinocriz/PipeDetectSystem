@@ -11,10 +11,11 @@ namespace MvvmLight4.Service
 {
     public interface IAbnormalService
     {
-        ObservableCollection<AbnormalViewModel> SelectAll(int[] a);
+        ObservableCollection<AbnormalViewModel> SelectAll(List<int> list);
         int UpdateAbnormalType(int id, int type);
         string SelectFolder(int id);
         List<ComplexInfoModel> QueryVideo();
         List<AbnormalViewModel> ExportByVideoId(int id);
+        int AddAbnormal(List<AbnormalModel> abnormalModels);
     }
 }

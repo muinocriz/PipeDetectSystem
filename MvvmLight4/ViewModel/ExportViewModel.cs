@@ -22,6 +22,7 @@ namespace MvvmLight4.ViewModel
             LoadWorker();
             DispatcherHelper.Initialize();
         }
+
         private BackgroundWorker worker;
         private List<ComplexInfoModel> combboxList;
         private Dictionary<string, string> dict;
@@ -135,7 +136,10 @@ namespace MvvmLight4.ViewModel
             switch (p.IsChoose)
             {
                 //选中->未选中
-                case -1: break;
+                case -1:
+                    {
+                        break;
+                    }
                 //未选中->选中
                 case 1:
                     {

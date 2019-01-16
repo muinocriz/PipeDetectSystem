@@ -18,6 +18,17 @@ namespace MvvmLight4.ViewModel
         public VideoViewModel()
         {
             InitDataGrid();
+            Messenger.Default.Register<int>(this, "DVM2VVM", msg=>
+            {
+                if (msg == 0)
+                {
+                    foreach (var item in VideoList)
+                    {
+                        item.IsChoose = -1;
+                    }
+                    SelectList.Clear();
+                }
+            });
         }
 
         private ObservableCollection<MetaViewModel> selectList;
@@ -113,7 +124,7 @@ namespace MvvmLight4.ViewModel
         #region 附属方法
         private void InitDataGrid()
         {
-            VideoList = MetaService.GetService().SelectAll();
+            VideoList = MetaService.GetService().SelectAllFramed();
             SelectList = new ObservableCollection<MetaViewModel>();
         }
         #endregion

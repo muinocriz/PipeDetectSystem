@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GalaSoft.MvvmLight.Messaging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,7 @@ namespace MvvmLight4.View
         {
             InitializeComponent();
             IsNormal = 0;
+            this.Unloaded += (sender, e) => Messenger.Default.Unregister(this);
         }
         #region 全屏处理
         /// <summary>

@@ -17,24 +17,18 @@ namespace MvvmLight4.Common
             switch ((int)parameter)
             {
                 case 0:
-                    if ((int)value < 1000 || (int)value > 2000)
-                        return (double)1500;
+                    if ((int)value < 1 || (int)value > 100)
+                        return (double)1;
                     else
                         return (double)value;
-                    break;
                 case 1:
-                    if ((int)value < 85 || (int)value > 98)
-                        return (double)85;
+                    if ((int)value < 200000 || (int)value >1000000)
+                        return (double)200000;
                     else
                         return (double)value;
-                    break;
                 default:
-                    break;
+                    return 0;
             }
-            if ((int)value < 1000 || (int)value > 2000)
-                return (double)1500;
-            else
-                return (double)value;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

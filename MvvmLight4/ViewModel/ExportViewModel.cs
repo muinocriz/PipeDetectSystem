@@ -18,7 +18,6 @@ namespace MvvmLight4.ViewModel
     {
         public ExportViewModel()
         {
-            LoadData();
             LoadWorker();
             DispatcherHelper.Initialize();
         }
@@ -110,7 +109,23 @@ namespace MvvmLight4.ViewModel
                 RaisePropertyChanged(() => ProVisiable);
             }
         }
-
+        private RelayCommand loadedCmd;
+        public RelayCommand LoadedCmd
+        {
+            get
+            {
+                if (loadedCmd == null)
+                    return new RelayCommand(() => 
+                    {
+                        LoadData();
+                    });
+                return loadedCmd;
+            }
+            set
+            {
+                loadedCmd = value;
+            }
+        }
         private RelayCommand<ExportModel> checkCmd;
         public RelayCommand<ExportModel> CheckCmd
         {
@@ -270,7 +285,7 @@ namespace MvvmLight4.ViewModel
         {
             CombboxList = AbnormalService.GetService().QueryVideo();
             if (CombboxList.Count > 0)
-                combboxItem = CombboxList[0];
+                CombboxItem = CombboxList[0];
 
             Way = 0;
 

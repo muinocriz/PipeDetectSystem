@@ -98,11 +98,12 @@ namespace MvvmLight4.Service
             using (IDbConnection conn = SqlHelper.GetConnection())
             {
                 conn.Open();
-                var sql = @"UPDATE TB_MODEL SET MODELNAME = @MODELNAME WHERE ID = @ID";
+                var sql = @"UPDATE TB_MODEL SET MODELNAME = @ModelName,UPDATETIME=@UpdateTime WHERE ID = @Id";
                 return conn.Execute(sql, new
                 {
-                    MODELNAME = modelViewModel.ModelModel.ModelName,
-                    ID = modelViewModel.Id
+                    modelViewModel.ModelModel.ModelName,
+                    modelViewModel.ModelModel.UpdateTime,
+                    modelViewModel.Id
                 });
             }
         }

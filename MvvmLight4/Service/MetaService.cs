@@ -133,6 +133,26 @@ namespace MvvmLight4.Service
             }
         }
 
+        /// <summary>
+        /// 分帧页面，将分帧位置保存到数据库
+        /// </summary>
+        /// <param name="FramePath">分帧文件夹位置</param>
+        /// <param name="VideoPath">源文件位置</param>
+        /// <returns></returns>
+        public int UpdateFramePathByVideoPath(string FramePath, string VideoPath)
+        {
+            using (IDbConnection conn = SqlHelper.GetConnection())
+            {
+                conn.Open();
+                var sql = @"UPDATE TB_METADATA SET FRAMEPATH=@FramePath WHERE VIDEOPATH=@VideoPath";
+                int result = conn.Execute(sql, new
+                {
+                    FramePath,VideoPath
+                });
+                return result;
+            }
+        }
+
         public int UpdateInterval(string path, int i)
         {
             using (IDbConnection conn = SqlHelper.GetConnection())

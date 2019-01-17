@@ -13,6 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace MvvmLight4.ViewModel
 {
@@ -22,9 +23,13 @@ namespace MvvmLight4.ViewModel
         {
             InitCombbox();
             ProgV = Visibility.Collapsed;
+            errorMsg = "";
         }
         public BackgroundWorker worker;
         public NamedPipeServerStream pipeReader;
+        public string errorMsg = "";
+
+        public int VideoId=0;
 
         private Visibility progV;
         //进度条可视状态
@@ -162,6 +167,10 @@ namespace MvvmLight4.ViewModel
             //根据模型路径，设置该模型的分帧间隔
             int result = MetaService.GetService().UpdateInterval(SourcePath, Convert.ToInt32(CombboxItem.Key));
 
+            DispatcherTimer timer = new DispatcherTimer();
+            timer.Interval = new TimeSpan(0, 0, 5);
+            timer.Tick += new EventHandler(Timer_Tick);
+
             //分帧逻辑
             //使用cmd运行Python
             string cmdString = ConfigurationManager.ConnectionStrings["FrameCmdString"].ConnectionString;
@@ -170,64 +179,97 @@ namespace MvvmLight4.ViewModel
             //新建后台进程
             worker = new BackgroundWorker();
             worker.WorkerReportsProgress = true;
+            worker.WorkerSupportsCancellation = true;
             worker.DoWork += Worker_DoWork;
             worker.ProgressChanged += Worker_ProgressChanged;
             worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
+
             worker.RunWorkerAsync();
+            timer.Start();
         }
 
         private void Worker_DoWork(object sender, DoWorkEventArgs e)
         {
-            pipeReader = new NamedPipeServerStream("SamplePipe", PipeDirection.InOut);
-            Console.WriteLine("byte reader connecting");
-            pipeReader.WaitForConnection();
-            Console.WriteLine("byte reader connected");
-            ProgV = Visibility.Visible;
-
-            bool completed = false;
-            int progress = 0;
-            const int BUFFERSIZE = 256;
-
-            while (!completed)
+            using (pipeReader = new NamedPipeServerStream("SamplePipe", PipeDirection.InOut))
             {
-                byte[] buffer = new byte[BUFFERSIZE];
-                int nRead = pipeReader.Read(buffer, 0, BUFFERSIZE);
-                string line = Encoding.UTF8.GetString(buffer, 0, nRead);
-                Console.WriteLine("line: " + line);
-                string[] messages = line.Split('_');
-                switch (Convert.ToInt32(messages[0]))
+                Console.WriteLine("byte reader connecting");
+                pipeReader.WaitForConnection();
+                Console.WriteLine("byte reader connected");
+                
+                ProgV = Visibility.Visible;
+
+                int progress = 0;
+                const int BUFFERSIZE = 256;
+                int messageType = 0;
+                bool completed = false;
+
+                while (!completed)
                 {
-                    case 0:
-                        break;
-                    case 1:
-                        //收到进度
-                        if(messages.Length==2 && int.TryParse(messages[1], out progress))
-                        {
-                            Console.WriteLine(messages[1]);
-                            worker.ReportProgress(progress);
-                        }
-                        break;
-                    case 2:
-                        break;
-                    case 4:
-                        //普通消息
-                        if (messages.Length == 2 && "Done".Equals(messages[1]))
-                        {
-                            completed = true;
-                        }
-                        break;
-                    case 8:
-                        break;
-                    case 16:
-                        break;
-                    case 32:
-                        break;
-                    case 64:
-                        break;
-                    default:
-                        break;
+                    if (worker.CancellationPending)
+                    {
+                        errorMsg = @"管道未能正确连接";
+                        e.Cancel = true;
+                        return;
+                    }
+                    byte[] buffer = new byte[BUFFERSIZE];
+                    int nRead = pipeReader.Read(buffer, 0, BUFFERSIZE);
+                    string line = Encoding.UTF8.GetString(buffer, 0, nRead);
+                    Console.WriteLine("line: " + line);
+                    string[] messages = line.Split('_');
+                    int.TryParse(messages[0], out messageType);
+                    switch (messageType)
+                    {
+                        case 0:
+                            break;
+                        case 1:
+                            //收到进度
+                            if (messages.Length == 2 && int.TryParse(messages[1], out progress))
+                            {
+                                Console.WriteLine(messages[1]);
+                                worker.ReportProgress(progress);
+                            }
+                            break;
+                        case 2:
+                            break;
+                        case 4:
+                            //普通消息
+                            if (messages.Length == 2 && "Done".Equals(messages[1]))
+                            {
+                                completed = true;
+                            }
+                            break;
+                        case 8:
+                            break;
+                        case 16:
+                            break;
+                        case 32:
+                            errorMsg = "本次任务由于后台而中断";
+                            if (messages.Length > 1)
+                                errorMsg +="\r\n消息：" + messages[1];
+                            e.Cancel = true;
+                            return;
+                        case 64:
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
+        }
+
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            DispatcherTimer _timer = (DispatcherTimer)sender;
+            _timer.Stop();
+            if (!pipeReader.IsConnected)
+            {
+                Console.WriteLine("diaoyong shibai ");
+                NamedPipeClientStream npcs = new NamedPipeClientStream("SamplePipe");
+                npcs.Connect();
+                worker.CancelAsync();
+            }
+            else
+                Console.WriteLine("diaoyong chenggong");
         }
 
         private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -237,8 +279,19 @@ namespace MvvmLight4.ViewModel
 
         private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            pipeReader.Close();
             ProgV = Visibility.Collapsed;
+            pipeReader.Close();
+
+            if(e.Cancelled || e.Error!=null)
+            {
+                MessageBox.Show(errorMsg);
+            }
+            else
+            {
+                int result = MetaService.GetService().UpdateFramePathByVideoPath(TargetPath, SourcePath);
+                MessageBox.Show("分帧完成");
+            }
+            errorMsg = "";
         }
         #region 辅助函数
         /// <summary>

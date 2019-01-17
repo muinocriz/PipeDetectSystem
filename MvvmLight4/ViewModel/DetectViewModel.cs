@@ -18,6 +18,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace MvvmLight4.ViewModel
 {
@@ -36,6 +37,7 @@ namespace MvvmLight4.ViewModel
         public NamedPipeServerStream pipeReader;
         public List<AbnormalModel> abnormalModels;
         public bool canBackTrackOrExport;
+        public string errorMsg = "";
 
         private string receiveStr;
         /// <summary>
@@ -153,6 +155,8 @@ namespace MvvmLight4.ViewModel
                         DetectProgNum = 0;
                         LogText = "";
                         canBackTrackOrExport = false;
+
+                        errorMsg = "";
                     });
                 return loadedCmd;
             }
@@ -191,6 +195,10 @@ namespace MvvmLight4.ViewModel
                 dict[(int)item.Id] = item.Meta.FramePath;
             }
 
+            DispatcherTimer timer = new DispatcherTimer();
+            timer.Interval = new TimeSpan(0, 0, 5);
+            timer.Tick += new EventHandler(Timer_Tick);
+
             //使用cmd运行Python
             string cmdString = ConfigurationManager.ConnectionStrings["DetectCmdString"].ConnectionString;
             Console.WriteLine(JsonConvert.SerializeObject(dict));
@@ -203,6 +211,7 @@ namespace MvvmLight4.ViewModel
             worker.ProgressChanged += Worker_ProgressChanged;
             worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
             worker.RunWorkerAsync();
+            timer.Start();
         }
 
         private void Worker_DoWork(object sender, DoWorkEventArgs e)
@@ -218,17 +227,25 @@ namespace MvvmLight4.ViewModel
             bool completed = false;
             int progress = 0;
             const int BUFFERSIZE = 256;
+            int messageType = 0;
             LogText = "";
             canBackTrackOrExport = false;
 
             while (!completed)
             {
+                if (worker.CancellationPending)
+                {
+                    errorMsg = @"管道未能正确连接";
+                    e.Cancel = true;
+                    return;
+                }
                 byte[] buffer = new byte[BUFFERSIZE];
                 int nRead = pipeReader.Read(buffer, 0, BUFFERSIZE);
                 string line = Encoding.UTF8.GetString(buffer, 0, nRead);
                 Console.WriteLine("line: " + line);
                 string[] messages = line.Split('_');
-                switch (Convert.ToInt32(messages[0]))
+                int.TryParse(messages[0], out messageType);
+                switch (messageType)
                 {
                     case 0:
                         break;
@@ -270,7 +287,11 @@ namespace MvvmLight4.ViewModel
                     case 16:
                         break;
                     case 32:
-                        break;
+                        errorMsg = "本次任务由于后台而中断";
+                        if (messages.Length > 1)
+                            errorMsg += "\r\n消息：" + messages[1];
+                        e.Cancel = true;
+                        return;
                     case 64:
                         break;
                     default:
@@ -279,6 +300,20 @@ namespace MvvmLight4.ViewModel
             }
         }
 
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            DispatcherTimer _timer = (DispatcherTimer)sender;
+            _timer.Stop();
+            if (!pipeReader.IsConnected)
+            {
+                Console.WriteLine("diaoyong shibai ");
+                NamedPipeClientStream npcs = new NamedPipeClientStream("SamplePipe");
+                npcs.Connect();
+                worker.CancelAsync();
+            }
+            else
+                Console.WriteLine("diaoyong chenggong");
+        }
         private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             DispatcherHelper.CheckBeginInvokeOnUI(() => 
@@ -298,12 +333,19 @@ namespace MvvmLight4.ViewModel
             pipeReader.Close();
             DetectProgVb = Visibility.Hidden;
             LogText += "\r\n检测完成";
-            //批量存入
-            if (abnormalModels!=null && abnormalModels.Count>0)
-            AbnormalService.GetService().AddAbnormal(abnormalModels);
-            //清空
-            abnormalModels.Clear();
-            canBackTrackOrExport = true;
+            if (e.Cancelled || e.Error != null)
+            {
+                MessageBox.Show(errorMsg);
+            }
+            else
+            {
+                //批量存入
+                if (abnormalModels!=null && abnormalModels.Count>0)
+                AbnormalService.GetService().AddAbnormal(abnormalModels);
+                //清空
+                abnormalModels.Clear();
+                canBackTrackOrExport = true;
+            }
         }
 
         private RelayCommand openVSC;

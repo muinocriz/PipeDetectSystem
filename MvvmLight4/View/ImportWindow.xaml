@@ -47,16 +47,16 @@
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
                         <Label Width="80" Content="地址："/>
-                        <TextBox Width="250" Name="txtAddress" Text="{Binding Address}"/>
+                        <TextBox Width="250" Name="txtAddress" Text="{Binding Address,UpdateSourceTrigger=PropertyChanged}"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
                         <Label Width="80" Content="负责人："/>
-                        <TextBox Width="250" Name="txtCharge" Text="{Binding Charge}"/>
+                        <TextBox Width="250" Name="txtCharge" Text="{Binding Charge,UpdateSourceTrigger=PropertyChanged}"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
                         <Label Width="80" Content="时间段："/>
-                        <Controls:DateTimePicker ToolTip="开始时间" SelectedTimeFormat="Short" Width="123" SelectedDateTime="{Binding StartTime}" Name="txtBeginTime" Margin="0 0 4 0"/>
-                        <Controls:DateTimePicker ToolTip="结束时间" SelectedTimeFormat="Short" Width="123" SelectedDateTime="{Binding EndTime}" Name="txtEndTime"/>
+                        <Controls:DateTimePicker SelectedTimeFormat="Short" Width="123" SelectedDateTime="{Binding StartTime}" Name="txtBeginTime" Margin="0 0 4 0" Controls:TextBoxHelper.Watermark="开始时间" Culture="zh-CN"/>
+                        <Controls:DateTimePicker SelectedTimeFormat="Short" Width="123" SelectedDateTime="{Binding EndTime}" Name="txtEndTime" Controls:TextBoxHelper.Watermark="结束时间" Culture="zh-CN"/>
                     </StackPanel>
                 </StackPanel>
             </StackPanel>

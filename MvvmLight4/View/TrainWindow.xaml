@@ -27,17 +27,17 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
                     <Label Content="样本位置：" Width="80"/>
-                    <TextBox Margin="0 0 10 0" Width="250" Text="{Binding Simple}"/>
+                    <TextBox Margin="0 0 10 0" Width="250" Text="{Binding Simple,UpdateSourceTrigger=PropertyChanged}"/>
                     <Button Width="80"  Content="浏览" Command="{Binding Train.FolderBrowserCmd}" CommandParameter="S" DataContext="{Binding Source={StaticResource Locator}}"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
                     <Label Content="模型输出：" Width="80"/>
                     <TextBox Margin="0 0 10 0" Width="250" Text="{Binding Location}"/>
-                    <Button Width="80"  Content="浏览" Command="{Binding Train.FolderBrowserCmd}" CommandParameter="O" DataContext="{Binding Source={StaticResource Locator}}"/>
+                    <Button Width="80"  Content="浏览" Command="{Binding Train.FolderBrowserCmd,UpdateSourceTrigger=PropertyChanged}" CommandParameter="O" DataContext="{Binding Source={StaticResource Locator}}"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
                     <Label Content="模型命名：" Width="80"/>
-                    <TextBox Margin="0 0 10 0" Width="250" Text="{Binding ModelName}"/>
+                    <TextBox Margin="0 0 10 0" Width="250" Text="{Binding ModelName,UpdateSourceTrigger=PropertyChanged}"/>
 
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
@@ -46,12 +46,12 @@
                     </StackPanel.Resources>
                     <Label Content="学习率：" Width="80"/>
                     <!--<TextBox Margin="0 0 10 0" Width="250" Text="{Binding Rate}"/>-->
-                    <Slider Style="{DynamicResource FlatSlider}" Width="250"  Value="{Binding Rate,Converter={StaticResource itdc},ConverterParameter=0, UpdateSourceTrigger=PropertyChanged}" Minimum="1000" Maximum="2000" SmallChange="100" LargeChange="100" TickFrequency="100" IsSnapToTickEnabled="True" AutoToolTipPrecision="0"  AutoToolTipPlacement="TopLeft"/>
+                    <Slider Style="{DynamicResource FlatSlider}" Width="250"  Value="{Binding Rate,Converter={StaticResource itdc},ConverterParameter=0, UpdateSourceTrigger=PropertyChanged}" Minimum="1" Maximum="100" SmallChange="1" LargeChange="10" TickFrequency="1" IsSnapToTickEnabled="True" AutoToolTipPrecision="0"  AutoToolTipPlacement="TopLeft"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
                     <Label Content="迭代次数：" Width="80"/>
                     <!--<TextBox Margin="0 0 10 0" Width="250" Text="{Binding Lteration}"/>-->
-                    <Slider Style="{DynamicResource FlatSlider}" Width="250"  Value="{Binding Lteration,Converter={StaticResource itdc},ConverterParameter=1,UpdateSourceTrigger=PropertyChanged}" Minimum="80" Maximum="98" SmallChange="1" LargeChange="1" TickFrequency="1" IsSnapToTickEnabled="True" AutoToolTipPrecision="0"  AutoToolTipPlacement="TopLeft"/>
+                    <Slider Style="{DynamicResource FlatSlider}" Width="250"  Value="{Binding Lteration,Converter={StaticResource itdc},ConverterParameter=1,UpdateSourceTrigger=PropertyChanged}" Minimum="200000" Maximum="1000000" SmallChange="5000" LargeChange="100000" TickFrequency="5000" IsSnapToTickEnabled="True" AutoToolTipPrecision="0"  AutoToolTipPlacement="TopLeft"/>
                 </StackPanel>
             </StackPanel>
 

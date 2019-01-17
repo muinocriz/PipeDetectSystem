@@ -16,12 +16,12 @@
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Label Content="选择分帧视频：" Width="100"/>
-                <TextBox Width="250" Margin="0 0 10 0" Text="{Binding SourcePath}"/>
+                <TextBox Width="250" Margin="0 0 10 0" Text="{Binding SourcePath,UpdateSourceTrigger=PropertyChanged}"/>
                 <Button Width="80" Content="浏览" Command="{Binding OpenFileDialogCmd}" CommandParameter="Source"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
                 <Label Content="输出位置：" Width="100"/>
-                <TextBox Width="250" Margin="0 0 10 0" Text="{Binding TargetPath}"/>
+                <TextBox Width="250" Margin="0 0 10 0" Text="{Binding TargetPath,UpdateSourceTrigger=PropertyChanged}"/>
                 <Button Width="80" Content="浏览" Command="{Binding FolderBrowserDialogCmd}" CommandParameter="Target"/>
             </StackPanel>
         </StackPanel>

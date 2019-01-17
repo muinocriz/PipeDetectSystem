@@ -17,5 +17,6 @@ namespace MvvmLight4.Service
         List<ComplexInfoModel> QueryVideoFramed();
         string QueryFramePathById(int id);
         int HasVideoPath(string path);
+        int UpdateFramePathByVideoPath(string FramePath,string VideoPath);
     }
 }

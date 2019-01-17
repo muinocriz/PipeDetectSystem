@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace MvvmLight4.ViewModel
 {
@@ -25,6 +26,7 @@ namespace MvvmLight4.ViewModel
 
         public BackgroundWorker worker;
         public NamedPipeServerStream pipeReader;
+        public string errorMsg = "";
 
         private Visibility filterProgVb;
         /// <summary>
@@ -107,6 +109,8 @@ namespace MvvmLight4.ViewModel
                         FilterProgVb = Visibility.Hidden;
                         TrainProgVb = Visibility.Hidden;
                         TrainProgNum = 0;
+
+                        errorMsg = "";
                     });
                 return loadedCmd;
             }
@@ -195,6 +199,10 @@ namespace MvvmLight4.ViewModel
         /// </summary>
         private void ExecuteTrainCmd()
         {
+            DispatcherTimer timer = new DispatcherTimer();
+            timer.Interval = new TimeSpan(0, 0, 5);
+            timer.Tick += new EventHandler(Timer_Tick);
+
             //分帧逻辑
             //使用cmd运行Python
             string cmdString = ConfigurationManager.ConnectionStrings["TrainCmdString"].ConnectionString;
@@ -208,8 +216,9 @@ namespace MvvmLight4.ViewModel
             worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
             worker.RunWorkerAsync();
 
-            
+            timer.Start();
         }
+
 
         private void Worker_DoWork(object sender, DoWorkEventArgs e)
         {
@@ -225,9 +234,16 @@ namespace MvvmLight4.ViewModel
             int progress = 0;
             const int BUFFERSIZE = 256;
             int messageType = 0;
+            errorMsg = "";
 
             while (!completed)
             {
+                if (worker.CancellationPending)
+                {
+                    errorMsg = @"管道未能正确连接";
+                    e.Cancel = true;
+                    return;
+                }
                 byte[] buffer = new byte[BUFFERSIZE];
                 int nRead = pipeReader.Read(buffer, 0, BUFFERSIZE);
                 string line = Encoding.UTF8.GetString(buffer, 0, nRead);
@@ -276,7 +292,11 @@ namespace MvvmLight4.ViewModel
                     case 16:
                         break;
                     case 32:
-                        break;
+                        errorMsg = "本次任务由于后台而中断";
+                        if (messages.Length > 1)
+                            errorMsg += "\r\n消息：" + messages[1];
+                        e.Cancel = true;
+                        return;
                     case 64:
                         break;
                     default:
@@ -285,6 +305,20 @@ namespace MvvmLight4.ViewModel
             }
         }
 
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            DispatcherTimer _timer = (DispatcherTimer)sender;
+            _timer.Stop();
+            if (!pipeReader.IsConnected)
+            {
+                Console.WriteLine("diaoyong shibai ");
+                NamedPipeClientStream npcs = new NamedPipeClientStream("SamplePipe");
+                npcs.Connect();
+                worker.CancelAsync();
+            }
+            else
+                Console.WriteLine("diaoyong chenggong");
+        }
         private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             TrainProgNum = e.ProgressPercentage;
@@ -292,15 +326,22 @@ namespace MvvmLight4.ViewModel
 
         private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            pipeReader.Close();
-            //存储逻辑
-            DateTime dt = DateTime.Now;
-            Model.CreateTime = dt.ToString();
-            int result = ModelService.GetService().AddModel(Model);
-            if (result > 0)
+            if (e.Cancelled || e.Error != null)
             {
-                MessageBox.Show(result + "个模型已生成");
-                //训练部分
+                MessageBox.Show(errorMsg);
+            }
+            else
+            {
+                pipeReader.Close();
+                //存储逻辑
+                DateTime dt = DateTime.Now;
+                Model.CreateTime = dt.ToString();
+                int result = ModelService.GetService().AddModel(Model);
+                if (result > 0)
+                {
+                    MessageBox.Show(result + "个模型已生成");
+                    //训练部分
+                }
             }
         }
     }

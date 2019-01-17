@@ -18,7 +18,7 @@ namespace MvvmLight4.ViewModel
         public ModelManageViewModel()
         {
             //Models = ModelService.GetService().LoadData();
-            
+
         }
 
         private ObservableCollection<ModelViewModel> models;
@@ -61,7 +61,7 @@ namespace MvvmLight4.ViewModel
         {
             get
             {
-                if(updateModelCmd == null)
+                if (updateModelCmd == null)
                 {
                     return new RelayCommand<DataGridCellEditEndingEventArgs>((p) => ExecuteUpdateModelCmd(p));
                 }
@@ -76,17 +76,18 @@ namespace MvvmLight4.ViewModel
         private void ExecuteUpdateModelCmd(DataGridCellEditEndingEventArgs p)
         {
             ModelViewModel mvm = p.Row.DataContext as ModelViewModel;
-             mvm.ModelModel.ModelName = (p.EditingElement as TextBox).Text;
+            mvm.ModelModel.ModelName = (p.EditingElement as TextBox).Text;
+            mvm.ModelModel.UpdateTime = DateTime.Now.ToString();
             int result = ModelService.GetService().UpdateModel(mvm);
         }
 
         private RelayCommand<ModelViewModel> deleteModelCmd;
-        public RelayCommand<ModelViewModel>  DeleteModelCmd
+        public RelayCommand<ModelViewModel> DeleteModelCmd
         {
             get
             {
                 if (deleteModelCmd == null)
-                    return new RelayCommand<ModelViewModel>((p) => ExecuteDeleteModelCmd(p),CanExecuteDeleteModelCmd);
+                    return new RelayCommand<ModelViewModel>((p) => ExecuteDeleteModelCmd(p), CanExecuteDeleteModelCmd);
                 return deleteModelCmd;
             }
             set
@@ -102,23 +103,23 @@ namespace MvvmLight4.ViewModel
 
         private void ExecuteDeleteModelCmd(ModelViewModel p)
         {
-            if(p==null)
+            if (p == null)
             {
                 MessageBox.Show("还未选择要删除的对象");
                 return;
             }
             int result = ModelService.GetService().DeleteModel(p);
-            if(result>0)
+            if (result > 0)
             {
                 foreach (var item in Models)
                 {
-                    if(item.Id == p.Id)
+                    if (item.Id == p.Id)
                     {
                         models.Remove(item);
                         break;
                     }
                 }
-            } 
+            }
             else
             {
                 MessageBox.Show("删除失败，该数据可能已被更改");

@@ -9,7 +9,7 @@
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         mc:Ignorable="d"
         DataContext="{Binding Source={StaticResource Locator},Path=Detect}"
-        Title="检测" Height="460" Width="460" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
+        Title="检测" Height="440" Width="460" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <mvvm:EventToCommand Command="{Binding LoadedCmd}"/>
@@ -35,7 +35,12 @@
                 <Button Width="80" Margin="0 0 22 0" Style="{StaticResource AccentedSquareButtonStyle}" Content="检测" Command="{Binding DetectCmd}"/>
             </StackPanel>
             <StackPanel Margin="15 10">
-                <ProgressBar Visibility="{Binding DetectProgVb}" Value="{Binding DetectProgNum}"/>
+                <StackPanel Height="10">
+                    <Canvas>
+                        <ProgressBar Width="413" Height="10" Visibility="{Binding FilterProgVb}" IsIndeterminate="True"/>
+                        <ProgressBar  Width="413" Height="10" Visibility="{Binding DetectProgVb}" Value="{Binding DetectProgNum}"/>
+                    </Canvas>
+                </StackPanel>
                 <TextBox Name="LogTB" Height="200" TextChanged="LogTB_TextChanged" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" IsReadOnly="True" Text="{Binding LogText}"></TextBox>
             </StackPanel>
             <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">

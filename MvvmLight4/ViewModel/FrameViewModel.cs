@@ -173,8 +173,10 @@ namespace MvvmLight4.ViewModel
 
             //分帧逻辑
             //使用cmd运行Python
-            string cmdString = ConfigurationManager.ConnectionStrings["FrameCmdString"].ConnectionString;
-            CmdHelper.RunCmd(cmdString);
+            string cmdStringTest = ConfigurationManager.ConnectionStrings["FrameCmdString"].ConnectionString;
+            string cmdString = @"test.exe"+" "+sourcePath+" "+targetPath;
+            Console.WriteLine("cmdstring: " + cmdString);
+            CmdHelper.RunCmd(cmdStringTest);
 
             //新建后台进程
             worker = new BackgroundWorker();

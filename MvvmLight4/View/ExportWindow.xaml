@@ -88,7 +88,7 @@
                 </StackPanel>-->
                 <StackPanel Margin="67 0 0 0">
                     <DataGrid MaxHeight="320" Name="ExDG" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Hidden" HeadersVisibility="Column" AutoGenerateColumns="False" 
-                              GridLinesVisibility="Horizontal" CanUserDeleteRows="False"  CanUserAddRows="False" ItemsSource="{Binding Exports}" Margin="33,0,45,0">
+                              GridLinesVisibility="Horizontal" CanUserDeleteRows="False"  CanUserAddRows="False" ItemsSource="{Binding Exports}" Margin="33,0,45,0" FontFamily="/MvvmLight4;component/Font/#Source Han Sans CN">
                         <DataGrid.Columns>
                             <!--<DataGridCheckBoxColumn Header="输出" Width="50" Binding="{Binding IsChoose,Converter={StaticResource itbc},ConverterParameter=1}"/>-->
                             <DataGridTemplateColumn Header="输出">

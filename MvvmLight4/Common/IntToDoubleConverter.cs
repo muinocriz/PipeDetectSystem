@@ -14,18 +14,18 @@ namespace MvvmLight4.Common
         {
             if (value == null)
             { return null; }
-            switch ((int)parameter)
+            switch (System.Convert.ToInt32(parameter))
             {
                 case 0:
                     if ((int)value < 1 || (int)value > 100)
-                        return (double)1;
+                        return 1.0;
                     else
-                        return (double)value;
+                        return System.Convert.ToDouble(value);
                 case 1:
                     if ((int)value < 200000 || (int)value >1000000)
-                        return (double)200000;
+                        return 200000.0;
                     else
-                        return (double)value;
+                        return System.Convert.ToDouble(value);
                 default:
                     return 0;
             }

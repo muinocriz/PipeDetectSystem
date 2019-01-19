@@ -75,7 +75,7 @@
             <StackPanel Margin="0 10 0 0">
                 <!--<TextBox Height="200" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"></TextBox>-->
                 <Canvas>
-                    <ProgressBar Margin="80 0 0 0" HorizontalAlignment="Left" Width="250" IsIndeterminate="True" Visibility="{Binding Train.FilterProgVb}" DataContext="{Binding Source={StaticResource Locator}}"/>
+                    <!--<ProgressBar Margin="80 0 0 0" HorizontalAlignment="Left" Width="250" IsIndeterminate="True" Visibility="{Binding Train.FilterProgVb}" DataContext="{Binding Source={StaticResource Locator}}"/>-->
                     <ProgressBar Margin="80 0 0 0" HorizontalAlignment="Left" Width="250" Value="{Binding Train.TrainProgNum}" Visibility="{Binding Train.TrainProgVb, Source={StaticResource Locator}}" DataContext="{Binding Source={StaticResource Locator}}"/>
                 </Canvas>
             </StackPanel>

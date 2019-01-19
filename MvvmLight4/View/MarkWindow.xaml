@@ -52,12 +52,12 @@
                         <Image Source="/Image/开始.png" Margin="5,6"></Image>
                     </Button>
                     <Grid Width="10"/>
-                    <Button Command="{Binding PauseCmd}" Name="Pause" Width="40" Height="40">
-                        <Image Source="/Image/暂停.png"></Image>
+                    <Button Command="{Binding PauseCmd}" Name="Pause" Width="40" Height="40" Padding="0">
+                        <Image Source="/Image/暂停.png" Margin="5,6"></Image>
                     </Button>
                     <Grid Width="10"/>
-                    <Button Command="{Binding FFCmd}" Name="FF" Width="40" Height="40">
-                        <Image Source="/Image/快进.png"></Image>
+                    <Button Command="{Binding FFCmd}" Name="FF" Width="40" Height="40" Padding="0">
+                        <Image Source="/Image/快进.png" Margin="5,6"></Image>
                     </Button>
                 </StackPanel>
             </StackPanel>

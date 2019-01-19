@@ -82,6 +82,22 @@ namespace MvvmLight4.ViewModel
                 RaisePropertyChanged(() => ModelList);
             }
         }
+        private Visibility filterProgVb;
+        /// <summary>
+        /// 初筛可见性
+        /// </summary>
+        public Visibility FilterProgVb
+        {
+            get
+            {
+                return filterProgVb;
+            }
+            set
+            {
+                filterProgVb = value;
+                RaisePropertyChanged(() => FilterProgVb);
+            }
+        }
 
         private Visibility detectProgVb;
         /// <summary>
@@ -151,6 +167,7 @@ namespace MvvmLight4.ViewModel
                         VideoList = new ObservableCollection<MetaViewModel>();
                         abnormalModels = new List<AbnormalModel>();
 
+                        FilterProgVb = Visibility.Hidden;
                         DetectProgVb = Visibility.Hidden;
                         DetectProgNum = 0;
                         LogText = "";
@@ -200,9 +217,11 @@ namespace MvvmLight4.ViewModel
             timer.Tick += new EventHandler(Timer_Tick);
 
             //使用cmd运行Python
-            string cmdString = ConfigurationManager.ConnectionStrings["DetectCmdString"].ConnectionString;
+            string cmdStringTest = ConfigurationManager.ConnectionStrings["DetectCmdString"].ConnectionString;
             Console.WriteLine(JsonConvert.SerializeObject(dict));
-            CmdHelper.RunCmd(cmdString);
+            string cmdString = "test.exe" + " " + JsonConvert.SerializeObject(dict) + " " + ModelItem.ModelModel.Location + @"\" + ModelItem.ModelModel.ModelName;
+            Console.WriteLine("cmdstring: "+cmdString);
+            CmdHelper.RunCmd(cmdStringTest);
 
             //新建后台进程
             worker = new BackgroundWorker();
@@ -222,13 +241,16 @@ namespace MvvmLight4.ViewModel
             Console.WriteLine("byte reader connecting");
             pipeReader.WaitForConnection();
             Console.WriteLine("byte reader connected");
-            DetectProgVb = Visibility.Visible;
+
+            FilterProgVb = Visibility.Visible;
+            DetectProgVb = Visibility.Hidden;
 
             bool completed = false;
             int progress = 0;
             const int BUFFERSIZE = 256;
             int messageType = 0;
             LogText = "";
+            errorMsg = "";
             canBackTrackOrExport = false;
 
             while (!completed)
@@ -273,7 +295,15 @@ namespace MvvmLight4.ViewModel
                             abnormalModels.Add(abnormalModel);
                             worker.ReportProgress(progress,abnormalModel);
                         }
-                        //结束消息
+                        //初筛结束消息
+                        else if(messages.Length == 2 && !string.IsNullOrEmpty(messages[1])&& "filter done".Equals(messages[1]))
+                        {
+                            Console.WriteLine("filter done true");
+                            //初筛结束
+                            FilterProgVb = Visibility.Hidden;
+                            DetectProgVb = Visibility.Visible;
+                        }
+                        //检测结束消息
                         else if(messages.Length == 2 && "Done".Equals(messages[1]))
                         {
                             progress = 100;

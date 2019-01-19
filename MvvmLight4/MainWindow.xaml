@@ -6,11 +6,10 @@
         xmlns:ignore="http://www.galasoft.ch/ignore"
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         mc:Ignorable="d ignore"
-        Title="管道检测系统" Height="167" Width="450" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Icon="Image/pipe.ico"
+        Title="管道检测系统" Height="167" Width="300" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Icon="Image/pipe.ico"
         DataContext="{Binding Main, Source={StaticResource Locator}}">
     <Grid Button.Click="Button_Click">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
             <ColumnDefinition/>
             <ColumnDefinition/>
             <ColumnDefinition/>
@@ -32,14 +31,6 @@
                     </StackPanel>
                 </Button.Content>
             </Button>
-            <Button Tag="ModelManageWindow">
-                <Button.Content>
-                    <StackPanel Orientation="Horizontal">
-                        <Image Source=".\Image\cog.png" Width="24" Height="24"/>
-                        <Label  Content="模型"/>
-                    </StackPanel>
-                </Button.Content>
-            </Button>
         </StackPanel>
         <StackPanel Grid.Column="1" Margin="5">
             <Button Margin="0 0 0 5" Tag="TrainWindow">
@@ -50,7 +41,7 @@
                     </StackPanel>
                 </Button.Content>
             </Button>
-            <Button Tag="MarkFileChooseWindow">
+            <Button Margin="0 0 0 5" Tag="MarkFileChooseWindow">
                 <Button.Content>
                     <StackPanel Orientation="Horizontal">
                         <Image Source=".\Image\tag.png" Width="24" Height="24"/>
@@ -58,9 +49,17 @@
                     </StackPanel>
                 </Button.Content>
             </Button>
+            <Button Tag="ModelManageWindow">
+                <Button.Content>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source=".\Image\cog.png" Width="24" Height="24"/>
+                        <Label  Content="模型"/>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
         </StackPanel>
         <StackPanel Grid.Column="2" Margin="5">
-            <Button Tag="DetectWindow">
+            <Button Margin="0 0 0 5" Tag="DetectWindow">
                 <Button.Content>
                     <StackPanel Orientation="Horizontal">
                         <Image Source=".\Image\detect.png" Width="24" Height="24"/>
@@ -68,8 +67,6 @@
                     </StackPanel>
                 </Button.Content>
             </Button>
-        </StackPanel>
-        <StackPanel Grid.Column="3" Margin="5">
             <Button Tag="ExportWindow">
                 <Button.Content>
                     <StackPanel Orientation="Horizontal">

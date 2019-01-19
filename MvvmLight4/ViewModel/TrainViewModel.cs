@@ -3,6 +3,7 @@ using GalaSoft.MvvmLight.CommandWpf;
 using MvvmLight4.Common;
 using MvvmLight4.Model;
 using MvvmLight4.Service;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -27,23 +28,6 @@ namespace MvvmLight4.ViewModel
         public BackgroundWorker worker;
         public NamedPipeServerStream pipeReader;
         public string errorMsg = "";
-
-        private Visibility filterProgVb;
-        /// <summary>
-        /// 初筛可见性
-        /// </summary>
-        public Visibility FilterProgVb
-        {
-            get
-            {
-                return filterProgVb;
-            }
-            set
-            {
-                filterProgVb = value;
-                RaisePropertyChanged(() => FilterProgVb);
-            }
-        }
 
         private Visibility trainProgVb;
         /// <summary>
@@ -106,7 +90,6 @@ namespace MvvmLight4.ViewModel
                     return new RelayCommand(() =>
                     {
                         //进度条初始化
-                        FilterProgVb = Visibility.Hidden;
                         TrainProgVb = Visibility.Hidden;
                         TrainProgNum = 0;
 
@@ -205,8 +188,10 @@ namespace MvvmLight4.ViewModel
 
             //分帧逻辑
             //使用cmd运行Python
-            string cmdString = ConfigurationManager.ConnectionStrings["TrainCmdString"].ConnectionString;
-            CmdHelper.RunCmd(cmdString);
+            string cmdStringTest = ConfigurationManager.ConnectionStrings["TrainCmdString"].ConnectionString;
+            string cmdString = "test.exe" + " " + JsonConvert.SerializeObject(Model);
+            Console.WriteLine("cmdString: " + cmdString);
+            CmdHelper.RunCmd(cmdStringTest);
 
             //新建后台进程
             worker = new BackgroundWorker();
@@ -227,8 +212,7 @@ namespace MvvmLight4.ViewModel
             pipeReader.WaitForConnection();
             Console.WriteLine("byte reader connected");
 
-            FilterProgVb = Visibility.Visible;
-            TrainProgVb = Visibility.Hidden;
+            TrainProgVb = Visibility.Visible;
 
             bool completed = false;
             int progress = 0;
@@ -266,25 +250,14 @@ namespace MvvmLight4.ViewModel
                     case 4:
                         Console.WriteLine(messages[1]);
                         //普通消息
-                        if (messages.Length == 2 && !string.IsNullOrEmpty(messages[1]))
+                        if (messages.Length == 2 && "Done".Equals(messages[1]))
                         {
-                            if ("filter done".Equals(messages[1]))
-                            {
-                                Console.WriteLine("filter done true");
-                                //初筛结束
-                                FilterProgVb = Visibility.Hidden;
-                                TrainProgVb = Visibility.Visible;
-                            }
-                            else if ("Done".Equals(messages[1]))
-                            {
-                                progress = 100;
-                                worker.ReportProgress(progress);
-                                //检测结束
-                                Thread.Sleep(1500);
-                                FilterProgVb = Visibility.Hidden;
-                                TrainProgVb = Visibility.Hidden;
-                                completed = true;
-                            }
+                            progress = 100;
+                            worker.ReportProgress(progress);
+                            //检测结束
+                            Thread.Sleep(1500);
+                            TrainProgVb = Visibility.Hidden;
+                            completed = true;
                         }
                         break;
                     case 8:

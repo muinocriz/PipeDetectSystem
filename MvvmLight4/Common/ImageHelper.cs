@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,7 +18,7 @@ namespace MvvmLight4.Common
         /// <param name="y">显示图像中心纵坐标    /   显示图像高度</param>
         /// <param name="width">截图宽</param>
         /// <param name="height">截图高</param>
-        public static void caijianpic(String picPath,String savePath, double x, double y, int width, int height)
+        public static void Caijianpic(String picPath,String savePath, double x, double y, int width, int height)
         {
             using (System.Drawing.Image img = System.Drawing.Image.FromStream(new System.IO.MemoryStream(System.IO.File.ReadAllBytes(picPath))))
             {
@@ -38,9 +39,22 @@ namespace MvvmLight4.Common
                     using (System.Drawing.Bitmap bmpCrop = bmpImage.Clone(cropArea, bmpImage.PixelFormat))
                     {
                         bmpCrop.Save(savePath);
+                        bmpCrop.Dispose();
                     }
+                    bmpImage.Dispose();
                 }
             }
+        }
+
+        /// <summary>
+        /// 对于全局异常，直接在新位置存储照片，并重命名即可
+        /// </summary>
+        /// <param name="picPath">原始文件绝对路径</param>
+        /// <param name="savePath">新位置</param>
+        public static void SavePic(String picPath, String savePath)
+        {
+            File.Copy(picPath, savePath, true);
+            return;
         }
     }
 }

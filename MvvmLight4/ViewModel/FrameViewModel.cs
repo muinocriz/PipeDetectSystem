@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
 using System.Diagnostics;
+using System.IO;
 using System.IO.Pipes;
 using System.Linq;
 using System.Text;
@@ -22,6 +23,7 @@ namespace MvvmLight4.ViewModel
         public FrameViewModel()
         {
             InitCombbox();
+            TargetPath= Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
             ProgV = Visibility.Collapsed;
             errorMsg = "";
         }
@@ -168,15 +170,16 @@ namespace MvvmLight4.ViewModel
             int result = MetaService.GetService().UpdateInterval(SourcePath, Convert.ToInt32(CombboxItem.Key));
 
             DispatcherTimer timer = new DispatcherTimer();
-            timer.Interval = new TimeSpan(0, 0, 5);
+            timer.Interval = new TimeSpan(0, 0, 2);
             timer.Tick += new EventHandler(Timer_Tick);
 
             //分帧逻辑
             //使用cmd运行Python
+            string pythonFilePosition = Directory.GetCurrentDirectory() + @"\testpipe.py";
             string cmdStringTest = ConfigurationManager.ConnectionStrings["FrameCmdString"].ConnectionString;
-            string cmdString = @"test.exe"+" "+sourcePath+" "+targetPath;
-            Console.WriteLine("cmdstring: " + cmdString);
-            CmdHelper.RunCmd(cmdStringTest);
+            string cmdString = @"python "+ pythonFilePosition + " " + sourcePath + " " + targetPath;
+            //MessageBox.Show("cmdstring: " + cmdString);
+            CmdHelper.RunCmd(cmdString);
 
             //新建后台进程
             worker = new BackgroundWorker();
@@ -192,11 +195,11 @@ namespace MvvmLight4.ViewModel
 
         private void Worker_DoWork(object sender, DoWorkEventArgs e)
         {
-            using (pipeReader = new NamedPipeServerStream("SamplePipe", PipeDirection.InOut))
+            using (pipeReader = new NamedPipeServerStream("cutfram_result1", PipeDirection.InOut))
             {
-                Console.WriteLine("byte reader connecting");
+                Console.WriteLine("字节读取管道正在连接...");
                 pipeReader.WaitForConnection();
-                Console.WriteLine("byte reader connected");
+                Console.WriteLine("字节读取管道已连接");
                 
                 ProgV = Visibility.Visible;
 
@@ -256,22 +259,26 @@ namespace MvvmLight4.ViewModel
                             break;
                     }
                 }
+                pipeReader.Disconnect();
+                pipeReader.Close();
             }
         }
 
         private void Timer_Tick(object sender, EventArgs e)
         {
+            Console.WriteLine("进入计时器");
             DispatcherTimer _timer = (DispatcherTimer)sender;
             _timer.Stop();
             if (!pipeReader.IsConnected)
             {
-                Console.WriteLine("diaoyong shibai ");
-                NamedPipeClientStream npcs = new NamedPipeClientStream("SamplePipe");
+                Console.WriteLine("调用管道失败");
+                errorMsg = "调用管道失败";
+                NamedPipeClientStream npcs = new NamedPipeClientStream("cutfram_result1");
                 npcs.Connect();
                 worker.CancelAsync();
             }
             else
-                Console.WriteLine("diaoyong chenggong");
+                Console.WriteLine("调用管道成功");
         }
 
         private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -284,13 +291,15 @@ namespace MvvmLight4.ViewModel
             ProgV = Visibility.Collapsed;
             pipeReader.Close();
 
-            if(e.Cancelled || e.Error!=null)
+            if(e.Cancelled || e.Error!=null || !string.IsNullOrEmpty(errorMsg))
             {
                 MessageBox.Show(errorMsg);
             }
             else
             {
-                int result = MetaService.GetService().UpdateFramePathByVideoPath(TargetPath, SourcePath);
+                string framePathWithDirectory = Path.GetFileNameWithoutExtension(SourcePath);
+                Console.WriteLine("framePathWithDirectory: " + framePathWithDirectory);
+                int result = MetaService.GetService().UpdateFramePathByVideoPath(TargetPath + @"\" + framePathWithDirectory + @"\bigimg", SourcePath);
                 MessageBox.Show("分帧完成");
             }
             errorMsg = "";

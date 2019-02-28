@@ -21,7 +21,7 @@
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Label Content="视频选择：" Width="100"/>
-                <ComboBox Width="250" ItemsSource="{Binding CombboxList}" SelectedItem="{Binding CombboxItem}" DisplayMemberPath="Text" SelectedValuePath="Key">
+                <ComboBox Width="250" Name="TypeCB" ItemsSource="{Binding CombboxList}" SelectedItem="{Binding CombboxItem}" DisplayMemberPath="Text" SelectedValuePath="Key">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="DropDownClosed">
                             <mvvm:EventToCommand Command="{Binding VideoSelectCmd}" CommandParameter="{Binding ElementName=TypeCB,Path=SelectedItem }"/>
@@ -36,7 +36,7 @@
             </StackPanel>
         </StackPanel>
         <StackPanel HorizontalAlignment="Right">
-            <Button Margin="0 10 40 0" Width="80" Style="{StaticResource AccentedSquareButtonStyle}" Content="开始标注" Command="{Binding SubmitCmd}"/>
+            <Button Margin="0 10 47 0" Width="80" Style="{StaticResource AccentedSquareButtonStyle}" Content="开始标注" Command="{Binding SubmitCmd}"/>
         </StackPanel>
     </StackPanel>
 </Controls:MetroWindow>

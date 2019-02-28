@@ -124,19 +124,21 @@ namespace MvvmLight4.ViewModel
                 return ServiceLocator.Current.GetInstance<BackTrackViewModel>();
             }
         }
-        public MarkViewModel Mark
+        public MarkViewModel MarkVM
         {
             get
             {
                 //return ServiceLocator.Current.GetInstance<MarkViewModel>();
-                return new MarkViewModel(FolderPath, SavePath);
+                //return new MarkViewModel(FolderPath, SavePath);
+                return new MarkViewModel();
             }
         }
         public MarkFileChooseViewModel MarkFileChoose
         {
             get
             {
-                return ServiceLocator.Current.GetInstance<MarkFileChooseViewModel>();
+                //return ServiceLocator.Current.GetInstance<MarkFileChooseViewModel>();
+                return new MarkFileChooseViewModel();
             }
         }
         /// <summary>

@@ -1,6 +1,7 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Messaging;
+using MvvmLight4.Common;
 using MvvmLight4.Model;
 using MvvmLight4.Service;
 using MvvmLight4.View;
@@ -93,16 +94,20 @@ namespace MvvmLight4.ViewModel
         private void ExecuteSubmitCmd()
         {
             string framePath = MetaService.GetService().QueryFramePathById(Convert.ToInt32(CombboxItem.Key));
+            List<string> msg = new List<string>();
+            msg.Add(framePath);
+            msg.Add(SavePath);
             StringMessage[0] = framePath;
             StringMessage[1] = SavePath;
-            ViewModelLocator.FolderPath = StringMessage[0];
-            ViewModelLocator.SavePath = StringMessage[1];
-            MarkWindow mark = new MarkWindow();
-            
-            mark.Show();
+            //ViewModelLocator.FolderPath = StringMessage[0];
+            //ViewModelLocator.SavePath = StringMessage[1];
+            MessageHelper.FramePath = framePath;
+            MessageHelper.SavePath = SavePath;
+            //MessageBox.Show("选择界面\nframePath: " + framePath + "\nSavePath: " + SavePath);
+            MarkWindow sender = new MarkWindow();
+            Messenger.Default.Send<List<string>>(msg, "markMessage");
+            sender.Show();
             //Messenger.Default.Send<String[]>(StringMessage, "MFSVM2MVM");
-
-
         }
         #endregion
 

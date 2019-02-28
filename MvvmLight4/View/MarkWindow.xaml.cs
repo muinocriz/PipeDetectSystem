@@ -24,7 +24,7 @@ namespace MvvmLight4.View
         public MarkWindow()
         {
             InitializeComponent();
-            this.Unloaded += (sender, e) => Messenger.Default.Unregister(this);
+            //this.Unloaded += (sender, e) => Messenger.Default.Unregister(this);
         }
     }
 }

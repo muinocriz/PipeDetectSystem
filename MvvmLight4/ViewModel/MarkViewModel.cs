@@ -23,40 +23,48 @@ namespace MvvmLight4.ViewModel
 {
     public class MarkViewModel : ViewModelBase
     {
-        public MarkViewModel(string _folderPath,string _savePath)
+        public MarkViewModel()
         {
-            FolderPath = _folderPath;
-            SavePath = _savePath;
-            Messenger.Default.Register<string[]>(this, "MFSVM2MVM", message =>
+            //FolderPath = _folderPath;
+            //SavePath = _savePath;
+            //Messenger.Default.Register<string[]>(this, "MFSVM2MVM", message =>
+            //{
+            //    FolderPath = message[0];
+            //    SavePath = message[1];
+
+
+            //    player = new PlayerModel();
+            //    DirectoryInfo root = new DirectoryInfo(FolderPath);
+            //    FileInfo[] files = root.GetFiles("*.jpg");
+            //    files = files.OrderBy(y => y.Name, new FileComparer()).ToArray();
+            //    foreach (var item in files)
+            //    {
+            //        string name = item.FullName;
+            //        imagePath.Add(name);
+            //    }
+            //    player.StartNum = 0;
+            //    player.EndNum = imagePath.Count - 1;
+            //    //加载之后自动开始进程
+            //    worker.RunWorkerAsync(player);
+            //    //暂停，让用户手动点击开始
+            //    //manualReset.Reset();
+            //});
+            Messenger.Default.Register<List<string>>(this, "markMessage", msg =>
             {
-                FolderPath = message[0];
-                SavePath = message[1];
-
-                
-                player = new PlayerModel();
-                DirectoryInfo root = new DirectoryInfo(FolderPath);
-                FileInfo[] files = root.GetFiles("*.png");
-                files = files.OrderBy(y => y.Name, new FileComparer()).ToArray();
-                foreach (var item in files)
-                {
-                    string name = item.FullName;
-                    imagePath.Add(name);
-                }
-                player.StartNum = 0;
-                player.EndNum = imagePath.Count - 1;
-                //加载之后自动开始进程
-                worker.RunWorkerAsync(player);
-                //暂停，让用户手动点击开始
-                //manualReset.Reset();
-            }); 
-
-            InitSaveDirectory();
-            InitData();
-            InitPlayer();
-            InitWorker();
-            DispatcherHelper.Initialize();
+                //MessageBox.Show("收到消息");
+                FolderPath = msg[0];
+                SavePath = msg[1];
+            });
+            //SavePath = MessageHelper.SavePath;
+            //InitSaveDirectory();
+            //InitData();
+            //InitPlayer();
+            //InitWorker();
+            //DispatcherHelper.Initialize();
 
             //Messenger.Default.Send<bool>(true, "CloseMarkFileChooseWindow");
+           
+            
         }
 
 
@@ -84,11 +92,11 @@ namespace MvvmLight4.ViewModel
         /// 各个异常的数目，初始化全0
         /// </summary>
         public ObservableCollection<int> AbnormalNums { get => abnormalNums; set { abnormalNums = value; RaisePropertyChanged(() => AbnormalNums); } }
-        private string currentThumbnailPath;
-        /// <summary>
-        /// 右下角缩略图绝对路径，初始化为default.png
-        /// </summary>
-        public string CurrentThumbnailPath { get => currentThumbnailPath; set { currentThumbnailPath = value; RaisePropertyChanged(() => CurrentThumbnailPath); } }
+        //private string currentThumbnailPath;
+        ///// <summary>
+        ///// 右下角缩略图绝对路径，初始化为default.png
+        ///// </summary>
+        //public string CurrentThumbnailPath { get => currentThumbnailPath; set { currentThumbnailPath = value; RaisePropertyChanged(() => CurrentThumbnailPath); } }
 
         private ImageSource currentThumbnailPathNew;
         /// <summary>
@@ -227,7 +235,10 @@ namespace MvvmLight4.ViewModel
 
         private bool CanExecuteCancelCmd()
         {
-            return Marks.Count != 0;
+            if (Marks != null)
+                return Marks.Count != 0;
+            else
+                return false;
         }
 
         private void ExecuteCancelCmd()
@@ -237,16 +248,16 @@ namespace MvvmLight4.ViewModel
             {
                 DispatcherHelper.CheckBeginInvokeOnUI(() =>
                 {
-                    CurrentThumbnailPath = Marks[Marks.Count - 2].Path;
-                    CurrentThumbnailPathNew =  BitmapFrame.Create(new Uri(Marks[Marks.Count - 2].Path), BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+                    //CurrentThumbnailPath = Marks[Marks.Count - 2].Path;
+                    CurrentThumbnailPathNew =  BitmapFrame.Create(new Uri(Marks[Marks.Count - 2].Path + "_1" + ".jpg"), BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
                 });
             }
             else
             {
                 DispatcherHelper.CheckBeginInvokeOnUI(() =>
                 {
-                    CurrentThumbnailPath = @"../Image/default.png";
-                    CurrentThumbnailPathNew = BitmapFrame.Create(new Uri("../../Image/default.png", UriKind.Relative), BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+                    //CurrentThumbnailPath = @"../Image/default.png";
+                    CurrentThumbnailPathNew = BitmapFrame.Create(new Uri("Image/default.png", UriKind.Relative), BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
                 });
             }
             int a = Marks[Marks.Count - 1].Type;
@@ -259,9 +270,12 @@ namespace MvvmLight4.ViewModel
             });
             
             //删除文件
-            if (File.Exists(p))
-                File.Delete(p);
-            
+            if (File.Exists(p + "_1" + ".jpg"))
+                File.Delete(p + "_1" + ".jpg");
+            //供测试
+            if (File.Exists(p + "_2" + ".jpg"))
+                File.Delete(p + "_2" + ".jpg");
+
         }
         #endregion
         #region 标注
@@ -286,7 +300,7 @@ namespace MvvmLight4.ViewModel
         private bool CanExecuteMarkCmd(Image img)
         {
             Point p = Mouse.GetPosition(img);
-            return !(p.X < 30 || p.Y < 30 || img.ActualWidth - p.X < 30 || img.ActualHeight - p.Y < 30);
+            return !(p.X < 60 || p.Y < 60 || img.ActualWidth - p.X < 60 || img.ActualHeight - p.Y < 60);
         }
 
         private void ExecuteMarkCmd(Image img)
@@ -296,25 +310,72 @@ namespace MvvmLight4.ViewModel
             //MessageBox.Show("" + img.ActualHeight + "-" + img.ActualWidth + " " + p.Y + "-" + p.X);
             //添加到结果集合
 
-            //"201901081636_1234_3_157.png"
+            //"201901081636_1234_3_157_1.png"
             string filename = DateTime.Now.ToString("yyyyMMddHHmmss") + "_" +
                                 Convert.ToString(CurrentFramePosition) + "_" +
                                 Convert.ToString(currentAbnormalType) + "_" +
-                                Convert.ToString(Marks.Count) + ".png";
+                                Convert.ToString(Marks.Count);
 
             //"C:\Users\超\Desktop\2019-01-02 16-08-00" + "/2/"
             string path = SavePath + @"/" + Convert.ToString(currentAbnormalType) + @"/" + filename;
-            ImageHelper.caijianpic(imagePath[CurrentFramePosition], path, p.X * 1.0 / img.ActualWidth, p.Y * 1.0 / img.ActualHeight, 30, 30);
+            switch (currentAbnormalType)
+            {
+                case 0:
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                case 5:
+                    ImageHelper.Caijianpic(imagePath[CurrentFramePosition], path + "_1" + ".jpg", p.X * 1.0 / img.ActualWidth, p.Y * 1.0 / img.ActualHeight, 416, 416);
+                    ImageHelper.Caijianpic(imagePath[CurrentFramePosition], path + "_2" + ".jpg", p.X * 1.0 / img.ActualWidth, p.Y * 1.0 / img.ActualHeight, 299, 299);
+                    break;
+                case 6:
+                case 7:
+                case 8:
+                case 9:
+                case 10:
+                case 11:
+                    ImageHelper.SavePic(imagePath[CurrentFramePosition], path + "_1" + ".jpg");
+                    break;
+                default:
+                    break;
+            }
             Console.WriteLine("" + p.X * 1.0 / img.ActualWidth + "---" + p.Y * 1.0 / img.ActualHeight);
             MarkModel mark = new MarkModel(Convert.ToString(currentFramePosition), currentAbnormalType, p.X * 1.0 / img.ActualWidth, p.Y * 1.0 / img.ActualHeight, path);
             Marks.Add(mark);
             DispatcherHelper.CheckBeginInvokeOnUI(() =>
             {
-                CurrentThumbnailPath = mark.Path;
-
-                CurrentThumbnailPathNew = BitmapFrame.Create(new Uri(mark.Path), BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+                //CurrentThumbnailPath = mark.Path;
+                CurrentThumbnailPathNew = BitmapFrame.Create(new Uri(mark.Path + "_1" + ".jpg"), BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
             });
             AbnormalNums[mark.Type]++;
+        }
+        #endregion
+        #region 打开窗口
+        private RelayCommand winLoadedCommand;
+        /// <summary>
+        /// 退出
+        /// </summary>
+        public RelayCommand WinLoadedCommand
+        {
+            get
+            {
+                if (winLoadedCommand == null)
+                    return new RelayCommand(() =>
+                    {
+                        MessageBox.Show("loaded cmd in");
+                        InitSaveDirectory();
+                        InitData();
+                        InitPlayer();
+                        InitWorker();
+                        DispatcherHelper.Initialize();
+                    });
+                return winLoadedCommand;
+            }
+            set
+            {
+                winLoadedCommand = value;
+            }
         }
         #endregion
         #region 关闭窗口
@@ -330,6 +391,7 @@ namespace MvvmLight4.ViewModel
                     return new RelayCommand(() =>
                     {
                         worker.CancelAsync();
+                        imagePath.Clear();
                     });
                 return winClosedCmd;
             }
@@ -352,13 +414,13 @@ namespace MvvmLight4.ViewModel
             currentFramePosition = 0;
             //各类异常数目
             AbnormalNums = new ObservableCollection<int>();
-            for (int i = 0; i < 6; i++)
+            for (int i = 0; i < 12; i++)
             {
                 AbnormalNums.Add(0);
             }
             //当前右下角缩略图路径
-            CurrentThumbnailPath = @"../Image/default.png";
-            CurrentThumbnailPathNew = BitmapFrame.Create(new Uri("../../Image/default.png", UriKind.Relative), BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+            //CurrentThumbnailPath = @"../Image/default.jpg";
+            CurrentThumbnailPathNew = BitmapFrame.Create(new Uri("Image/default.png", UriKind.Relative), BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
             //新建标记类
             Marks = new ObservableCollection<MarkModel>();
         }
@@ -367,14 +429,22 @@ namespace MvvmLight4.ViewModel
         private void InitPlayer()
         {
             player = new PlayerModel();
+            string newPath = MessageHelper.FramePath;
+            //DirectoryInfo root = new DirectoryInfo(FolderPath);
             DirectoryInfo root = new DirectoryInfo(FolderPath);
-            FileInfo[] files = root.GetFiles("*.png");
+            //MessageBox.Show("root path " + root);
+            FileInfo[] files = root.GetFiles("*.jpg");
+            if (files == null)
+                MessageBox.Show("files is null");
+            else
+                MessageBox.Show("files is not null");
             files = files.OrderBy(y => y.Name, new FileComparer()).ToArray();
             foreach (var item in files)
             {
                 string name = item.FullName;
                 imagePath.Add(name);
             }
+            MessageBox.Show("imagePath.Count: " + imagePath.Count);
             player.StartNum = 0;
             player.EndNum = imagePath.Count - 1;
         }
@@ -430,8 +500,8 @@ namespace MvvmLight4.ViewModel
         #endregion
         private void InitSaveDirectory()
         {
-            //为5类异常新建文件夹
-            for (int i = 1; i < 6; i++)
+            //为12类异常新建文件夹
+            for (int i = 0; i < 12; i++)
             {
                 string path = SavePath;
                 path = path + @"\" + Convert.ToInt32(i);

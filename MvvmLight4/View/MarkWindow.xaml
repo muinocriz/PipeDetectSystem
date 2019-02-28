@@ -10,9 +10,12 @@
         xmlns:common="clr-namespace:MvvmLight4.Common"
         xmlns:local="clr-namespace:MvvmLight4.View"
         mc:Ignorable="d"
-        DataContext="{Binding Source={StaticResource Locator},Path=Mark}"
-         Title="标注" Height="420" Width="800" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+        DataContext="{Binding Source={StaticResource Locator},Path=MarkVM}"
+         Title="标注" Height="420" Width="950" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
     <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <mvvm:EventToCommand Command="{Binding WinLoadedCommand}"/>
+        </i:EventTrigger>
         <i:EventTrigger EventName="Closing">
             <mvvm:EventToCommand Command="{Binding WinClosedCmd}"/>
         </i:EventTrigger>
@@ -23,7 +26,7 @@
         </Grid.Resources>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
-            <ColumnDefinition Width="140.8"/>
+            <ColumnDefinition Width="280"/>
             <ColumnDefinition Width="9.6"/>
         </Grid.ColumnDefinitions>
         <!--视频展示-->
@@ -63,21 +66,29 @@
             </StackPanel>
         </Grid>
         <!--控制-->
-        <Grid Width="150" Grid.ColumnSpan="3" Margin="643,0,0.6,0.4">
+        <Grid Width="280" Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="50"/>
                 <RowDefinition/>
                 <RowDefinition Height="100"/>
             </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
             <!--标题-->
             <Grid Grid.Row="0">
-                <Label  VerticalAlignment="Center" HorizontalContentAlignment="Center" FontSize="14" Content="异常类型" FontWeight="Bold"/>
+                <Label  VerticalAlignment="Center" HorizontalContentAlignment="Center" FontSize="14" Content="局部异常" FontWeight="Bold"/>
+            </Grid>
+            <Grid Grid.Row="0" Grid.Column="1">
+                <Label  VerticalAlignment="Center" HorizontalContentAlignment="Center" FontSize="14" Content="全局异常" FontWeight="Bold"/>
             </Grid>
             <!--类型-->
-            <Grid Grid.Row="1">
+            <!--局部异常-->
+            <Grid Grid.Row="1" Name="AbnormalGrid">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
-                    <ColumnDefinition Width="80"/>
+                    <ColumnDefinition Width="55"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition/>
@@ -85,22 +96,51 @@
                     <RowDefinition/>
                     <RowDefinition/>
                     <RowDefinition/>
+                    <RowDefinition/>
                 </Grid.RowDefinitions>
-                <RadioButton Visibility="Collapsed" GroupName="AbnormalType" Grid.Row="0" Grid.Column="0" Content="1" IsChecked="{Binding CurrentAbnormalType,Converter={StaticResource itbc},ConverterParameter=0}"/>
-                <Label Visibility="Collapsed" VerticalContentAlignment="Center" Grid.Row="0" Grid.Column="1" HorizontalContentAlignment="Right" Content="{Binding AbnormalNums[0]}"/>
-                <RadioButton GroupName="AbnormalType" Grid.Row="0" Grid.Column="0" Content="1" IsChecked="{Binding CurrentAbnormalType,Converter={StaticResource itbc},ConverterParameter=1}"/>
+                
+                <RadioButton GroupName="AbnormalType" Grid.Row="0" Grid.Column="0" Content="破裂" IsChecked="{Binding CurrentAbnormalType,Converter={StaticResource itbc},ConverterParameter=1}"/>
                 <Label VerticalContentAlignment="Center" Grid.Row="0" Grid.Column="1" HorizontalContentAlignment="Right" Content="{Binding AbnormalNums[1]}"/>
-                <RadioButton GroupName="AbnormalType" Grid.Row="1" Grid.Column="0" Content="2" IsChecked="{Binding CurrentAbnormalType,Converter={StaticResource itbc},ConverterParameter=2}"/>
+                <RadioButton GroupName="AbnormalType" Grid.Row="1" Grid.Column="0" Content="腐蚀" IsChecked="{Binding CurrentAbnormalType,Converter={StaticResource itbc},ConverterParameter=2}"/>
                 <Label VerticalContentAlignment="Center" Grid.Row="1" Grid.Column="1" HorizontalContentAlignment="Right" Content="{Binding AbnormalNums[2]}"/>
-                <RadioButton GroupName="AbnormalType" Grid.Row="2" Grid.Column="0" Content="3" IsChecked="{Binding CurrentAbnormalType,Converter={StaticResource itbc},ConverterParameter=3}"/>
+                <RadioButton GroupName="AbnormalType" Grid.Row="2" Grid.Column="0" Content="树根" IsChecked="{Binding CurrentAbnormalType,Converter={StaticResource itbc},ConverterParameter=3}"/>
                 <Label VerticalContentAlignment="Center" Grid.Row="2" Grid.Column="1" HorizontalContentAlignment="Right" Content="{Binding AbnormalNums[3]}"/>
-                <RadioButton GroupName="AbnormalType" Grid.Row="3" Grid.Column="0" Content="4" IsChecked="{Binding CurrentAbnormalType,Converter={StaticResource itbc},ConverterParameter=4}"/>
+                <RadioButton GroupName="AbnormalType" Grid.Row="3" Grid.Column="0" Content="结垢" IsChecked="{Binding CurrentAbnormalType,Converter={StaticResource itbc},ConverterParameter=4}"/>
                 <Label VerticalContentAlignment="Center" Grid.Row="3" Grid.Column="1" HorizontalContentAlignment="Right" Content="{Binding AbnormalNums[4]}"/>
-                <RadioButton GroupName="AbnormalType" Grid.Row="4" Grid.Column="0" Content="5" IsChecked="{Binding CurrentAbnormalType,Converter={StaticResource itbc},ConverterParameter=5}"/>
-                <Label VerticalContentAlignment="Center" Grid.Row="4" Grid.Column="1" HorizontalContentAlignment="Right" Content="{Binding AbnormalNums[5]}"/>
+                <!--<RadioButton GroupName="AbnormalType" Grid.Row="4" Grid.Column="0" Content="5" IsChecked="{Binding CurrentAbnormalType,Converter={StaticResource itbc},ConverterParameter=5}"/>
+                <Label VerticalContentAlignment="Center" Grid.Row="4" Grid.Column="1" HorizontalContentAlignment="Right" Content="{Binding AbnormalNums[5]}"/>-->
+                <RadioButton GroupName="AbnormalType" Grid.Row="5" Grid.Column="0" Content="正常" IsChecked="{Binding CurrentAbnormalType,Converter={StaticResource itbc},ConverterParameter=0}"/>
+                <Label VerticalContentAlignment="Center" Grid.Row="5" Grid.Column="1" HorizontalContentAlignment="Right" Content="{Binding AbnormalNums[0]}"/>
+            </Grid>
+            <!--全局异常-->
+            <Grid Grid.Row="1" Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="55"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <RadioButton GroupName="AbnormalType" Grid.Row="0" Grid.Column="0" Content="障碍" IsChecked="{Binding CurrentAbnormalType,Converter={StaticResource itbc},ConverterParameter=7}"/>
+                <Label VerticalContentAlignment="Center" Grid.Row="0" Grid.Column="1" HorizontalContentAlignment="Right" Content="{Binding AbnormalNums[7]}"/>
+                <RadioButton GroupName="AbnormalType" Grid.Row="1" Grid.Column="0" Content="起伏" IsChecked="{Binding CurrentAbnormalType,Converter={StaticResource itbc},ConverterParameter=8}"/>
+                <Label VerticalContentAlignment="Center" Grid.Row="1" Grid.Column="1" HorizontalContentAlignment="Right" Content="{Binding AbnormalNums[8]}"/>
+                <RadioButton GroupName="AbnormalType" Grid.Row="2" Grid.Column="0" Content="沉积" IsChecked="{Binding CurrentAbnormalType,Converter={StaticResource itbc},ConverterParameter=9}"/>
+                <Label VerticalContentAlignment="Center" Grid.Row="2" Grid.Column="1" HorizontalContentAlignment="Right" Content="{Binding AbnormalNums[9]}"/>
+                <RadioButton GroupName="AbnormalType" Grid.Row="3" Grid.Column="0" Content="错口" IsChecked="{Binding CurrentAbnormalType,Converter={StaticResource itbc},ConverterParameter=10}"/>
+                <Label VerticalContentAlignment="Center" Grid.Row="3" Grid.Column="1" HorizontalContentAlignment="Right" Content="{Binding AbnormalNums[10]}"/>
+                <!--<RadioButton GroupName="AbnormalType" Grid.Row="4" Grid.Column="0" Content="5" IsChecked="{Binding CurrentAbnormalType,Converter={StaticResource itbc},ConverterParameter=11}"/>
+                <Label VerticalContentAlignment="Center" Grid.Row="4" Grid.Column="1" HorizontalContentAlignment="Right" Content="{Binding AbnormalNums[11]}"/>-->
+                <RadioButton GroupName="AbnormalType" Grid.Row="5" Grid.Column="0" Content="正常" IsChecked="{Binding CurrentAbnormalType,Converter={StaticResource itbc},ConverterParameter=6}"/>
+                <Label VerticalContentAlignment="Center" Grid.Row="5" Grid.Column="1" HorizontalContentAlignment="Right" Content="{Binding AbnormalNums[6]}"/>
             </Grid>
             <!--操作-->
-            <StackPanel Grid.Row="2" Margin="5 0 5 5" Background="#d5d5d5">
+            <StackPanel Grid.Row="2" Grid.ColumnSpan="2" Margin="5 0 5 5" Background="#d5d5d5">
                 <Image Source="{Binding CurrentThumbnailPathNew}" Height="50" Margin="0 5 0 0"/>
                 <Grid Height="6"/>
                 <Button Width="90" Command="{Binding CancelCmd}">

@@ -17,5 +17,6 @@ namespace MvvmLight4.Service
         List<ComplexInfoModel> QueryVideo();
         List<AbnormalViewModel> ExportByVideoId(int id);
         int AddAbnormal(List<AbnormalModel> abnormalModels);
+        ObservableCollection<AbnormalTypeModel> GetAbnormalTypeModels();
     }
 }

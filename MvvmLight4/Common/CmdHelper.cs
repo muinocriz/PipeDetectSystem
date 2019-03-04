@@ -19,10 +19,9 @@ namespace MvvmLight4.Common
         /// |:将上一个命令的输出,作为下一个命令的输入
         /// &&：当&&前的命令成功时,才执行&&后的命令
         /// ||：当||前的命令失败时,才执行||后的命令]]>
-        /// 其他请百度
         /// </summary>
         /// <param name="cmd">要执行的命令</param>
-        public static void RunCmd(string cmd)
+        public static int RunCmd(string cmd)
         {
             cmd = cmd.Trim().TrimEnd('&') + "&exit";//说明：不管命令是否成功均执行exit命令，否则当调用ReadToEnd()方法时，会处于假死状态
             using (Process p = new Process())
@@ -38,11 +37,11 @@ namespace MvvmLight4.Common
                 //向cmd窗口写入命令
                 p.StandardInput.WriteLine(cmd);
                 p.StandardInput.AutoFlush = true;
-
+                return p.Id;
                 //获取cmd窗口的输出信息
                 //output = p.StandardOutput.ReadToEnd();
                 //p.WaitForExit();//等待程序执行完退出进程
-                p.Close();
+                //p.Close();
             }
         }
     }

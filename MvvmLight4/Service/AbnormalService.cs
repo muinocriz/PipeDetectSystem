@@ -164,5 +164,21 @@ namespace MvvmLight4.Service
                 }
             }
         }
+
+        public ObservableCollection<AbnormalTypeModel> GetAbnormalTypeModels()
+        {
+            ObservableCollection<AbnormalTypeModel> models = new ObservableCollection<AbnormalTypeModel>();
+            using (IDbConnection conn = SqlHelper.GetConnection())
+            {
+                conn.Open();
+                var sql = @"SELECT * FROM TB_ABNORMALLIST;";
+                IEnumerable<dynamic> dynamics = conn.Query<AbnormalTypeModel>(sql).ToList();
+                foreach (var item in dynamics)
+                {
+                    models.Add(item);
+                }
+            }
+            return models;
+        }
     }
 }

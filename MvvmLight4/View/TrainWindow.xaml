@@ -10,7 +10,7 @@
         xmlns:mvvm="http://www.galasoft.ch/mvvmlight"
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         DataContext="{Binding Source={StaticResource Locator},Path=Train}"
-        Title="训练" Height="400" Width="460" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" >
+        Title="训练" Height="420" Width="460" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" >
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <mvvm:EventToCommand Command="{Binding LoadedCmd}"/>
@@ -27,8 +27,11 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
                     <Label Content="样本位置：" Width="80"/>
-                    <TextBox Margin="0 0 10 0" Width="250" Text="{Binding Simple,UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBox Name="SimpleTextBox" Margin="0 0 10 0" Width="250" Text="{Binding Simple,UpdateSourceTrigger=PropertyChanged}"/>
                     <Button Width="80"  Content="浏览" Command="{Binding Train.FolderBrowserCmd}" CommandParameter="S" DataContext="{Binding Source={StaticResource Locator}}"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="340 5 0 0">
+                    <Button Width="80"  Content="预处理" Command="{Binding Train.PreprocessCmd}" CommandParameter="{Binding ElementName=SimpleTextBox,Path=Text}" DataContext="{Binding Source={StaticResource Locator}}"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
                     <Label Content="模型输出：" Width="80"/>
@@ -38,7 +41,6 @@
                 <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
                     <Label Content="模型命名：" Width="80"/>
                     <TextBox Margin="0 0 10 0" Width="250" Text="{Binding ModelName,UpdateSourceTrigger=PropertyChanged}"/>
-
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
                     <StackPanel.Resources>
@@ -46,12 +48,12 @@
                     </StackPanel.Resources>
                     <Label Content="学习率：" Width="80"/>
                     <!--<TextBox Margin="0 0 10 0" Width="250" Text="{Binding Rate}"/>-->
-                    <Slider Style="{DynamicResource FlatSlider}" Width="250"  Value="{Binding Rate,Converter={StaticResource itdc},ConverterParameter=0, UpdateSourceTrigger=PropertyChanged}" Minimum="1" Maximum="100" SmallChange="1" LargeChange="10" TickFrequency="1" IsSnapToTickEnabled="True" AutoToolTipPrecision="0"  AutoToolTipPlacement="TopLeft"/>
+                    <Slider Width="250"  Value="{Binding Rate,Converter={StaticResource itdc},ConverterParameter=0, UpdateSourceTrigger=PropertyChanged}" Minimum="1" Maximum="100" SmallChange="1" LargeChange="10" TickFrequency="1" IsSnapToTickEnabled="True" AutoToolTipPrecision="0"  AutoToolTipPlacement="TopLeft"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
                     <Label Content="迭代次数：" Width="80"/>
                     <!--<TextBox Margin="0 0 10 0" Width="250" Text="{Binding Lteration}"/>-->
-                    <Slider Style="{DynamicResource FlatSlider}" Width="250"  Value="{Binding Lteration,Converter={StaticResource itdc},ConverterParameter=1,UpdateSourceTrigger=PropertyChanged}" Minimum="200000" Maximum="1000000" SmallChange="5000" LargeChange="100000" TickFrequency="5000" IsSnapToTickEnabled="True" AutoToolTipPrecision="0"  AutoToolTipPlacement="TopLeft"/>
+                    <Slider Width="250"  Value="{Binding Lteration,Converter={StaticResource itdc},ConverterParameter=1,UpdateSourceTrigger=PropertyChanged}" Minimum="200000" Maximum="1000000" SmallChange="5000" LargeChange="100000" TickFrequency="5000" IsSnapToTickEnabled="True" AutoToolTipPrecision="0"  AutoToolTipPlacement="TopLeft"/>
                 </StackPanel>
             </StackPanel>
 
@@ -72,10 +74,10 @@
             <StackPanel HorizontalAlignment="Right" DataContext="{Binding Source={StaticResource Locator}}">
                 <Button Width="80" Margin="0 0 26 0" Style="{StaticResource AccentedSquareButtonStyle}" Content="训练" Command="{Binding Train.TrainCmd}" />
             </StackPanel>
-            <StackPanel Margin="0 10 0 0">
-                <Canvas>
-                    <!--<ProgressBar Margin="80 0 0 0" HorizontalAlignment="Left" Width="250" IsIndeterminate="True" Visibility="{Binding Train.FilterProgVb}" DataContext="{Binding Source={StaticResource Locator}}"/>-->
-                    <ProgressBar Margin="80 0 0 0" HorizontalAlignment="Left" Width="250" Value="{Binding Train.TrainProgNum}" Visibility="{Binding Train.TrainProgVb, Source={StaticResource Locator}}" DataContext="{Binding Source={StaticResource Locator}}"/>
+            <StackPanel Margin="0 20 0 0">
+                <Canvas Visibility="{Binding Train.TrainProgVb}" DataContext="{Binding Source={StaticResource Locator}}">
+                    <ProgressBar Margin="80 7 0 0" HorizontalAlignment="Left" Width="250" Value="{Binding Train.TrainProgNum}" />
+                    <Button Margin="340 0 0 0" Width="80" Content="停止生成" Command="{Binding Train.StopTrainCmd}"/>
                 </Canvas>
             </StackPanel>
         </StackPanel>

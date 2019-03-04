@@ -5,11 +5,10 @@ using MvvmLight4.Model;
 using MvvmLight4.Service;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
+using System.Diagnostics;
 using System.IO.Pipes;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -103,6 +102,49 @@ namespace MvvmLight4.ViewModel
             }
         }
 
+        private RelayCommand<string> preprocessCmd;
+        /// <summary>
+        /// 预处理函数
+        /// </summary>
+        public RelayCommand<string> PreprocessCmd
+        {
+            get
+            {
+                if (preprocessCmd == null)
+                {
+                    return new RelayCommand<string>((directory) => ExecutePreprocessCmd(directory), CanExecutePreprocessCmd);
+                }
+                return preprocessCmd;
+            }
+            set
+            {
+                preprocessCmd = value;
+            }
+        }
+
+        private void ExecutePreprocessCmd(string directory)
+        {
+            var t = new Task(() =>
+            {
+                Thread.Sleep(1500);
+            });
+            t.Start();
+            t.ContinueWith((task) =>
+            {
+                if (task.IsCompleted)
+                    MessageBox.Show("已完成");
+                else if (task.IsCanceled)
+                    MessageBox.Show("已取消");
+                else if (task.IsFaulted)
+                    MessageBox.Show("任务失败");
+            });
+        }
+
+        private bool CanExecutePreprocessCmd(string directory)
+        {
+            return !string.IsNullOrEmpty(directory);
+        }
+
         private RelayCommand<string> folderBrowserCmd;
         public RelayCommand<string> FolderBrowserCmd
         {
@@ -156,6 +198,39 @@ namespace MvvmLight4.ViewModel
             Model.SourceModel = FileDialogService.GetService().OpenFileDialog();
         }
 
+        private RelayCommand stopTrainCmd;
+        public RelayCommand StopTrainCmd
+        {
+            get
+            {
+                if (stopTrainCmd == null)
+                    return new RelayCommand(() =>
+                    {
+                        //Process[] processes= processes = System.Diagnostics.Process.GetProcesses();
+                        //foreach (var item in processes)
+                        //{
+                        //    if (item.ProcessName == "python")
+                        //    {
+                        //        Console.WriteLine("kill: "+item.Id);
+                        //        item.Kill();
+                        //    }
+                        //}
+                        Process process = new Process();
+                        string path = string.Format(@"C:\Users\超\Desktop\");
+                        process.StartInfo.WorkingDirectory = path;
+                        process.StartInfo.FileName = "gc.bat";
+                        process.Start();
+                        process.WaitForExit();
+                        if (pipeReader.IsConnected)
+                            pipeReader.Close();
+                        worker.CancelAsync();
+                    });
+                return stopTrainCmd;
+            }
+            set
+            { stopTrainCmd = value; }
+        }
+
         private RelayCommand trainCmd;
         public RelayCommand TrainCmd
         {
@@ -196,6 +271,7 @@ namespace MvvmLight4.ViewModel
             //新建后台进程
             worker = new BackgroundWorker();
             worker.WorkerReportsProgress = true;
+            worker.WorkerSupportsCancellation = true;
             worker.DoWork += Worker_DoWork;
             worker.ProgressChanged += Worker_ProgressChanged;
             worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
@@ -302,6 +378,7 @@ namespace MvvmLight4.ViewModel
             if (e.Cancelled || e.Error != null)
             {
                 MessageBox.Show(errorMsg);
+                TrainProgVb = Visibility.Hidden;
             }
             else
             {

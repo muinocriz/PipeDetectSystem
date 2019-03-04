@@ -50,7 +50,7 @@ namespace MvvmLight4.ViewModel
 
         private bool CanExecuteSubmitCmd()
         {
-            return !( string.IsNullOrEmpty(Meta.VideoPath) || string.IsNullOrEmpty(Meta.PipeCode) || string.IsNullOrEmpty(Meta.TaskCode) || string.IsNullOrEmpty(Meta.Address) || string.IsNullOrEmpty(Meta.Charge) || string.IsNullOrEmpty(Meta.StartTime) || string.IsNullOrEmpty(Meta.EndTime));
+            return !( string.IsNullOrEmpty(Meta.VideoPath) || string.IsNullOrEmpty(Meta.PipeCode) || string.IsNullOrEmpty(Meta.TaskCode) || string.IsNullOrEmpty(Meta.Address) || string.IsNullOrEmpty(Meta.Charge));
         }
 
         private void ExecuteSubmitCmd()

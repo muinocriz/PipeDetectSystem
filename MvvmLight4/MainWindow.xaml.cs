@@ -26,7 +26,7 @@ namespace MvvmLight4
             string winName = ((Button)e.OriginalSource).Tag.ToString();
             Window win = ((Window)_assembly.CreateInstance(string.Format("MvvmLight4.View.{0}", winName)));
             win.Owner = this;
-            win.Show();
+            win.ShowDialog();
         }
     }
 }

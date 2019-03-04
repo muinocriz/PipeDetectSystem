@@ -175,8 +175,7 @@ namespace MvvmLight4.ViewModel
 
             //分帧逻辑
             //使用cmd运行Python
-            string pythonFilePosition = Directory.GetCurrentDirectory() + @"\testpipe.py";
-            string cmdStringTest = ConfigurationManager.ConnectionStrings["FrameCmdString"].ConnectionString;
+            string pythonFilePosition = @"testpipe.py";
             string cmdString = @"python "+ pythonFilePosition + " " + sourcePath + " " + targetPath;
             //MessageBox.Show("cmdstring: " + cmdString);
             CmdHelper.RunCmd(cmdString);

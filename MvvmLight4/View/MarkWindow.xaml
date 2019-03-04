@@ -11,7 +11,7 @@
         xmlns:local="clr-namespace:MvvmLight4.View"
         mc:Ignorable="d"
         DataContext="{Binding Source={StaticResource Locator},Path=MarkVM}"
-         Title="标注" Height="420" Width="950" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+         Title="标注" Height="420" Width="830" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <mvvm:EventToCommand Command="{Binding WinLoadedCommand}"/>
@@ -26,7 +26,8 @@
         </Grid.Resources>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
-            <ColumnDefinition Width="280"/>
+            <ColumnDefinition Width="0"/>
+            <ColumnDefinition Width="150"/>
             <ColumnDefinition Width="9.6"/>
         </Grid.ColumnDefinitions>
         <!--视频展示-->
@@ -50,15 +51,14 @@
                     <Button Command="{Binding RewCmd}" Name="Rew" Width="40" Height="40" Padding="0">
                         <Image Source="/Image/快退.png" Margin="5,6"></Image>
                     </Button>
-                    <Grid Width="10"/>
-                    <Button Command="{Binding PlayCmd}" Name="Start" Width="40" Height="40" Padding="0">
+                    <Grid/>
+                    <Button Margin="10 0 10 0" Command="{Binding PlayCmd}" Name="Start" Width="40" Height="40" Padding="0">
                         <Image Source="/Image/开始.png" Margin="5,6"></Image>
                     </Button>
-                    <Grid Width="10"/>
-                    <Button Command="{Binding PauseCmd}" Name="Pause" Width="40" Height="40" Padding="0">
+                    <Grid />
+                    <Button Margin="10 0 10 0" Command="{Binding PauseCmd}" Name="Pause" Width="40" Height="40" Padding="0" Visibility="Collapsed">
                         <Image Source="/Image/暂停.png" Margin="5,6"></Image>
                     </Button>
-                    <Grid Width="10"/>
                     <Button Command="{Binding FFCmd}" Name="FF" Width="40" Height="40" Padding="0">
                         <Image Source="/Image/快进.png" Margin="5,6"></Image>
                     </Button>
@@ -66,7 +66,7 @@
             </StackPanel>
         </Grid>
         <!--控制-->
-        <Grid Width="280" Grid.Column="1">
+        <!--<Grid Width="280" Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="50"/>
                 <RowDefinition/>
@@ -76,15 +76,15 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <!--标题-->
+            --><!--标题--><!--
             <Grid Grid.Row="0">
                 <Label  VerticalAlignment="Center" HorizontalContentAlignment="Center" FontSize="14" Content="局部异常" FontWeight="Bold"/>
             </Grid>
             <Grid Grid.Row="0" Grid.Column="1">
                 <Label  VerticalAlignment="Center" HorizontalContentAlignment="Center" FontSize="14" Content="全局异常" FontWeight="Bold"/>
             </Grid>
-            <!--类型-->
-            <!--局部异常-->
+            --><!--类型-->
+            <!--局部异常--><!--
             <Grid Grid.Row="1" Name="AbnormalGrid">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
@@ -107,12 +107,12 @@
                 <Label VerticalContentAlignment="Center" Grid.Row="2" Grid.Column="1" HorizontalContentAlignment="Right" Content="{Binding AbnormalNums[3]}"/>
                 <RadioButton GroupName="AbnormalType" Grid.Row="3" Grid.Column="0" Content="结垢" IsChecked="{Binding CurrentAbnormalType,Converter={StaticResource itbc},ConverterParameter=4}"/>
                 <Label VerticalContentAlignment="Center" Grid.Row="3" Grid.Column="1" HorizontalContentAlignment="Right" Content="{Binding AbnormalNums[4]}"/>
-                <!--<RadioButton GroupName="AbnormalType" Grid.Row="4" Grid.Column="0" Content="5" IsChecked="{Binding CurrentAbnormalType,Converter={StaticResource itbc},ConverterParameter=5}"/>
-                <Label VerticalContentAlignment="Center" Grid.Row="4" Grid.Column="1" HorizontalContentAlignment="Right" Content="{Binding AbnormalNums[5]}"/>-->
+                --><!--<RadioButton GroupName="AbnormalType" Grid.Row="4" Grid.Column="0" Content="5" IsChecked="{Binding CurrentAbnormalType,Converter={StaticResource itbc},ConverterParameter=5}"/>
+                <Label VerticalContentAlignment="Center" Grid.Row="4" Grid.Column="1" HorizontalContentAlignment="Right" Content="{Binding AbnormalNums[5]}"/>--><!--
                 <RadioButton GroupName="AbnormalType" Grid.Row="5" Grid.Column="0" Content="正常" IsChecked="{Binding CurrentAbnormalType,Converter={StaticResource itbc},ConverterParameter=0}"/>
                 <Label VerticalContentAlignment="Center" Grid.Row="5" Grid.Column="1" HorizontalContentAlignment="Right" Content="{Binding AbnormalNums[0]}"/>
             </Grid>
-            <!--全局异常-->
+            --><!--全局异常--><!--
             <Grid Grid.Row="1" Grid.Column="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
@@ -134,12 +134,12 @@
                 <Label VerticalContentAlignment="Center" Grid.Row="2" Grid.Column="1" HorizontalContentAlignment="Right" Content="{Binding AbnormalNums[9]}"/>
                 <RadioButton GroupName="AbnormalType" Grid.Row="3" Grid.Column="0" Content="错口" IsChecked="{Binding CurrentAbnormalType,Converter={StaticResource itbc},ConverterParameter=10}"/>
                 <Label VerticalContentAlignment="Center" Grid.Row="3" Grid.Column="1" HorizontalContentAlignment="Right" Content="{Binding AbnormalNums[10]}"/>
-                <!--<RadioButton GroupName="AbnormalType" Grid.Row="4" Grid.Column="0" Content="5" IsChecked="{Binding CurrentAbnormalType,Converter={StaticResource itbc},ConverterParameter=11}"/>
-                <Label VerticalContentAlignment="Center" Grid.Row="4" Grid.Column="1" HorizontalContentAlignment="Right" Content="{Binding AbnormalNums[11]}"/>-->
+                --><!--<RadioButton GroupName="AbnormalType" Grid.Row="4" Grid.Column="0" Content="5" IsChecked="{Binding CurrentAbnormalType,Converter={StaticResource itbc},ConverterParameter=11}"/>
+                <Label VerticalContentAlignment="Center" Grid.Row="4" Grid.Column="1" HorizontalContentAlignment="Right" Content="{Binding AbnormalNums[11]}"/>--><!--
                 <RadioButton GroupName="AbnormalType" Grid.Row="5" Grid.Column="0" Content="正常" IsChecked="{Binding CurrentAbnormalType,Converter={StaticResource itbc},ConverterParameter=6}"/>
                 <Label VerticalContentAlignment="Center" Grid.Row="5" Grid.Column="1" HorizontalContentAlignment="Right" Content="{Binding AbnormalNums[6]}"/>
             </Grid>
-            <!--操作-->
+            --><!--操作--><!--
             <StackPanel Grid.Row="2" Grid.ColumnSpan="2" Margin="5 0 5 5" Background="#d5d5d5">
                 <Image Source="{Binding CurrentThumbnailPathNew}" Height="50" Margin="0 5 0 0"/>
                 <Grid Height="6"/>
@@ -152,6 +152,49 @@
                     </Button.Content>
                 </Button>
             </StackPanel>
+        </Grid>-->
+        <Grid Grid.Column="2" Background="Azure">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+                <RowDefinition/>
+                <RowDefinition Height="100"/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Label  VerticalAlignment="Center" HorizontalContentAlignment="Center" FontSize="14" Content="异常" FontWeight="Bold"/>
+            </Grid>
+            <Grid Grid.Row="1">
+                <DataGrid
+                    ItemsSource="{Binding AbnormalTypes}"
+                    VerticalScrollBarVisibility="Auto" 
+                    HorizontalScrollBarVisibility="Hidden" 
+                    HeadersVisibility="Column" 
+                    AutoGenerateColumns="False" 
+                    CanUserDeleteRows="False"  
+                    CanUserAddRows="False" 
+                    CanUserReorderColumns="False" 
+                    CanUserSortColumns="False" 
+                    SelectedItem="{Binding AbnormalType}"
+                    >
+                    
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="名称" Width="150" IsReadOnly="True" Binding="{Binding Name}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+            <Grid Grid.Row="2">
+                <StackPanel Grid.Row="2" Margin="5 0 5 5" Background="#d5d5d5">
+                    <Image Source="{Binding CurrentThumbnailPathNew}" Height="50" Margin="0 5 0 0"/>
+                    <Grid Height="6"/>
+                    <Button Width="90" Command="{Binding CancelCmd}">
+                        <Button.Content>
+                            <StackPanel Orientation="Horizontal">
+                                <Image Height="15" Width="15" Source="/MvvmLight4;component/Image/撤销.png"/>
+                                <Label Content="撤销" Padding="0" FontFamily="/System1;component/Font/#Source Han Sans CN"/>
+                            </StackPanel>
+                        </Button.Content>
+                    </Button>
+                </StackPanel>
+            </Grid>
         </Grid>
     </Grid>
 </Controls:MetroWindow>

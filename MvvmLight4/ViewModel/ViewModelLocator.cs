@@ -51,6 +51,7 @@ namespace MvvmLight4.ViewModel
             SimpleIoc.Default.Register<BackTrackViewModel>();
             SimpleIoc.Default.Register<MarkViewModel>();
             SimpleIoc.Default.Register<MarkFileChooseViewModel>();
+            SimpleIoc.Default.Register<SetViewModel>();
         }
 
         /// <summary>
@@ -139,6 +140,15 @@ namespace MvvmLight4.ViewModel
             {
                 //return ServiceLocator.Current.GetInstance<MarkFileChooseViewModel>();
                 return new MarkFileChooseViewModel();
+            }
+        }
+
+        public SetViewModel SetVM
+        {
+            get
+            {
+                //return ServiceLocator.Current.GetInstance<MarkFileChooseViewModel>();
+                return new SetViewModel();
             }
         }
         /// <summary>

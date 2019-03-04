@@ -4,6 +4,9 @@ using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
 using MvvmLight4.Common;
 using MvvmLight4.Model;
+using MvvmLight4.Service;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -25,63 +28,28 @@ namespace MvvmLight4.ViewModel
     {
         public MarkViewModel()
         {
-            //FolderPath = _folderPath;
-            //SavePath = _savePath;
-            //Messenger.Default.Register<string[]>(this, "MFSVM2MVM", message =>
-            //{
-            //    FolderPath = message[0];
-            //    SavePath = message[1];
-
-
-            //    player = new PlayerModel();
-            //    DirectoryInfo root = new DirectoryInfo(FolderPath);
-            //    FileInfo[] files = root.GetFiles("*.jpg");
-            //    files = files.OrderBy(y => y.Name, new FileComparer()).ToArray();
-            //    foreach (var item in files)
-            //    {
-            //        string name = item.FullName;
-            //        imagePath.Add(name);
-            //    }
-            //    player.StartNum = 0;
-            //    player.EndNum = imagePath.Count - 1;
-            //    //加载之后自动开始进程
-            //    worker.RunWorkerAsync(player);
-            //    //暂停，让用户手动点击开始
-            //    //manualReset.Reset();
-            //});
             Messenger.Default.Register<List<string>>(this, "markMessage", msg =>
             {
                 //MessageBox.Show("收到消息");
                 FolderPath = msg[0];
                 SavePath = msg[1];
             });
-            //SavePath = MessageHelper.SavePath;
-            //InitSaveDirectory();
-            //InitData();
-            //InitPlayer();
-            //InitWorker();
-            //DispatcherHelper.Initialize();
-
-            //Messenger.Default.Send<bool>(true, "CloseMarkFileChooseWindow");
-           
-            
         }
 
 
         #region 属性
         public BackgroundWorker worker;
-        //private ManualResetEvent manualReset = new ManualResetEvent(true);
         public PlayerModel player;
         public List<string> imagePath = new List<string>();
         public string FolderPath { get; set; }
-        public string TargetPath { get; set; }
+        //public string TargetPath { get; set; }
         public string SavePath { get; set; }
 
-        private int currentAbnormalType;
+        //private int currentAbnormalType;
         /// <summary>
         /// 当前选中的异常类型
         /// </summary>
-        public int CurrentAbnormalType { get => currentAbnormalType; set { currentAbnormalType = value; RaisePropertyChanged(() => CurrentAbnormalType); } }
+        //public int CurrentAbnormalType { get => currentAbnormalType; set { currentAbnormalType = value; RaisePropertyChanged(() => CurrentAbnormalType); } }
         private int currentFramePosition;
         /// <summary>
         /// 当前帧号（该图片在列表里的位置）
@@ -92,11 +60,6 @@ namespace MvvmLight4.ViewModel
         /// 各个异常的数目，初始化全0
         /// </summary>
         public ObservableCollection<int> AbnormalNums { get => abnormalNums; set { abnormalNums = value; RaisePropertyChanged(() => AbnormalNums); } }
-        //private string currentThumbnailPath;
-        ///// <summary>
-        ///// 右下角缩略图绝对路径，初始化为default.png
-        ///// </summary>
-        //public string CurrentThumbnailPath { get => currentThumbnailPath; set { currentThumbnailPath = value; RaisePropertyChanged(() => CurrentThumbnailPath); } }
 
         private ImageSource currentThumbnailPathNew;
         /// <summary>
@@ -104,14 +67,14 @@ namespace MvvmLight4.ViewModel
         /// </summary>
         public ImageSource CurrentThumbnailPathNew { get => currentThumbnailPathNew; set { currentThumbnailPathNew = value; RaisePropertyChanged(() => CurrentThumbnailPathNew); } }
 
-        private MarkModel markItem;
+        //private MarkModel markItem;
         /// <summary>
         /// 显示在右下角的mark model
         /// </summary>
-        public MarkModel MarkItem { get => markItem; set { markItem = value; RaisePropertyChanged(() => MarkItem); } }
+        //public MarkModel MarkItem { get => markItem; set { markItem = value; RaisePropertyChanged(() => MarkItem); } }
         private ObservableCollection<MarkModel> marks;
         /// <summary>
-        /// 存储标记的异常
+        /// 存储标记的异常类的列表
         /// </summary>
         public ObservableCollection<MarkModel> Marks { get => marks; set { marks = value; RaisePropertyChanged(() => Marks); } }
         private string imgSource;
@@ -119,6 +82,21 @@ namespace MvvmLight4.ViewModel
         /// 当前视频图片的路径
         /// </summary>
         public string ImgSource { get => imgSource; set { imgSource = value; RaisePropertyChanged(() => ImgSource); } }
+
+        private AbnormalTypeModel abnormalType;
+        /// <summary>
+        /// 当前表格选中项
+        /// </summary>
+        public AbnormalTypeModel AbnormalType { get => abnormalType; set { abnormalType = value; RaisePropertyChanged(() => AbnormalType); } }
+
+        private ObservableCollection<AbnormalTypeModel> abnormalTypes;
+        /// <summary>
+        /// 装载用于表格显示的异常列表数据
+        /// </summary>
+        public ObservableCollection<AbnormalTypeModel> AbnormalTypes
+        {
+            get => abnormalTypes; set { abnormalTypes = value; RaisePropertyChanged(() => AbnormalTypes); }
+        }
         #endregion
         #region 命令
         #region 播放
@@ -133,7 +111,9 @@ namespace MvvmLight4.ViewModel
                 if (playCmd == null)
                     return new RelayCommand(() =>
                     {
-                        if(!worker.IsBusy)
+                        string msg = "showPause";
+                        Messenger.Default.Send<string>(msg, "ButtonVisibility");
+                        if (!worker.IsBusy)
                             worker.RunWorkerAsync(player);
                     });
                 return playCmd;
@@ -156,7 +136,10 @@ namespace MvvmLight4.ViewModel
                 if (pauseCmd == null)
                     return new RelayCommand(() =>
                     {
-                        worker.CancelAsync();
+                        string msg = "showStart";
+                        Messenger.Default.Send<string>(msg, "ButtonVisibility");
+                        if(worker.IsBusy)
+                            worker.CancelAsync();
                     });
                 return pauseCmd;
             }
@@ -265,7 +248,7 @@ namespace MvvmLight4.ViewModel
             //减少该异常的数量
             DispatcherHelper.CheckBeginInvokeOnUI(() =>
             {
-                AbnormalNums[a]--;
+                //AbnormalNums[a]--;
                 Marks.RemoveAt(Marks.Count - 1);
             });
             
@@ -300,7 +283,7 @@ namespace MvvmLight4.ViewModel
         private bool CanExecuteMarkCmd(Image img)
         {
             Point p = Mouse.GetPosition(img);
-            return !(p.X < 60 || p.Y < 60 || img.ActualWidth - p.X < 60 || img.ActualHeight - p.Y < 60);
+            return !(p.X < 60 || p.Y < 60 || img.ActualWidth - p.X < 60 || img.ActualHeight - p.Y < 60) && AbnormalType!=null;
         }
 
         private void ExecuteMarkCmd(Image img)
@@ -313,42 +296,55 @@ namespace MvvmLight4.ViewModel
             //"201901081636_1234_3_157_1.png"
             string filename = DateTime.Now.ToString("yyyyMMddHHmmss") + "_" +
                                 Convert.ToString(CurrentFramePosition) + "_" +
-                                Convert.ToString(currentAbnormalType) + "_" +
+                                Convert.ToString(AbnormalType.Type) + "_" +
                                 Convert.ToString(Marks.Count);
 
             //"C:\Users\超\Desktop\2019-01-02 16-08-00" + "/2/"
-            string path = SavePath + @"/" + Convert.ToString(currentAbnormalType) + @"/" + filename;
-            switch (currentAbnormalType)
+            string path = SavePath + @"/" + Convert.ToString(AbnormalType.Type) + @"/" + filename;
+            //switch (currentAbnormalType)
+            //{
+            //    case 0:
+            //    case 1:
+            //    case 2:
+            //    case 3:
+            //    case 4:
+            //    case 5:
+            //        ImageHelper.Caijianpic(imagePath[CurrentFramePosition], path + "_1" + ".jpg", p.X * 1.0 / img.ActualWidth, p.Y * 1.0 / img.ActualHeight, 416, 416);
+            //        ImageHelper.Caijianpic(imagePath[CurrentFramePosition], path + "_2" + ".jpg", p.X * 1.0 / img.ActualWidth, p.Y * 1.0 / img.ActualHeight, 299, 299);
+            //        break;
+            //    case 6:
+            //    case 7:
+            //    case 8:
+            //    case 9:
+            //    case 10:
+            //    case 11:
+            //        ImageHelper.SavePic(imagePath[CurrentFramePosition], path + "_1" + ".jpg");
+            //        break;
+            //    default:
+            //        break;
+            //}
+            
+            if ("局部".Equals(AbnormalType.Category))
             {
-                case 0:
-                case 1:
-                case 2:
-                case 3:
-                case 4:
-                case 5:
-                    ImageHelper.Caijianpic(imagePath[CurrentFramePosition], path + "_1" + ".jpg", p.X * 1.0 / img.ActualWidth, p.Y * 1.0 / img.ActualHeight, 416, 416);
-                    ImageHelper.Caijianpic(imagePath[CurrentFramePosition], path + "_2" + ".jpg", p.X * 1.0 / img.ActualWidth, p.Y * 1.0 / img.ActualHeight, 299, 299);
-                    break;
-                case 6:
-                case 7:
-                case 8:
-                case 9:
-                case 10:
-                case 11:
-                    ImageHelper.SavePic(imagePath[CurrentFramePosition], path + "_1" + ".jpg");
-                    break;
-                default:
-                    break;
+                Console.WriteLine("局部异常");
+                ImageHelper.Caijianpic(imagePath[CurrentFramePosition], path + "_1" + ".jpg", p.X * 1.0 / img.ActualWidth, p.Y * 1.0 / img.ActualHeight, 416, 416);
+                ImageHelper.Caijianpic(imagePath[CurrentFramePosition], path + "_2" + ".jpg", p.X * 1.0 / img.ActualWidth, p.Y * 1.0 / img.ActualHeight, 299, 299);
+            }
+            if ("全局".Equals(AbnormalType.Category))
+            {
+                Console.WriteLine("全局异常");
+                ImageHelper.SavePic(imagePath[CurrentFramePosition], path + "_1" + ".jpg");
             }
             Console.WriteLine("" + p.X * 1.0 / img.ActualWidth + "---" + p.Y * 1.0 / img.ActualHeight);
-            MarkModel mark = new MarkModel(Convert.ToString(currentFramePosition), currentAbnormalType, p.X * 1.0 / img.ActualWidth, p.Y * 1.0 / img.ActualHeight, path);
+            //MarkModel mark = new MarkModel(Convert.ToString(currentFramePosition), currentAbnormalType, p.X * 1.0 / img.ActualWidth, p.Y * 1.0 / img.ActualHeight, path);
+            MarkModel mark = new MarkModel(Convert.ToString(currentFramePosition), AbnormalType.Type, p.X * 1.0 / img.ActualWidth, p.Y * 1.0 / img.ActualHeight, path);
             Marks.Add(mark);
             DispatcherHelper.CheckBeginInvokeOnUI(() =>
             {
                 //CurrentThumbnailPath = mark.Path;
                 CurrentThumbnailPathNew = BitmapFrame.Create(new Uri(mark.Path + "_1" + ".jpg"), BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
             });
-            AbnormalNums[mark.Type]++;
+            //AbnormalNums[mark.Type]++;
         }
         #endregion
         #region 打开窗口
@@ -363,9 +359,9 @@ namespace MvvmLight4.ViewModel
                 if (winLoadedCommand == null)
                     return new RelayCommand(() =>
                     {
-                        MessageBox.Show("loaded cmd in");
-                        InitSaveDirectory();
+                        //MessageBox.Show("loaded cmd in");
                         InitData();
+                        InitSaveDirectory();
                         InitPlayer();
                         InitWorker();
                         DispatcherHelper.Initialize();
@@ -405,24 +401,55 @@ namespace MvvmLight4.ViewModel
         #region 辅助函数
 
 
-
+        private void InitSaveDirectory()
+        {
+            //为12类异常新建文件夹
+            //for (int i = 0; i < AbnormalTypes.Count; i++)
+            //{
+            //    string path = SavePath;
+            //    path = path + @"\" + Convert.ToInt32(i);
+            //    if (!Directory.Exists(path))
+            //    {
+            //        Directory.CreateDirectory(path);
+            //    }
+            //}
+            //为异常新建文件夹
+            foreach (var item in AbnormalTypes)
+            {
+                string path = SavePath;
+                path = path + @"\" + item.Type;
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+            }
+        }
         public void InitData()
         {
             //当前异常类型
-            currentAbnormalType = 1;
+            //currentAbnormalType = 1;
             //初始帧号
             currentFramePosition = 0;
             //各类异常数目
-            AbnormalNums = new ObservableCollection<int>();
-            for (int i = 0; i < 12; i++)
-            {
-                AbnormalNums.Add(0);
-            }
+            //AbnormalNums = new ObservableCollection<int>();
+            //for (int i = 0; i < 12; i++)
+            //{
+            //    AbnormalNums.Add(0);
+            //}
             //当前右下角缩略图路径
-            //CurrentThumbnailPath = @"../Image/default.jpg";
             CurrentThumbnailPathNew = BitmapFrame.Create(new Uri("Image/default.png", UriKind.Relative), BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
             //新建标记类
             Marks = new ObservableCollection<MarkModel>();
+            //加载datagrid中的数据
+            if(File.Exists("test.txt"))
+            {
+                string data = File.ReadAllText("test.txt");
+                AbnormalTypes = JsonConvert.DeserializeObject<ObservableCollection<AbnormalTypeModel>>(data);
+            }
+            if (AbnormalTypes == null || AbnormalTypes.Count == 0)
+            {
+                AbnormalTypes = AbnormalService.GetService().GetAbnormalTypeModels();
+            }
         }
 
 
@@ -434,17 +461,12 @@ namespace MvvmLight4.ViewModel
             DirectoryInfo root = new DirectoryInfo(FolderPath);
             //MessageBox.Show("root path " + root);
             FileInfo[] files = root.GetFiles("*.jpg");
-            if (files == null)
-                MessageBox.Show("files is null");
-            else
-                MessageBox.Show("files is not null");
             files = files.OrderBy(y => y.Name, new FileComparer()).ToArray();
             foreach (var item in files)
             {
                 string name = item.FullName;
                 imagePath.Add(name);
             }
-            MessageBox.Show("imagePath.Count: " + imagePath.Count);
             player.StartNum = 0;
             player.EndNum = imagePath.Count - 1;
         }
@@ -457,8 +479,6 @@ namespace MvvmLight4.ViewModel
             worker.DoWork += new DoWorkEventHandler(worker_DoWork);
             worker.ProgressChanged += new ProgressChangedEventHandler(worker_ProgressChanged);
             worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(worker_RunWorkerCompleted);
-
-
         }
 
         #region Worker相关函数
@@ -498,19 +518,6 @@ namespace MvvmLight4.ViewModel
             }
         }
         #endregion
-        private void InitSaveDirectory()
-        {
-            //为12类异常新建文件夹
-            for (int i = 0; i < 12; i++)
-            {
-                string path = SavePath;
-                path = path + @"\" + Convert.ToInt32(i);
-                if (!Directory.Exists(path))
-                {
-                    Directory.CreateDirectory(path);
-                }
-            }
-        }
         #endregion
     }
 }

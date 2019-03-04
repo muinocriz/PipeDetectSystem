@@ -43,7 +43,9 @@ namespace MvvmLight4.Service
                                                                         CHARGE,
                                                                         STARTTIME,
                                                                         ENDTIME,
-                                                                        VIDEOPATH) VALUES(
+                                                                        VIDEOPATH,
+                                                                        HEADTIME,
+                                                                        TAILTIME) VALUES(
                                                                         @PIPECODE,
                                                                         @PIPETYPE,
                                                                         @TASKCODE,
@@ -51,17 +53,21 @@ namespace MvvmLight4.Service
                                                                         @CHARGE,
                                                                         @STARTTIME,
                                                                         @ENDTIME,
-                                                                        @VIDEOPATH)",
+                                                                        @VIDEOPATH,
+                                                                        @HEADTIME,
+                                                                        @TAILTIME)",
                     new
                     {
                         PIPECODE = meta.PipeCode,
                         PIPETYPE = meta.PipeType,
-                        TASKCODE =  meta.TaskCode,
+                        TASKCODE = meta.TaskCode,
                         ADDR = meta.Address,
                         CHARGE = meta.Charge,
                         STARTTIME = meta.StartTime,
                         ENDTIME = meta.EndTime,
-                        VIDEOPATH = meta.VideoPath
+                        VIDEOPATH = meta.VideoPath,
+                        HEADTIME = meta.HeadTime,
+                        TAILTIME = meta.TailTime
                     });
             }
             return insertedRows;

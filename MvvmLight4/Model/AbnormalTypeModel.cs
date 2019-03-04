@@ -14,36 +14,54 @@ namespace MvvmLight4.Model
     {
         public AbnormalTypeModel() { }
 
-        public AbnormalTypeModel(int id, int type, string name, string category)
+        public AbnormalTypeModel(int id, int type, string name, string category, bool isSelected)
         {
             this.id = id;
             this.type = type;
             this.name = name;
             this.category = category;
+            this.isSelected = isSelected;
         }
 
-        public AbnormalTypeModel(int type, string name, string category)
+        public AbnormalTypeModel(int type, string name, string category, bool isSelected)
         {
             this.type = type;
             this.name = name;
             this.category = category;
+            this.isSelected = isSelected;
         }
 
+        public AbnormalTypeModel(int type, string name, string category)
+        {
+            Type = type;
+            Name = name;
+            Category = category;
+        }
+
+        private int id;
         /// <summary>
         /// 编号
         /// </summary>
-        public int id { get; set; }
+        public int Id { get => id; set { id = value; RaisePropertyChanged(() => Id); } }
+
+        private int type;
         /// <summary>
         /// 类型
         /// </summary>
-        public int type { get; set; }
+        public int Type { get => type; set { type = value; RaisePropertyChanged(() => Type); } }
+
+        private string name;
         /// <summary>
         /// 异常名字
         /// </summary>
-        public string name { get; set; }
+        public string Name { get => name; set { name = value; RaisePropertyChanged(() => Name); } }
+
+        private string category;
         /// <summary>
         /// 异常分类 局部异常/全局异常
         /// </summary>
-        public string category { get; set; }
+        public string Category { get => category; set { category = value; RaisePropertyChanged(() => Category); } }
+        private bool isSelected;
+        public bool IsSelected { get => isSelected; set { isSelected = value; RaisePropertyChanged(() => IsSelected); } }
     }
 }

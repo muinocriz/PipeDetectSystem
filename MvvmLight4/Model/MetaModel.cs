@@ -59,5 +59,9 @@ namespace MvvmLight4.Model
         /// 分帧图片路径
         /// </summary>
         public string FramePath { get => framePath; set { framePath = value; RaisePropertyChanged(() => FramePath); } }
+        private string headTime;
+        public string HeadTime { get => headTime; set { headTime = value; RaisePropertyChanged(() => HeadTime); } }
+        private string tailTime;
+        public string TailTime { get => tailTime; set { tailTime = value; RaisePropertyChanged(() => TailTime); } }
     }
 }

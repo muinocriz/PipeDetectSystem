@@ -52,7 +52,7 @@
             <Button Tag="ModelManageWindow">
                 <Button.Content>
                     <StackPanel Orientation="Horizontal">
-                        <Image Source=".\Image\cog.png" Width="24" Height="24"/>
+                        <Image Source=".\Image\model.png" Width="24" Height="24"/>
                         <Label  Content="模型"/>
                     </StackPanel>
                 </Button.Content>
@@ -67,11 +67,19 @@
                     </StackPanel>
                 </Button.Content>
             </Button>
-            <Button Tag="ExportWindow">
+            <Button Tag="ExportWindow" Margin="0 0 0 5">
                 <Button.Content>
                     <StackPanel Orientation="Horizontal">
                         <Image Source=".\Image\export.ico" Width="24" Height="24"/>
                         <Label  Content="输出"/>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
+            <Button Tag="SetWindow" Margin="0 0 0 5">
+                <Button.Content>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source=".\Image\cog.png" Width="24" Height="24"/>
+                        <Label  Content="选项"/>
                     </StackPanel>
                 </Button.Content>
             </Button>

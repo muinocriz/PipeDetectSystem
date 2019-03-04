@@ -8,7 +8,7 @@
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         DataContext="{Binding Source={StaticResource Locator},Path=Import}"
         mc:Ignorable="d"
-        Title="导入" Height="415" Width="450" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
+        Title="导入" Height="480" Width="450" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
     <Grid DataContext="{Binding Meta}">
         <Grid.Resources>
             <common:IntToBoolConverter x:Key="itbc"/>
@@ -57,6 +57,14 @@
                         <Label Width="80" Content="时间段："/>
                         <Controls:DateTimePicker SelectedTimeFormat="Short" Width="123" SelectedDateTime="{Binding StartTime}" Name="txtBeginTime" Margin="0 0 4 0" Controls:TextBoxHelper.Watermark="开始时间" Culture="zh-CN"/>
                         <Controls:DateTimePicker SelectedTimeFormat="Short" Width="123" SelectedDateTime="{Binding EndTime}" Name="txtEndTime" Controls:TextBoxHelper.Watermark="结束时间" Culture="zh-CN"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                        <Label Content="开头时间：" Width="80"/>
+                        <TextBox Width="250" Text="{Binding HeadTime}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                        <Label Content="尾部时间：" Width="80"/>
+                        <TextBox Width="250" Text="{Binding TailTime}"/>
                     </StackPanel>
                 </StackPanel>
             </StackPanel>

@@ -44,5 +44,30 @@ namespace MvvmLight4.Common
                 //p.Close();
             }
         }
+
+        public static Process RunProcess(string cmd,string arguments)
+        {
+            try
+            {
+                Process process = new Process();
+                process.StartInfo.FileName = cmd;
+                if (!string.IsNullOrEmpty(arguments))
+                {
+                    process.StartInfo.Arguments = arguments;
+                }
+                //设置不在新窗口中启动新的进程
+                process.StartInfo.CreateNoWindow = true;
+                //不使用操作系统使用的shell启动进程
+                process.StartInfo.UseShellExecute = false;
+                //将输出信息重定向
+                process.StartInfo.RedirectStandardOutput = true;
+                return process;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+                throw;
+            }
+        }
     }
 }

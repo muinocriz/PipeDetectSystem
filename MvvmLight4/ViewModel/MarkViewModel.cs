@@ -283,7 +283,7 @@ namespace MvvmLight4.ViewModel
         private bool CanExecuteMarkCmd(Image img)
         {
             Point p = Mouse.GetPosition(img);
-            return !(p.X < 60 || p.Y < 60 || img.ActualWidth - p.X < 60 || img.ActualHeight - p.Y < 60) && AbnormalType!=null;
+            return !(p.X/img.ActualWidth < 0.11 || p.Y/img.ActualHeight < 0.20 || (img.ActualWidth - p.X) / img.ActualWidth < 0.11 || (img.ActualHeight - p.Y)/ img.ActualHeight < 0.20) && AbnormalType!=null;
         }
 
         private void ExecuteMarkCmd(Image img)

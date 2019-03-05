@@ -11,7 +11,7 @@
         xmlns:local="clr-namespace:MvvmLight4.View"
         mc:Ignorable="d"
         DataContext="{Binding Source={StaticResource Locator},Path=MarkVM}"
-         Title="标注" Height="420" Width="830" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+         Title="标注" Height="420" Width="830" WindowStartupLocation="CenterScreen" MinWidth="830" MinHeight="420">
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <mvvm:EventToCommand Command="{Binding WinLoadedCommand}"/>
@@ -37,8 +37,8 @@
                 <RowDefinition Height="70"/>
             </Grid.RowDefinitions>
 
-            <Grid Grid.Row="0" Height="297" Width="640" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="5 0" Background="#d5d5d5">
-                <Image Name="Img" Height="297" Source="{Binding ImgSource}">
+            <Grid Grid.Row="0"  VerticalAlignment="Center" HorizontalAlignment="Center" Margin="5 0" Background="#d5d5d5">
+                <Image Name="Img" Source="{Binding ImgSource}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="MouseUp">
                             <mvvm:EventToCommand Command="{Binding MarkCmd}" CommandParameter="{Binding ElementName=Img}"/>

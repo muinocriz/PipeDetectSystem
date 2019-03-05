@@ -126,7 +126,11 @@ namespace MvvmLight4.ViewModel
         {
             var t = new Task(() =>
             {
-                Thread.Sleep(1500);
+                Process p = CmdHelper.RunProcess("Util/try.exe", directory);
+                p.Start();
+                //必须等待完成，否则task会直接结束
+                p.WaitForExit();
+
             });
             t.Start();
             t.ContinueWith((task) =>

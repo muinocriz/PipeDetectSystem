@@ -212,8 +212,10 @@ namespace MvvmLight4.ViewModel
                 dict[(int)item.Id] = item.Meta.FramePath;
             }
 
-            DispatcherTimer timer = new DispatcherTimer();
-            timer.Interval = new TimeSpan(0, 0, 5);
+            DispatcherTimer timer = new DispatcherTimer
+            {
+                Interval = new TimeSpan(0, 0, 5)
+            };
             timer.Tick += new EventHandler(Timer_Tick);
 
             //使用cmd运行Python
@@ -224,8 +226,10 @@ namespace MvvmLight4.ViewModel
             CmdHelper.RunCmd(cmdStringTest);
 
             //新建后台进程
-            worker = new BackgroundWorker();
-            worker.WorkerReportsProgress = true;
+            worker = new BackgroundWorker
+            {
+                WorkerReportsProgress = true
+            };
             worker.DoWork += Worker_DoWork;
             worker.ProgressChanged += Worker_ProgressChanged;
             worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
@@ -285,11 +289,10 @@ namespace MvvmLight4.ViewModel
                         //异常类型
                         if (messages.Length == 4)
                         {
-                            int _videoId=0, _type=0;
-                            string _position="";
-                            int.TryParse(messages[1], out _videoId);
+                            string _position = String.Empty;
+                            int.TryParse(messages[1], out int _videoId);
                             _position = messages[2];
-                            int.TryParse(messages[3], out _type);
+                            int.TryParse(messages[3], out int _type);
                             //存起来，最后一期打包存
                             AbnormalModel abnormalModel = new AbnormalModel(_videoId, _position, _type);
                             abnormalModels.Add(abnormalModel);

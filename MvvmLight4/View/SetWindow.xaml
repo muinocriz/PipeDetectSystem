@@ -11,7 +11,7 @@
         Title="SetWindow" Height="450" Width="600" MinHeight="450" MinWidth="500" WindowStartupLocation="CenterScreen">
     <Grid>
         <TabControl TabStripPlacement="Left" Controls:TabControlHelper.Underlined="SelectedTabItem">
-            <TabItem Header="标注设置">
+            <TabItem Header="标注设置" FontFamily="/MvvmLight4;component/Font/#Source Han Sans CN">
                 <Grid Background="Azure">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="100"/>

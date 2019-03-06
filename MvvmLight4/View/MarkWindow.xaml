@@ -173,7 +173,7 @@
                     CanUserAddRows="False" 
                     CanUserReorderColumns="False" 
                     CanUserSortColumns="False" 
-                    SelectedItem="{Binding AbnormalType}"
+                    SelectedItem="{Binding AbnormalType}" FontFamily="/MvvmLight4;component/Font/#Source Han Sans CN"
                     >
                     
                     <DataGrid.Columns>

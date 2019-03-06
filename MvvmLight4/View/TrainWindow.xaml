@@ -10,7 +10,7 @@
         xmlns:mvvm="http://www.galasoft.ch/mvvmlight"
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         DataContext="{Binding Source={StaticResource Locator},Path=Train}"
-        Title="训练" Height="420" Width="460" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" >
+        Title="训练" Height="500" Width="460" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" >
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <mvvm:EventToCommand Command="{Binding LoadedCmd}"/>
@@ -65,21 +65,25 @@
                     <Label Content="加载模型：" Width="80"/>
                     <CheckBox IsThreeState="False" Name="ModelCB" Content="加载已有模型" Checked="ModelCB_Checked" Unchecked="ModelCB_Unchecked"/>
                 </StackPanel>
-                <StackPanel Name="SP" Orientation="Horizontal" Margin="0 5 0 0" Visibility="Hidden">
+                <StackPanel Name="SP" Orientation="Horizontal" Margin="0 5 0 0" >
                     <Label Content="模型位置：" Width="80"/>
                     <TextBox Margin="0 0 10 0" Width="250" Text="{Binding SourceModel}"/>
                     <Button Width="80"  Content="浏览" Command="{Binding Train.OpenFileCmd}" CommandParameter="M" DataContext="{Binding Source={StaticResource Locator}}"/>
                 </StackPanel>
             </StackPanel>
-            <StackPanel HorizontalAlignment="Right" DataContext="{Binding Source={StaticResource Locator}}">
-                <Button Width="80" Margin="0 0 26 0" Style="{StaticResource AccentedSquareButtonStyle}" Content="训练" Command="{Binding Train.TrainCmd}" />
-            </StackPanel>
-            <StackPanel Margin="0 20 0 0">
+
+            <!--<StackPanel Margin="0 20 0 0">
                 <Canvas Visibility="{Binding Train.TrainProgVb}" DataContext="{Binding Source={StaticResource Locator}}">
                     <ProgressBar Margin="80 7 0 0" HorizontalAlignment="Left" Width="250" Value="{Binding Train.TrainProgNum}" />
                     <Button Margin="340 0 0 0" Width="80" Content="停止生成" Command="{Binding Train.StopTrainCmd}"/>
                 </Canvas>
+            </StackPanel>-->
+            <StackPanel Margin="25 0 25 10" DataContext="{Binding Source={StaticResource Locator}}">
+                <TextBox Name="OutputTextBox" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" IsReadOnly="True" Text="{Binding Train.OutputText}" Height="85" TextChanged="OutputTextBox_TextChanged"/>
             </StackPanel>
         </StackPanel>
+        <Grid VerticalAlignment="Bottom" HorizontalAlignment="Right" DataContext="{Binding Source={StaticResource Locator}}">
+            <Button Width="80" Margin="0 0 26 10" Style="{StaticResource AccentedSquareButtonStyle}" Content="训练" Command="{Binding Train.TrainCmd}" />
+        </Grid>
     </Grid>
 </Controls:MetroWindow>

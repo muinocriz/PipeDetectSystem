@@ -386,6 +386,9 @@
     <Content Include="Image\default.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Util\train.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Util\try.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

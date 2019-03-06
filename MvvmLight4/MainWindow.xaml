@@ -7,7 +7,7 @@
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         mc:Ignorable="d ignore"
         Title="管道检测系统" Height="167" Width="300" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Icon="Image/pipe.ico"
-        DataContext="{Binding Main, Source={StaticResource Locator}}">
+        DataContext="{Binding Main, Source={StaticResource Locator}}" FontFamily="/MvvmLight4;component/Font/#Source Han Sans CN">
     <Grid Button.Click="Button_Click">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>

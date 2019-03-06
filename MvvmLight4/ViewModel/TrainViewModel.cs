@@ -1,5 +1,6 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
+using GalaSoft.MvvmLight.Threading;
 using MvvmLight4.Common;
 using MvvmLight4.Model;
 using MvvmLight4.Service;
@@ -22,6 +23,7 @@ namespace MvvmLight4.ViewModel
         public TrainViewModel()
         {
             Model = new ModelModel();
+            DispatcherHelper.Initialize();
         }
 
         public BackgroundWorker worker;
@@ -77,6 +79,23 @@ namespace MvvmLight4.ViewModel
             }
         }
 
+        private string outputText;
+        /// <summary>
+        /// 输出框显示字符串
+        /// </summary>
+        public string OutputText
+        {
+            get
+            {
+                return outputText;
+            }
+            set
+            {
+                outputText = value;
+                RaisePropertyChanged(() => OutputText);
+            }
+        }
+
         private RelayCommand loadedCmd;
         /// <summary>
         /// 加载函数
@@ -89,8 +108,8 @@ namespace MvvmLight4.ViewModel
                     return new RelayCommand(() =>
                     {
                         //进度条初始化
-                        TrainProgVb = Visibility.Hidden;
-                        TrainProgNum = 0;
+                        //TrainProgVb = Visibility.Hidden;
+                        //TrainProgNum = 0;
 
                         errorMsg = "";
                     });
@@ -128,9 +147,23 @@ namespace MvvmLight4.ViewModel
             {
                 Process p = CmdHelper.RunProcess("Util/try.exe", directory);
                 p.Start();
-                //必须等待完成，否则task会直接结束
+                Console.WriteLine("python is start");
+                //string outputData = string.Empty;
+                //string errorData = string.Empty;
+                //p.BeginOutputReadLine();
+                //p.BeginErrorReadLine();
+                //p.OutputDataReceived += (sender, e) =>
+                //  {
+                //      outputData += (e.Data + "\n");
+                //  };
+                //p.ErrorDataReceived += (sender, e) =>
+                //{
+                //    errorData += (e.Data + "\n");
+                //};
                 p.WaitForExit();
-
+                Console.WriteLine("python is exit");
+                p.Close();
+                Console.WriteLine("python is closed");
             });
             t.Start();
             t.ContinueWith((task) =>
@@ -261,21 +294,70 @@ namespace MvvmLight4.ViewModel
         /// </summary>
         private void ExecuteTrainCmd()
         {
-            DispatcherTimer timer = new DispatcherTimer();
-            timer.Interval = new TimeSpan(0, 0, 5);
+            DispatcherTimer timer = new DispatcherTimer
+            {
+                Interval = new TimeSpan(0, 0, 100)
+            };
             timer.Tick += new EventHandler(Timer_Tick);
 
             //分帧逻辑
-            //使用cmd运行Python
-            string cmdStringTest = ConfigurationManager.ConnectionStrings["TrainCmdString"].ConnectionString;
-            string cmdString = "test.exe" + " " + JsonConvert.SerializeObject(Model);
-            Console.WriteLine("cmdString: " + cmdString);
-            CmdHelper.RunCmd(cmdStringTest);
+            //使用cmd运行Python  
+            //string cmdStringTest = ConfigurationManager.ConnectionStrings["TrainCmdString"].ConnectionString;
+            if (string.IsNullOrEmpty(Model.SourceModel))
+                Model.SourceModel = "";
+
+            if (string.IsNullOrEmpty(Model.CreateTime))
+                Model.CreateTime = "";
+
+            if (string.IsNullOrEmpty(Model.UpdateTime))
+                Model.UpdateTime = "";
+
+            string json = JsonConvert.SerializeObject(Model).Replace("\"", "'");
+
+            var t = new Task(() =>
+            {
+                Process p = CmdHelper.RunProcess(@"Util/train2.exe", json);
+                p.Start();
+                if (p.HasExited)
+                    Console.WriteLine("python has exited");
+                else
+                    Console.WriteLine("python has not exited");
+                Console.WriteLine("python is start");
+                //string outputData = string.Empty;
+                //string errorData = string.Empty;
+                //p.BeginOutputReadLine();
+                //p.BeginErrorReadLine();
+                //p.OutputDataReceived += (sender, e) =>
+                //{
+                //    outputData += (e.Data + "\n");
+                //};
+                //p.ErrorDataReceived += (sender, e) =>
+                //{
+                //    errorData += (e.Data + "\n");
+                //};
+                Console.WriteLine("wait for exit");
+                p.WaitForExit();
+                Console.WriteLine("exit");
+                p.Close();
+                Console.WriteLine("closed");
+            });
+            t.Start();
+            t.ContinueWith((task) =>
+            {
+                if (task.IsCompleted)
+                    Console.WriteLine("已完成");
+                else if (task.IsCanceled)
+                    MessageBox.Show("已取消");
+                else if (task.IsFaulted)
+                    MessageBox.Show("任务失败");
+            });
 
             //新建后台进程
-            worker = new BackgroundWorker();
-            worker.WorkerReportsProgress = true;
-            worker.WorkerSupportsCancellation = true;
+            worker = new BackgroundWorker
+            {
+                WorkerReportsProgress = true,
+                WorkerSupportsCancellation = true
+            };
             worker.DoWork += Worker_DoWork;
             worker.ProgressChanged += Worker_ProgressChanged;
             worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
@@ -287,15 +369,15 @@ namespace MvvmLight4.ViewModel
 
         private void Worker_DoWork(object sender, DoWorkEventArgs e)
         {
-            pipeReader = new NamedPipeServerStream("SamplePipe", PipeDirection.InOut);
+            pipeReader = new NamedPipeServerStream("train_inception", PipeDirection.InOut);
             Console.WriteLine("byte reader connecting");
             pipeReader.WaitForConnection();
             Console.WriteLine("byte reader connected");
 
-            TrainProgVb = Visibility.Visible;
+            //TrainProgVb = Visibility.Visible;
 
             bool completed = false;
-            int progress = 0;
+            //int progress = 0;
             const int BUFFERSIZE = 256;
             int messageType = 0;
             errorMsg = "";
@@ -320,27 +402,48 @@ namespace MvvmLight4.ViewModel
                         break;
                     case 1:
                         //收到进度
-                        if (messages.Length == 2 && int.TryParse(messages[1], out progress))
-                        {
-                            worker.ReportProgress(progress);
-                        }
+                        //if (messages.Length == 2 && int.TryParse(messages[1], out progress))
+                        //{
+                        //    worker.ReportProgress(progress);
+                        //}
                         break;
                     case 2:
                         break;
                     case 4:
                         Console.WriteLine(messages[1]);
-                        //普通消息
-                        if (messages.Length == 2 && "Done".Equals(messages[1]))
+                        //普通消息-训练次数
+                        if (messages.Length == 3 && "s".Equals(messages[1]))
                         {
-                            progress = 100;
-                            worker.ReportProgress(progress);
+                            string text = "当前训练次数：" + messages[2];
+                            worker.ReportProgress(0, text);
+                        }
+                        //普通消息-训练准确率
+                        if (messages.Length == 3 && "v".Equals(messages[1]))
+                        {
+                            string text = "当前训练准确率：0." + messages[2];
+                            worker.ReportProgress(0, text);
+                        }
+                        //训练完成
+                        else if (messages.Length == 2 && "Done".Equals(messages[1]))
+                        {
+                            //progress = 100;
+                            //worker.ReportProgress(progress);
                             //检测结束
-                            Thread.Sleep(1500);
-                            TrainProgVb = Visibility.Hidden;
+                            //Thread.Sleep(1500);
+                            //TrainProgVb = Visibility.Hidden;
                             completed = true;
                         }
                         break;
                     case 8:
+                        {
+                            string text = String.Empty;
+                            if (messages.Length > 1)
+                            {
+                                for (int i = 1; i < messages.Length; i++)
+                                    text += messages[i];
+                            }
+                            worker.ReportProgress(0, text);
+                        }
                         break;
                     case 16:
                         break;
@@ -364,17 +467,26 @@ namespace MvvmLight4.ViewModel
             _timer.Stop();
             if (!pipeReader.IsConnected)
             {
-                Console.WriteLine("diaoyong shibai ");
+                Console.WriteLine("计时器：调用管道失败");
                 NamedPipeClientStream npcs = new NamedPipeClientStream("SamplePipe");
                 npcs.Connect();
                 worker.CancelAsync();
             }
             else
-                Console.WriteLine("diaoyong chenggong");
+                Console.WriteLine("计时器：调用管道成功");
         }
         private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            TrainProgNum = e.ProgressPercentage;
+            //TrainProgNum = e.ProgressPercentage;
+            DispatcherHelper.CheckBeginInvokeOnUI(() =>
+            {
+                if (e.UserState != null)
+                {
+                    string text = (string)e.UserState;
+                    string log = DateTime.Now.ToString() + "\r\n" + text + "\r\n\r\n";
+                    OutputText += log;
+                }
+            });
         }
 
         private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -382,7 +494,7 @@ namespace MvvmLight4.ViewModel
             if (e.Cancelled || e.Error != null)
             {
                 MessageBox.Show(errorMsg);
-                TrainProgVb = Visibility.Hidden;
+                //TrainProgVb = Visibility.Hidden;
             }
             else
             {

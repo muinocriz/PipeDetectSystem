@@ -45,7 +45,7 @@ namespace MvvmLight4.Common
             }
         }
 
-        public static Process RunProcess(string cmd,string arguments)
+        public static Process RunProcess(string cmd,string arguments="")
         {
             try
             {
@@ -61,6 +61,8 @@ namespace MvvmLight4.Common
                 process.StartInfo.UseShellExecute = false;
                 //将输出信息重定向
                 process.StartInfo.RedirectStandardOutput = true;
+                process.StartInfo.RedirectStandardError = true;   //重定向标准错误输出
+                process.StartInfo.RedirectStandardInput = true;   //接受来自调用程序的输入信息
                 return process;
             }
             catch (Exception e)

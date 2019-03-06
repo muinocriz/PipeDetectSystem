@@ -43,5 +43,10 @@ namespace MvvmLight4.View
         {
             SP.Visibility = Visibility.Hidden;
         }
+
+        private void OutputTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            OutputTextBox.ScrollToEnd();
+        }
     }
 }

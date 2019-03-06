@@ -10,6 +10,17 @@
 
     <Application.Resources>
         <ResourceDictionary>
+            
+            <!--Global View Model Locator--> 
+            <vm:ViewModelLocator x:Key="Locator" d:IsDataSource="True" />
+            <!--Global FontFamily-->
+            <FontFamily x:Key="DefaultFont">#Source Han Sans SC</FontFamily>
+            <FontFamily x:Key="HeaderFontFamily">#Source Han Sans SC</FontFamily>
+            <FontFamily x:Key="ContentFontFamily">#Source Han Sans SC</FontFamily>
+            <FontFamily x:Key="ToggleSwitchFontFamily">#Source Han Sans SC</FontFamily>
+            <FontFamily x:Key="ToggleSwitchHeaderFontFamily">#Source Han Sans SC</FontFamily>
+            <FontFamily x:Key="ToggleSwitchFontFamily.Win10">#Source Han Sans SC</FontFamily>
+            <FontFamily x:Key="ToggleSwitchHeaderFontFamily.Win10">#Source Han Sans SC</FontFamily>
             <ResourceDictionary.MergedDictionaries>
                 <!-- MahApps.Metro resource dictionaries. Make sure that all file names are Case Sensitive! -->
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
@@ -17,17 +28,6 @@
                 <!-- Accent and AppTheme setting -->
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Light.Blue.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            <!--Global View Model Locator--> 
-            <vm:ViewModelLocator x:Key="Locator" d:IsDataSource="True" />
-            <!--Global FontFamily-->
-            <FontFamily x:Key="DefaultFont">#Source Han Sans SC</FontFamily>
-            <FontFamily x:Key="HeaderFontFamily">#Source Han Sans SC</FontFamily>
-            <FontFamily x:Key="ContentFontFamily">#Source Han Sans SC</FontFamily>
-
-            <FontFamily x:Key="ToggleSwitchFontFamily">#Source Han Sans SC</FontFamily>
-            <FontFamily x:Key="ToggleSwitchHeaderFontFamily">#Source Han Sans SC</FontFamily>
-            <FontFamily x:Key="ToggleSwitchFontFamily.Win10">#Source Han Sans SC</FontFamily>
-            <FontFamily x:Key="ToggleSwitchHeaderFontFamily.Win10">#Source Han Sans SC</FontFamily>
         </ResourceDictionary>
         
     </Application.Resources>

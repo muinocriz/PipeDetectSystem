@@ -20,7 +20,7 @@
             <RowDefinition/>
             <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
-        <DataGrid Name="ModelDG" HorizontalScrollBarVisibility="Hidden" Width="550" HeadersVisibility="All" AutoGenerateColumns="False" GridLinesVisibility="Horizontal" CanUserDeleteRows="False"  CanUserAddRows="False" ItemsSource="{Binding Models}">
+        <DataGrid Name="ModelDG" HorizontalScrollBarVisibility="Hidden" Width="550" HeadersVisibility="All" AutoGenerateColumns="False" GridLinesVisibility="Horizontal" CanUserDeleteRows="False"  CanUserAddRows="False" ItemsSource="{Binding Models}" FontFamily="/MvvmLight4;component/Font/#Source Han Sans CN">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="CellEditEnding">
                     <mvvm:EventToCommand Command="{Binding UpdateModelCmd}" PassEventArgsToCommand="True"/>

@@ -1,5 +1,6 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
+using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
 using MvvmLight4.Common;
 using MvvmLight4.Model;
@@ -10,6 +11,7 @@ using System.ComponentModel;
 using System.Configuration;
 using System.Diagnostics;
 using System.IO.Pipes;
+using System.Management;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,12 +25,17 @@ namespace MvvmLight4.ViewModel
         public TrainViewModel()
         {
             Model = new ModelModel();
+            Model.Lteration = 201000;
+            Model.Rate = 85;
             DispatcherHelper.Initialize();
         }
 
         public BackgroundWorker worker;
         public NamedPipeServerStream pipeReader;
         public string errorMsg = "";
+        public bool pipeFlag = true;
+        //训练进程PID
+        public int trainProcessPID = -1;
 
         private Visibility trainProgVb;
         /// <summary>
@@ -147,6 +154,7 @@ namespace MvvmLight4.ViewModel
             {
                 Process p = CmdHelper.RunProcess("Util/try.exe", directory);
                 p.Start();
+                Console.WriteLine("pid:" + p.Id);
                 Console.WriteLine("python is start");
                 //string outputData = string.Empty;
                 //string errorData = string.Empty;
@@ -243,29 +251,37 @@ namespace MvvmLight4.ViewModel
                 if (stopTrainCmd == null)
                     return new RelayCommand(() =>
                     {
-                        //Process[] processes= processes = System.Diagnostics.Process.GetProcesses();
-                        //foreach (var item in processes)
-                        //{
-                        //    if (item.ProcessName == "python")
-                        //    {
-                        //        Console.WriteLine("kill: "+item.Id);
-                        //        item.Kill();
-                        //    }
-                        //}
-                        Process process = new Process();
-                        string path = string.Format(@"C:\Users\超\Desktop\");
-                        process.StartInfo.WorkingDirectory = path;
-                        process.StartInfo.FileName = "gc.bat";
-                        process.Start();
-                        process.WaitForExit();
-                        if (pipeReader.IsConnected)
-                            pipeReader.Close();
-                        worker.CancelAsync();
+                        ColseFun(trainProcessPID);
+
+                        pipeFlag = false;
+
+
                     });
                 return stopTrainCmd;
             }
             set
             { stopTrainCmd = value; }
+        }
+
+        /// <summary>
+        /// 通过停止python方式停止task
+        /// </summary>
+        /// <param name="trainProcessPID">线程号</param>
+        private void ColseFun(int id)
+        {
+            Process process = Process.GetProcessById(id);
+            ManagementObjectSearcher searcher
+                = new ManagementObjectSearcher("select * from Win32_Process where ParentProcessID=" + id);
+            ManagementObjectCollection moc = searcher.Get();
+            foreach (var mo in moc)
+            {
+                Process proc = Process.GetProcessById(Convert.ToInt32(mo["ProcessID"]));
+                Console.WriteLine("proc id: " + proc.Id);
+                Console.WriteLine("proc is null: " + proc == null);
+                Console.WriteLine("proc.HasExited: " + proc.HasExited);
+                if (!proc.HasExited)
+                    proc.Kill();
+            }
         }
 
         private RelayCommand trainCmd;
@@ -294,11 +310,14 @@ namespace MvvmLight4.ViewModel
         /// </summary>
         private void ExecuteTrainCmd()
         {
-            DispatcherTimer timer = new DispatcherTimer
-            {
-                Interval = new TimeSpan(0, 0, 100)
-            };
-            timer.Tick += new EventHandler(Timer_Tick);
+            // 显示终止按钮
+            Messenger.Default.Send<string>("showStopButton", "trainMessage");
+
+            //DispatcherTimer timer = new DispatcherTimer
+            //{
+            //    Interval = new TimeSpan(0, 0, 1)
+            //};
+            //timer.Tick += new EventHandler(Timer_Tick);
 
             //分帧逻辑
             //使用cmd运行Python  
@@ -316,13 +335,11 @@ namespace MvvmLight4.ViewModel
 
             var t = new Task(() =>
             {
-                Process p = CmdHelper.RunProcess(@"Util/train2.exe", json);
+                Process p = CmdHelper.RunProcess(@"Util/1.exe", "c");
                 p.Start();
-                if (p.HasExited)
-                    Console.WriteLine("python has exited");
-                else
-                    Console.WriteLine("python has not exited");
-                Console.WriteLine("python is start");
+                trainProcessPID = p.Id;
+                Console.WriteLine("trainProcessPID:" + trainProcessPID);
+                //Console.WriteLine("python is started");
                 //string outputData = string.Empty;
                 //string errorData = string.Empty;
                 //p.BeginOutputReadLine();
@@ -337,7 +354,7 @@ namespace MvvmLight4.ViewModel
                 //};
                 Console.WriteLine("wait for exit");
                 p.WaitForExit();
-                Console.WriteLine("exit");
+                Console.WriteLine("exited");
                 p.Close();
                 Console.WriteLine("closed");
             });
@@ -363,7 +380,7 @@ namespace MvvmLight4.ViewModel
             worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
             worker.RunWorkerAsync();
 
-            timer.Start();
+            //timer.Start();
         }
 
 
@@ -377,12 +394,13 @@ namespace MvvmLight4.ViewModel
             //TrainProgVb = Visibility.Visible;
 
             bool completed = false;
+            pipeFlag = true;
             //int progress = 0;
             const int BUFFERSIZE = 256;
             int messageType = 0;
             errorMsg = "";
 
-            while (!completed)
+            while (pipeFlag &&!completed)
             {
                 if (worker.CancellationPending)
                 {
@@ -440,7 +458,7 @@ namespace MvvmLight4.ViewModel
                             if (messages.Length > 1)
                             {
                                 for (int i = 1; i < messages.Length; i++)
-                                    text += messages[i];
+                                    text += messages[i]+" ";
                             }
                             worker.ReportProgress(0, text);
                         }
@@ -461,20 +479,20 @@ namespace MvvmLight4.ViewModel
             }
         }
 
-        private void Timer_Tick(object sender, EventArgs e)
-        {
-            DispatcherTimer _timer = (DispatcherTimer)sender;
-            _timer.Stop();
-            if (!pipeReader.IsConnected)
-            {
-                Console.WriteLine("计时器：调用管道失败");
-                NamedPipeClientStream npcs = new NamedPipeClientStream("SamplePipe");
-                npcs.Connect();
-                worker.CancelAsync();
-            }
-            else
-                Console.WriteLine("计时器：调用管道成功");
-        }
+        //private void Timer_Tick(object sender, EventArgs e)
+        //{
+        //    DispatcherTimer _timer = (DispatcherTimer)sender;
+        //    _timer.Stop();
+        //    if (!pipeReader.IsConnected)
+        //    {
+        //        Console.WriteLine("计时器：调用管道失败");
+        //        NamedPipeClientStream npcs = new NamedPipeClientStream("SamplePipe");
+        //        npcs.Connect();
+        //        worker.CancelAsync();
+        //    }
+        //    else
+        //        Console.WriteLine("计时器：调用管道成功");
+        //}
         private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             //TrainProgNum = e.ProgressPercentage;
@@ -491,6 +509,9 @@ namespace MvvmLight4.ViewModel
 
         private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            // 隐藏终止按钮
+            Messenger.Default.Send<string>("hideStopButton", "trainMessage");
+
             if (e.Cancelled || e.Error != null)
             {
                 MessageBox.Show(errorMsg);
@@ -509,6 +530,8 @@ namespace MvvmLight4.ViewModel
                     //训练部分
                 }
             }
+            Thread.Sleep(200);
+            Messenger.Default.Send<string>("closeTrainWindow", "trainMessage");
         }
     }
 }

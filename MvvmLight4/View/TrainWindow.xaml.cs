@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GalaSoft.MvvmLight.Messaging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,6 +23,18 @@ namespace MvvmLight4.View
         public TrainWindow()
         {
             InitializeComponent();
+            Messenger.Default.Register<String>(this, "trainMessage", StopButtonVis);
+            this.Unloaded += (sender, e) => Messenger.Default.Unregister(this);
+        }
+
+        private void StopButtonVis(string msg)
+        {
+            if ("showStopButton".Equals(msg))
+                StopButton.Visibility = Visibility.Visible;
+            else if ("hideStopButton".Equals(msg))
+                StopButton.Visibility = Visibility.Hidden;
+            else if ("closeTrainWindow".Equals(msg))
+                this.Close();
         }
 
         /// <summary>

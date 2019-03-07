@@ -9,14 +9,14 @@
         mc:Ignorable="d"
         xmlns:mvvm="http://www.galasoft.ch/mvvmlight"
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
-        DataContext="{Binding Source={StaticResource Locator},Path=Train}"
+        DataContext="{Binding Source={StaticResource Locator},Path=Train}" 
         Title="训练" Height="500" Width="460" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" >
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <mvvm:EventToCommand Command="{Binding LoadedCmd}"/>
         </i:EventTrigger>
     </i:Interaction.Triggers>
-    <Grid DataContext="{Binding Model}">
+    <Grid>
         <Grid.Resources>
             <common:IntToDoubleConverter x:Key="itdc"/>
         </Grid.Resources>
@@ -27,33 +27,31 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
                     <Label Content="样本位置：" Width="80"/>
-                    <TextBox Name="SimpleTextBox" Margin="0 0 10 0" Width="250" Text="{Binding Simple,UpdateSourceTrigger=PropertyChanged}"/>
-                    <Button Width="80"  Content="浏览" Command="{Binding Train.FolderBrowserCmd}" CommandParameter="S" DataContext="{Binding Source={StaticResource Locator}}"/>
+                    <TextBox Name="SimpleTextBox" Margin="0 0 10 0" Width="250" Text="{Binding Model.Simple,UpdateSourceTrigger=PropertyChanged}"/>
+                    <Button Width="80"  Content="浏览"  CommandParameter="S" Command="{Binding FolderBrowserCmd}"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="340 5 0 0">
-                    <Button Width="80"  Content="预处理" Command="{Binding Train.PreprocessCmd}" CommandParameter="{Binding ElementName=SimpleTextBox,Path=Text}" DataContext="{Binding Source={StaticResource Locator}}"/>
+                    <Button Width="80"  Content="预处理" Command="{Binding PreprocessCmd}" CommandParameter="{Binding ElementName=SimpleTextBox,Path=Text}"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
                     <Label Content="模型输出：" Width="80"/>
-                    <TextBox Margin="0 0 10 0" Width="250" Text="{Binding Location}"/>
-                    <Button Width="80"  Content="浏览" Command="{Binding Train.FolderBrowserCmd,UpdateSourceTrigger=PropertyChanged}" CommandParameter="O" DataContext="{Binding Source={StaticResource Locator}}"/>
+                    <TextBox Margin="0 0 10 0" Width="250" Text="{Binding Model.Location}"/>
+                    <Button Width="80"  Content="浏览" Command="{Binding FolderBrowserCmd,UpdateSourceTrigger=PropertyChanged}" CommandParameter="O"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
                     <Label Content="模型命名：" Width="80"/>
-                    <TextBox Margin="0 0 10 0" Width="250" Text="{Binding ModelName,UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBox Margin="0 0 10 0" Width="250" Text="{Binding Model.ModelName,UpdateSourceTrigger=PropertyChanged}"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
                     <StackPanel.Resources>
                         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/FlatSlider.xaml" />
                     </StackPanel.Resources>
                     <Label Content="学习率：" Width="80"/>
-                    <!--<TextBox Margin="0 0 10 0" Width="250" Text="{Binding Rate}"/>-->
-                    <Slider Width="250"  Value="{Binding Rate,Converter={StaticResource itdc},ConverterParameter=0, UpdateSourceTrigger=PropertyChanged}" Minimum="1" Maximum="100" SmallChange="1" LargeChange="10" TickFrequency="1" IsSnapToTickEnabled="True" AutoToolTipPrecision="0"  AutoToolTipPlacement="TopLeft"/>
+                    <Slider Width="250"  Value="{Binding Model.Rate,Converter={StaticResource itdc},ConverterParameter=0, UpdateSourceTrigger=PropertyChanged}" Minimum="1" Maximum="99" SmallChange="1" LargeChange="10" TickFrequency="1" IsSnapToTickEnabled="True" AutoToolTipPrecision="0"  AutoToolTipPlacement="TopLeft"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
                     <Label Content="迭代次数：" Width="80"/>
-                    <!--<TextBox Margin="0 0 10 0" Width="250" Text="{Binding Lteration}"/>-->
-                    <Slider Width="250"  Value="{Binding Lteration,Converter={StaticResource itdc},ConverterParameter=1,UpdateSourceTrigger=PropertyChanged}" Minimum="200000" Maximum="1000000" SmallChange="5000" LargeChange="100000" TickFrequency="5000" IsSnapToTickEnabled="True" AutoToolTipPrecision="0"  AutoToolTipPlacement="TopLeft"/>
+                    <Slider Width="250"  Value="{Binding Model.Lteration,Converter={StaticResource itdc},ConverterParameter=1,UpdateSourceTrigger=PropertyChanged}" Minimum="200000" Maximum="1000000" SmallChange="5000" LargeChange="100000" TickFrequency="5000" IsSnapToTickEnabled="True" AutoToolTipPrecision="0"  AutoToolTipPlacement="TopLeft"/>
                 </StackPanel>
             </StackPanel>
 
@@ -65,10 +63,10 @@
                     <Label Content="加载模型：" Width="80"/>
                     <CheckBox IsThreeState="False" Name="ModelCB" Content="加载已有模型" Checked="ModelCB_Checked" Unchecked="ModelCB_Unchecked"/>
                 </StackPanel>
-                <StackPanel Name="SP" Orientation="Horizontal" Margin="0 5 0 0" >
+                <StackPanel Name="SP" Orientation="Horizontal" Margin="0 5 0 0" Visibility="Hidden">
                     <Label Content="模型位置：" Width="80"/>
-                    <TextBox Margin="0 0 10 0" Width="250" Text="{Binding SourceModel}"/>
-                    <Button Width="80"  Content="浏览" Command="{Binding Train.OpenFileCmd}" CommandParameter="M" DataContext="{Binding Source={StaticResource Locator}}"/>
+                    <TextBox Margin="0 0 10 0" Width="250" Text="{Binding Model.SourceModel}"/>
+                    <Button Width="80"  Content="浏览" Command="{Binding OpenFileCmd}" CommandParameter="M"/>
                 </StackPanel>
             </StackPanel>
 
@@ -78,12 +76,15 @@
                     <Button Margin="340 0 0 0" Width="80" Content="停止生成" Command="{Binding Train.StopTrainCmd}"/>
                 </Canvas>
             </StackPanel>-->
-            <StackPanel Margin="25 0 25 10" DataContext="{Binding Source={StaticResource Locator}}">
-                <TextBox Name="OutputTextBox" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" IsReadOnly="True" Text="{Binding Train.OutputText}" Height="85" TextChanged="OutputTextBox_TextChanged"/>
+            <StackPanel Margin="25 0 25 10">
+                <TextBox Name="OutputTextBox" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" IsReadOnly="True" Text="{Binding OutputText}" Height="85" TextChanged="OutputTextBox_TextChanged"/>
             </StackPanel>
         </StackPanel>
-        <Grid VerticalAlignment="Bottom" HorizontalAlignment="Right" DataContext="{Binding Source={StaticResource Locator}}">
-            <Button Width="80" Margin="0 0 26 10" Style="{StaticResource AccentedSquareButtonStyle}" Content="训练" Command="{Binding Train.TrainCmd}" />
+        <Grid VerticalAlignment="Bottom" HorizontalAlignment="Right">
+            <StackPanel Orientation="Horizontal">
+                <Button Name="StopButton" Width="80" Margin="0 0 10 10" Content="终止" Command="{Binding StopTrainCmd}" Visibility="Hidden"/>
+                <Button Width="80" Margin="0 0 30 10" Style="{StaticResource AccentedSquareButtonStyle}" Content="训练" Command="{Binding TrainCmd}"/>
+            </StackPanel>
         </Grid>
     </Grid>
 </Controls:MetroWindow>

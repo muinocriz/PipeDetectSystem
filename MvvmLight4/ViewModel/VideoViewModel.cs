@@ -3,6 +3,7 @@ using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Messaging;
 using MvvmLight4.Model;
 using MvvmLight4.Service;
+using MvvmLight4.View;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -57,6 +58,29 @@ namespace MvvmLight4.ViewModel
                 RaisePropertyChanged(() => VideoList);
             }
         }
+
+
+        private RelayCommand winLoadedCommand;
+        /// <summary>
+        /// 退出
+        /// </summary>
+        public RelayCommand WinLoadedCommand
+        {
+            get
+            {
+                if (winLoadedCommand == null)
+                    return new RelayCommand(() =>
+                    {
+                        InitDataGrid();
+                    });
+                return winLoadedCommand;
+            }
+            set
+            {
+                winLoadedCommand = value;
+            }
+        }
+
         /// <summary>
         /// 选中命令
         /// </summary>
@@ -100,13 +124,13 @@ namespace MvvmLight4.ViewModel
         /// <summary>
         /// 选择完毕命令
         /// </summary>
-        private RelayCommand chooseCmd;
-        public RelayCommand ChooseCmd
+        private RelayCommand<Window> chooseCmd;
+        public RelayCommand<Window> ChooseCmd
         {
             get
             {
                 if (chooseCmd == null)
-                    return new RelayCommand(() => ExecuteChooseCmd());
+                    return new RelayCommand<Window>((window) => ExecuteChooseCmd(window));
                 return chooseCmd;
             }
             set
@@ -115,10 +139,10 @@ namespace MvvmLight4.ViewModel
             }
         }
 
-        private void ExecuteChooseCmd()
+        private void ExecuteChooseCmd(Window window)
         {
-            //MessageBox.Show("" + SelectList.Count);
             Messenger.Default.Send<ObservableCollection<MetaViewModel>>(selectList, "VideosChooseMessage");
+            window.Close();
         }
 
         #region 附属方法

@@ -93,7 +93,8 @@ namespace MvvmLight4.ViewModel
         {
             get
             {
-                return ServiceLocator.Current.GetInstance<TrainViewModel>();
+                //return ServiceLocator.Current.GetInstance<TrainViewModel>();
+                return new TrainViewModel();
             }
         }
         public ExportViewModel Export

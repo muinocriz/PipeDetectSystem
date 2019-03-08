@@ -7,6 +7,7 @@ using MvvmLight4.Service;
 using MvvmLight4.View;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -94,20 +95,42 @@ namespace MvvmLight4.ViewModel
         private void ExecuteSubmitCmd()
         {
             string framePath = MetaService.GetService().QueryFramePathById(Convert.ToInt32(CombboxItem.Key));
-            List<string> msg = new List<string>();
-            msg.Add(framePath);
-            msg.Add(SavePath);
-            StringMessage[0] = framePath;
-            StringMessage[1] = SavePath;
-            //ViewModelLocator.FolderPath = StringMessage[0];
-            //ViewModelLocator.SavePath = StringMessage[1];
-            MessageHelper.FramePath = framePath;
-            MessageHelper.SavePath = SavePath;
-            //MessageBox.Show("选择界面\nframePath: " + framePath + "\nSavePath: " + SavePath);
-            MarkWindow sender = new MarkWindow();
-            Messenger.Default.Send<List<string>>(msg, "markMessage");
-            sender.Show();
-            //Messenger.Default.Send<String[]>(StringMessage, "MFSVM2MVM");
+
+            bool check = CheckFramePath(framePath);
+
+            if(check)
+            {
+                List<string> msg = new List<string>
+                {
+                    framePath,
+                    SavePath
+                };
+
+                StringMessage[0] = framePath;
+                StringMessage[1] = SavePath;
+
+                MessageHelper.FramePath = framePath;
+                MessageHelper.SavePath = SavePath;
+
+                MarkWindow sender = new MarkWindow();
+                Messenger.Default.Send<List<string>>(msg, "markMessage");
+                sender.Show();
+            }
+        }
+
+        private bool CheckFramePath(string framePath)
+        {
+            try
+            {
+                DirectoryInfo root = new DirectoryInfo(framePath);
+                FileInfo[] files = root.GetFiles("*.jpg");
+                return files.Count()>0;
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("读取文件时发生异常,请查看文件夹中分帧文件是否正常存放，在关闭标注窗口后请重新选择文件:\n异常描述：\n" + e.ToString());
+                return false;
+            }
         }
         #endregion
 

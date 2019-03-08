@@ -110,7 +110,8 @@ namespace MvvmLight4.ViewModel
 
         private void ExecuteOpenFileDialogCmd(string p)
         {
-            SourcePath = FileDialogService.GetService().OpenFileDialog();
+            string filter = @"视频文件|*.avi;*.mp4;*.wmv;*.mpeg|所有文件|*.*"; 
+            SourcePath = FileDialogService.GetService().OpenFileDialog(filter);
         }
 
         private RelayCommand<string> folderBrowserDialogCmd;

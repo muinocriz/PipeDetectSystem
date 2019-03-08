@@ -25,6 +25,8 @@ namespace MvvmLight4.Service
         public string OpenFileDialog(string srcFilter = "")
         {
             var dialog = new Microsoft.Win32.OpenFileDialog();
+            if(!string.IsNullOrEmpty(srcFilter))
+                dialog.Filter = srcFilter;
             dialog.ShowDialog();
             return dialog.FileName;
         }

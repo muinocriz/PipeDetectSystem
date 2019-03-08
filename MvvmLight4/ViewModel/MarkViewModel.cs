@@ -359,12 +359,12 @@ namespace MvvmLight4.ViewModel
                 if (winLoadedCommand == null)
                     return new RelayCommand(() =>
                     {
-                        //MessageBox.Show("loaded cmd in");
                         InitData();
                         InitSaveDirectory();
                         InitPlayer();
                         InitWorker();
                         DispatcherHelper.Initialize();
+
                     });
                 return winLoadedCommand;
             }
@@ -456,19 +456,26 @@ namespace MvvmLight4.ViewModel
         private void InitPlayer()
         {
             player = new PlayerModel();
-            string newPath = MessageHelper.FramePath;
-            //DirectoryInfo root = new DirectoryInfo(FolderPath);
-            DirectoryInfo root = new DirectoryInfo(FolderPath);
-            //MessageBox.Show("root path " + root);
-            FileInfo[] files = root.GetFiles("*.jpg");
-            files = files.OrderBy(y => y.Name, new FileComparer()).ToArray();
-            foreach (var item in files)
+            try
             {
-                string name = item.FullName;
-                imagePath.Add(name);
+                //DirectoryInfo root = new DirectoryInfo(FolderPath);
+                DirectoryInfo root = new DirectoryInfo(FolderPath);
+                //MessageBox.Show("root path " + root);
+                FileInfo[] files = root.GetFiles("*.jpg");
+                files = files.OrderBy(y => y.Name, new FileComparer()).ToArray();
+                foreach (var item in files)
+                {
+                    string name = item.FullName;
+                    imagePath.Add(name);
+                }
+                player.StartNum = 0;
+                player.EndNum = imagePath.Count - 1;
             }
-            player.StartNum = 0;
-            player.EndNum = imagePath.Count - 1;
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+                return;
+            }
         }
 
         public void InitWorker()

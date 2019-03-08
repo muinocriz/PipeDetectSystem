@@ -81,7 +81,8 @@ namespace MvvmLight4.ViewModel
 
         private void ExecuteOpenFileDialogCmd()
         {
-            Meta.VideoPath = FileDialogService.GetService().OpenFileDialog();
+            string filter = @"视频文件|*.avi;*.mp4;*.wmv;*.mpeg|所有文件|*.*";
+            Meta.VideoPath = FileDialogService.GetService().OpenFileDialog(filter);
         }
     }
 

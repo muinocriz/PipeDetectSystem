@@ -18,6 +18,7 @@ namespace MvvmLight4.Common
             switch (value)
             {
                 case 0:
+                case 6:
                     result = "无异常";
                     break;
                 default:

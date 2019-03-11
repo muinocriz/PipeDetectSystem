@@ -1,50 +1,95 @@
 ﻿<Controls:MetroWindow
-        x:Class="MvvmLight4.View.DetectFileChooseWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:mvvm="http://www.galasoft.ch/mvvmlight"
-        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:MvvmLight4.View"
-        xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
-        mc:Ignorable="d"
-        xmlns:common="clr-namespace:MvvmLight4.Common"
-        DataContext="{Binding Source={StaticResource Locator},Path=Video}"
-        Title="检测文件选择" Height="450" Width="700" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+    x:Class="MvvmLight4.View.DetectFileChooseWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:common="clr-namespace:MvvmLight4.Common"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+    xmlns:local="clr-namespace:MvvmLight4.View"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:mvvm="http://www.galasoft.ch/mvvmlight"
+    Title="检测文件选择"
+    Width="700"
+    Height="450"
+    DataContext="{Binding Source={StaticResource Locator}, Path=Video}"
+    ResizeMode="NoResize"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
-            <mvvm:EventToCommand Command="{Binding WinLoadedCommand}"/>
+            <mvvm:EventToCommand Command="{Binding WinLoadedCommand}" />
         </i:EventTrigger>
     </i:Interaction.Triggers>
     <Grid Margin="10">
         <Grid.Resources>
-            <common:IntToBoolConverter x:Key="itbc"/>
+            <common:IntToBoolConverter x:Key="itbc" />
         </Grid.Resources>
         <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition Height="50"/>
+            <RowDefinition />
+            <RowDefinition Height="50" />
         </Grid.RowDefinitions>
-        <StackPanel FocusManager.FocusedElement="{Binding ElementName=VideoDG}" HorizontalAlignment="Center" Height="350">
-            <DataGrid Name="VideoDG" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto"  HeadersVisibility="Column" AutoGenerateColumns="False" GridLinesVisibility="Horizontal" CanUserDeleteRows="False"  CanUserAddRows="False" ItemsSource="{Binding VideoList}">
+        <StackPanel
+            Height="350"
+            HorizontalAlignment="Center"
+            FocusManager.FocusedElement="{Binding ElementName=VideoDG}">
+            <DataGrid
+                Name="VideoDG"
+                AutoGenerateColumns="False"
+                CanUserAddRows="False"
+                CanUserDeleteRows="False"
+                GridLinesVisibility="Horizontal"
+                HeadersVisibility="Column"
+                HorizontalScrollBarVisibility="Hidden"
+                ItemsSource="{Binding VideoList}"
+                VerticalScrollBarVisibility="Auto">
                 <DataGrid.Columns>
                     <DataGridTemplateColumn Header="选择">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <CheckBox IsChecked="{Binding IsChoose,Converter={StaticResource itbc},ConverterParameter=1,UpdateSourceTrigger=PropertyChanged}" 
-                                                  VerticalAlignment="Center" HorizontalAlignment="Center" Command="{Binding Video.CheckCmd, Source={StaticResource Locator}}" CommandParameter="{Binding ElementName=VideoDG,Path=SelectedItem}"/>
+                                <CheckBox
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Command="{Binding Video.CheckCmd, Source={StaticResource Locator}}"
+                                    CommandParameter="{Binding ElementName=VideoDG, Path=SelectedItem}"
+                                    IsChecked="{Binding IsChoose, Converter={StaticResource itbc}, ConverterParameter=1, UpdateSourceTrigger=PropertyChanged}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTextColumn IsReadOnly="True" Header="文件路径" Width="150" Binding="{Binding Meta.VideoPath}"/>
-                    <DataGridTextColumn IsReadOnly="True" Header="任务编号" Width="150" Binding="{Binding Meta.TaskCode}"/>
-                    <DataGridTextColumn IsReadOnly="True" Header="开始时间" Width="150" Binding="{Binding Meta.StartTime}"/>
-                    <DataGridTextColumn IsReadOnly="True" Header="任务地址" Width="150" Binding="{Binding Meta.Address}"/>
+                    <DataGridTextColumn
+                        Width="150"
+                        Binding="{Binding Meta.VideoPath}"
+                        Header="文件路径"
+                        IsReadOnly="True" />
+                    <DataGridTextColumn
+                        Width="150"
+                        Binding="{Binding Meta.TaskCode}"
+                        Header="任务编号"
+                        IsReadOnly="True" />
+                    <DataGridTextColumn
+                        Width="150"
+                        Binding="{Binding Meta.StartTime}"
+                        Header="开始时间"
+                        IsReadOnly="True" />
+                    <DataGridTextColumn
+                        Width="150"
+                        Binding="{Binding Meta.Address}"
+                        Header="任务地址"
+                        IsReadOnly="True" />
                 </DataGrid.Columns>
             </DataGrid>
         </StackPanel>
-        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Command="{Binding ChooseCmd}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" Margin="0 0 10 0" Content="确定" Width="80" Height="25"/>
+        <StackPanel
+            Grid.Row="1"
+            HorizontalAlignment="Right"
+            Orientation="Horizontal">
+            <Button
+                Width="80"
+                Height="25"
+                Margin="0,0,10,0"
+                Command="{Binding ChooseCmd}"
+                CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+                Content="确定" />
         </StackPanel>
     </Grid>
 </Controls:MetroWindow>

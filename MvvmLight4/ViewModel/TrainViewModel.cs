@@ -474,6 +474,7 @@ namespace MvvmLight4.ViewModel
                     case 64:
                         break;
                     default:
+                        //sleep()
                         break;
                 }
             }

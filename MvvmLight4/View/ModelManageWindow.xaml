@@ -1,37 +1,71 @@
-﻿<Controls:MetroWindow x:Class="MvvmLight4.View.ModelManageWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:MvvmLight4.View"
-        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
-        xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-        mc:Ignorable="d"
-        xmlns:mvvm="http://www.galasoft.ch/mvvmlight"
-        DataContext="{Binding Source={StaticResource Locator},Path=ModelManage}"
-        Title="模型管理" Height="450" Width="590" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
+﻿<Controls:MetroWindow
+    x:Class="MvvmLight4.View.ModelManageWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+    xmlns:local="clr-namespace:MvvmLight4.View"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:mvvm="http://www.galasoft.ch/mvvmlight"
+    Title="模型管理"
+    Width="590"
+    Height="450"
+    DataContext="{Binding Source={StaticResource Locator}, Path=ModelManage}"
+    ResizeMode="NoResize"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
-            <mvvm:EventToCommand Command="{Binding LoadedCmd}"/>
+            <mvvm:EventToCommand Command="{Binding LoadedCmd}" />
         </i:EventTrigger>
     </i:Interaction.Triggers>
     <Grid Margin="5" FocusManager.FocusedElement="{Binding ElementName=ModelDG}">
         <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition Height="50"/>
+            <RowDefinition />
+            <RowDefinition Height="50" />
         </Grid.RowDefinitions>
-        <DataGrid Name="ModelDG" HorizontalScrollBarVisibility="Hidden" Width="550" HeadersVisibility="All" AutoGenerateColumns="False" GridLinesVisibility="Horizontal" CanUserDeleteRows="False"  CanUserAddRows="False" ItemsSource="{Binding Models}" FontFamily="/MvvmLight4;component/Font/#Source Han Sans CN">
+        <DataGrid
+            Name="ModelDG"
+            Width="550"
+            AutoGenerateColumns="False"
+            CanUserAddRows="False"
+            CanUserDeleteRows="False"
+            FontFamily="/MvvmLight4;component/Font/#Source Han Sans CN"
+            GridLinesVisibility="Horizontal"
+            HeadersVisibility="All"
+            HorizontalScrollBarVisibility="Hidden"
+            ItemsSource="{Binding Models}">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="CellEditEnding">
-                    <mvvm:EventToCommand Command="{Binding UpdateModelCmd}" PassEventArgsToCommand="True"/>
+                    <mvvm:EventToCommand Command="{Binding UpdateModelCmd}" PassEventArgsToCommand="True" />
                 </i:EventTrigger>
             </i:Interaction.Triggers>
             <DataGrid.Columns>
-                <DataGridTextColumn Binding="{Binding ModelModel.ModelName}" Header="模型名称" Width="150"/>
-                <DataGridTextColumn  IsReadOnly="True" Binding="{Binding ModelModel.Location}" Header="文件位置" Width="250"/>
-                <DataGridTextColumn IsReadOnly="True" Binding="{Binding ModelModel.CreateTime}" Header="创建时间" Width="150"/>
+                <DataGridTextColumn
+                    Width="150"
+                    Binding="{Binding ModelModel.ModelName}"
+                    Header="模型名称" />
+                <DataGridTextColumn
+                    Width="250"
+                    Binding="{Binding ModelModel.Location}"
+                    Header="文件位置"
+                    IsReadOnly="True" />
+                <DataGridTextColumn
+                    Width="150"
+                    Binding="{Binding ModelModel.CreateTime}"
+                    Header="创建时间"
+                    IsReadOnly="True" />
             </DataGrid.Columns>
         </DataGrid>
-        <Button Grid.Row="1" HorizontalAlignment="Right" Content="删除" Width="80" Height="25" Margin="0 0 10 0" Command="{Binding DeleteModelCmd}" CommandParameter="{Binding ElementName=ModelDG,Path=SelectedItem}"/>
+        <Button
+            Grid.Row="1"
+            Width="80"
+            Height="25"
+            Margin="0,0,10,0"
+            HorizontalAlignment="Right"
+            Command="{Binding DeleteModelCmd}"
+            CommandParameter="{Binding ElementName=ModelDG, Path=SelectedItem}"
+            Content="删除" />
     </Grid>
 </Controls:MetroWindow>

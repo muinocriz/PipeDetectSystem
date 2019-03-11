@@ -1,75 +1,135 @@
-﻿<Controls:MetroWindow x:Class="MvvmLight4.View.ImportWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:MvvmLight4.View"
-        xmlns:common="clr-namespace:MvvmLight4.Common"
-        xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-        DataContext="{Binding Source={StaticResource Locator},Path=Import}"
-        mc:Ignorable="d"
-        Title="导入" Height="480" Width="450" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
+﻿<Controls:MetroWindow
+    x:Class="MvvmLight4.View.ImportWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+    xmlns:common="clr-namespace:MvvmLight4.Common"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:MvvmLight4.View"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="导入"
+    Width="450"
+    Height="480"
+    DataContext="{Binding Source={StaticResource Locator}, Path=Import}"
+    ResizeMode="NoResize"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
     <Grid DataContext="{Binding Meta}">
         <Grid.Resources>
-            <common:IntToBoolConverter x:Key="itbc"/>
+            <common:IntToBoolConverter x:Key="itbc" />
         </Grid.Resources>
         <StackPanel Margin="5">
-            <!--file choose-->
-            <StackPanel Margin="0 0 0 10">
+            <!--  file choose  -->
+            <StackPanel Margin="0,0,0,10">
                 <StackPanel HorizontalAlignment="Left">
-                    <Label FontSize="16" Content="导入视频" Width="100"/>
+                    <Label
+                        Width="100"
+                        Content="导入视频"
+                        FontSize="16" />
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
-                    <Label Content="视频位置：" Width="80"/>
-                    <TextBox Margin="0 0 10 0" Width="250" Name="txtViewPath" Text="{Binding VideoPath}"/>
-                    <Button Command="{Binding Import.OpenFileDialogCmd}" Width="80"  Content="浏览" DataContext="{Binding Source={StaticResource Locator}}" />
+                <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
+                    <Label Width="80" Content="视频位置：" />
+                    <TextBox
+                        Name="txtViewPath"
+                        Width="250"
+                        Margin="0,0,10,0"
+                        Text="{Binding VideoPath}" />
+                    <Button
+                        Width="80"
+                        Command="{Binding Import.OpenFileDialogCmd}"
+                        Content="浏览"
+                        DataContext="{Binding Source={StaticResource Locator}}" />
 
                 </StackPanel>
             </StackPanel>
-            <!--Meta info-->
+            <!--  Meta info  -->
             <StackPanel>
                 <StackPanel HorizontalAlignment="Left">
-                    <Label FontSize="16" Content="元信息" Width="100"/>
+                    <Label
+                        Width="100"
+                        Content="元信息"
+                        FontSize="16" />
                 </StackPanel>
-                <StackPanel >
-                    <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
-                        <Label Content="管道编号：" Width="80" Name="txtPipeType"/>
-                        <TextBox Width="250" Text="{Binding PipeCode}"/>
+                <StackPanel>
+                    <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
+                        <Label
+                            Name="txtPipeType"
+                            Width="80"
+                            Content="管道编号：" />
+                        <TextBox Width="250" Text="{Binding PipeCode}" />
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
-                        <Label Width="80" Content="任务编号："/>
-                        <TextBox Width="250" Name="txtTaskCodel" Text="{Binding TaskCode}"/>
+                    <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
+                        <Label Width="80" Content="任务编号：" />
+                        <TextBox
+                            Name="txtTaskCodel"
+                            Width="250"
+                            Text="{Binding TaskCode}" />
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
-                        <Label Width="80" Content="管道类型："/>
-                        <RadioButton GroupName="PipeType" Content="污水管道" IsChecked="{Binding PipeType,Converter={StaticResource itbc},ConverterParameter=0}"/>
-                        <RadioButton GroupName="PipeType" Content="雨水管道" IsChecked="{Binding PipeType,Converter={StaticResource itbc},ConverterParameter=1}" Margin="53 0 0 0"/>
+                    <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
+                        <Label Width="80" Content="管道类型：" />
+                        <RadioButton
+                            Content="污水管道"
+                            GroupName="PipeType"
+                            IsChecked="{Binding PipeType, Converter={StaticResource itbc}, ConverterParameter=0}" />
+                        <RadioButton
+                            Margin="53,0,0,0"
+                            Content="雨水管道"
+                            GroupName="PipeType"
+                            IsChecked="{Binding PipeType, Converter={StaticResource itbc}, ConverterParameter=1}" />
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
-                        <Label Width="80" Content="地址："/>
-                        <TextBox Width="250" Name="txtAddress" Text="{Binding Address,UpdateSourceTrigger=PropertyChanged}"/>
+                    <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
+                        <Label Width="80" Content="地址：" />
+                        <TextBox
+                            Name="txtAddress"
+                            Width="250"
+                            Text="{Binding Address, UpdateSourceTrigger=PropertyChanged}" />
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
-                        <Label Width="80" Content="负责人："/>
-                        <TextBox Width="250" Name="txtCharge" Text="{Binding Charge,UpdateSourceTrigger=PropertyChanged}"/>
+                    <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
+                        <Label Width="80" Content="负责人：" />
+                        <TextBox
+                            Name="txtCharge"
+                            Width="250"
+                            Text="{Binding Charge, UpdateSourceTrigger=PropertyChanged}" />
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
-                        <Label Width="80" Content="时间段："/>
-                        <Controls:DateTimePicker SelectedTimeFormat="Short" Width="123" SelectedDateTime="{Binding StartTime}" Name="txtBeginTime" Margin="0 0 4 0" Controls:TextBoxHelper.Watermark="开始时间" Culture="zh-CN"/>
-                        <Controls:DateTimePicker SelectedTimeFormat="Short" Width="123" SelectedDateTime="{Binding EndTime}" Name="txtEndTime" Controls:TextBoxHelper.Watermark="结束时间" Culture="zh-CN"/>
+                    <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
+                        <Label Width="80" Content="时间段：" />
+                        <Controls:DateTimePicker
+                            Name="txtBeginTime"
+                            Width="123"
+                            Margin="0,0,4,0"
+                            Controls:TextBoxHelper.Watermark="开始时间"
+                            Culture="zh-CN"
+                            SelectedDateTime="{Binding StartTime}"
+                            SelectedTimeFormat="Short" />
+                        <Controls:DateTimePicker
+                            Name="txtEndTime"
+                            Width="123"
+                            Controls:TextBoxHelper.Watermark="结束时间"
+                            Culture="zh-CN"
+                            SelectedDateTime="{Binding EndTime}"
+                            SelectedTimeFormat="Short" />
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
-                        <Label Content="开头时间：" Width="80"/>
-                        <TextBox Width="250" Text="{Binding HeadTime}"/>
+                    <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
+                        <Label Width="80" Content="开头时间：" />
+                        <TextBox Width="250" Text="{Binding HeadTime}" />
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
-                        <Label Content="尾部时间：" Width="80"/>
-                        <TextBox Width="250" Text="{Binding TailTime}"/>
+                    <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
+                        <Label Width="80" Content="尾部时间：" />
+                        <TextBox Width="250" Text="{Binding TailTime}" />
                     </StackPanel>
                 </StackPanel>
             </StackPanel>
-            <StackPanel Margin="0 50 0 0" VerticalAlignment="Bottom" HorizontalAlignment="Right" DataContext="{Binding Source={StaticResource Locator}}">
-                <Button Command="{Binding Import.SubmitCmd}" Width="80" Margin="0 0 14 0" Style="{StaticResource AccentedSquareButtonStyle}" Content="导入"/>
+            <StackPanel
+                Margin="0,50,0,0"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                DataContext="{Binding Source={StaticResource Locator}}">
+                <Button
+                    Width="80"
+                    Margin="0,0,14,0"
+                    Command="{Binding Import.SubmitCmd}"
+                    Content="导入"
+                    Style="{StaticResource AccentedSquareButtonStyle}" />
             </StackPanel>
         </StackPanel>
     </Grid>

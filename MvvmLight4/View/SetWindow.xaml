@@ -1,48 +1,65 @@
 ﻿<Controls:MetroWindow
-        xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls" 
-        x:Class="MvvmLight4.View.SetWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:MvvmLight4.View"
-        mc:Ignorable="d"
-        DataContext="{Binding Source={StaticResource Locator},Path=SetVM}"
-        Title="SetWindow" Height="450" Width="600" MinHeight="450" MinWidth="500" WindowStartupLocation="CenterScreen">
+    x:Class="MvvmLight4.View.SetWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:MvvmLight4.View"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="SetWindow"
+    Width="600"
+    Height="450"
+    MinWidth="500"
+    MinHeight="450"
+    DataContext="{Binding Source={StaticResource Locator}, Path=SetVM}"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
     <Grid>
-        <TabControl TabStripPlacement="Left" Controls:TabControlHelper.Underlined="SelectedTabItem">
-            <TabItem Header="标注设置" FontFamily="/MvvmLight4;component/Font/#Source Han Sans CN">
+        <TabControl Controls:TabControlHelper.Underlined="SelectedTabItem" TabStripPlacement="Left">
+            <TabItem FontFamily="/MvvmLight4;component/Font/#Source Han Sans CN" Header="标注设置">
                 <Grid Background="Azure">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="100"/>
-                        <RowDefinition/>
-                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="100" />
+                        <RowDefinition />
+                        <RowDefinition Height="30" />
                     </Grid.RowDefinitions>
                     <Grid Grid.Row="1" Margin="5">
-                        <DataGrid Name="MarkSetDataGrid" ItemsSource="{Binding AbnormalTypes}" 
-                                  VerticalScrollBarVisibility="Auto" 
-                                  HorizontalScrollBarVisibility="Hidden" 
-                                  HeadersVisibility="Column" 
-                                  AutoGenerateColumns="False" 
-                                  CanUserDeleteRows="False"  
-                                  CanUserAddRows="False" 
-                                  CanUserReorderColumns="False" 
-                                  CanUserSortColumns="False"
-                                  >
+                        <DataGrid
+                            Name="MarkSetDataGrid"
+                            AutoGenerateColumns="False"
+                            CanUserAddRows="False"
+                            CanUserDeleteRows="False"
+                            CanUserReorderColumns="False"
+                            CanUserSortColumns="False"
+                            HeadersVisibility="Column"
+                            HorizontalScrollBarVisibility="Hidden"
+                            ItemsSource="{Binding AbnormalTypes}"
+                            VerticalScrollBarVisibility="Auto">
                             <DataGrid.Columns>
                                 <DataGridTemplateColumn Header="选择">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <CheckBox IsChecked="{Binding IsSelected,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                            <CheckBox
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
-                                <DataGridTextColumn Header="异常名称" IsReadOnly="True" Binding="{Binding Name}"/>
+                                <DataGridTextColumn
+                                    Binding="{Binding Name}"
+                                    Header="异常名称"
+                                    IsReadOnly="True" />
                             </DataGrid.Columns>
                         </DataGrid>
                     </Grid>
                     <Grid Grid.Row="2">
-                        <Button Width="80" Height="20" HorizontalAlignment="Right" Content="确定" Command="{Binding SelectAbnormal}"/>
+                        <Button
+                            Width="80"
+                            Height="20"
+                            HorizontalAlignment="Right"
+                            Command="{Binding SelectAbnormal}"
+                            Content="确定" />
                         <!--<Button Width="80" Height="20" HorizontalAlignment="Right" Content="确定" Click="Button_Click"/>-->
                     </Grid>
                 </Grid>

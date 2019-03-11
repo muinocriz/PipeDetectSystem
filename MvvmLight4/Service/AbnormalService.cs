@@ -32,7 +32,7 @@ namespace MvvmLight4.Service
             using (IDbConnection conn = SqlHelper.GetConnection())
             {
                 conn.Open();
-                var sql = @"SELECT ADDR,PIPECODE,PIPETYPE,STARTTIME,ABNORMALTYPE,FRAMEPOSITION,TB_ABNORMAL.ID AS TID,VIDEOID AS VID
+                var sql = @"SELECT ADDR,PIPECODE,PIPETYPE,STARTTIME,ABNORMALTYPE,FRAMEPOSITION,TB_ABNORMAL.ID AS TID,VIDEOID AS VID,FRAMEPATH 
                             FROM TB_ABNORMAL,TB_METADATA 
                             WHERE TB_METADATA.ID IN @ids AND TB_ABNORMAL.VIDEOID = TB_METADATA.ID;";
                 IEnumerable<dynamic> dynamics = conn.Query(sql, new { ids = list.ToArray() });
@@ -41,14 +41,22 @@ namespace MvvmLight4.Service
                     MetaModel mm = new MetaModel();
                     AbnormalModel am = new AbnormalModel();
                     AbnormalViewModel avm = new AbnormalViewModel();
+
                     mm.Address = item.ADDR;
                     mm.PipeCode = item.PIPECODE;
                     mm.PipeType = (int)item.PIPETYPE;
-                    mm.StartTime = item.STARTTIME;
+                    mm.FramePath = item.FRAMEPATH;
+
+                    if (!string.IsNullOrEmpty(item.STARTTIME))
+                        mm.StartTime = item.STARTTIME;
+                    else
+                        mm.StartTime = "未填写";
+
                     am.VideoId = (int)item.VID;
                     am.Type = (int)item.ABNORMALTYPE;
                     am.Position = item.FRAMEPOSITION;
                     avm.AbnormalId = (int)item.TID;
+
                     avm.Meta = mm;
                     avm.Abnormal = am;
                     avms.Add(avm);

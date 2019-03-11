@@ -1,19 +1,20 @@
-﻿<Application x:Class="MvvmLight4.App"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:vm="clr-namespace:MvvmLight4.ViewModel"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-			 xmlns:ignore="http://www.galasoft.ch/ignore"
-             StartupUri="MainWIndow.xaml"
-             mc:Ignorable="d ignore">
+﻿<Application
+    x:Class="MvvmLight4.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:ignore="http://www.galasoft.ch/ignore"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:MvvmLight4.ViewModel"
+    StartupUri="MainWindow.xaml"
+    mc:Ignorable="d ignore">
 
     <Application.Resources>
         <ResourceDictionary>
-            
-            <!--Global View Model Locator--> 
+
+            <!--  Global View Model Locator  -->
             <vm:ViewModelLocator x:Key="Locator" d:IsDataSource="True" />
-            <!--Global FontFamily-->
+            <!--  Global FontFamily  -->
             <FontFamily x:Key="DefaultFont">#Source Han Sans SC</FontFamily>
             <FontFamily x:Key="HeaderFontFamily">#Source Han Sans SC</FontFamily>
             <FontFamily x:Key="ContentFontFamily">#Source Han Sans SC</FontFamily>
@@ -22,14 +23,14 @@
             <FontFamily x:Key="ToggleSwitchFontFamily.Win10">#Source Han Sans SC</FontFamily>
             <FontFamily x:Key="ToggleSwitchHeaderFontFamily.Win10">#Source Han Sans SC</FontFamily>
             <ResourceDictionary.MergedDictionaries>
-                <!-- MahApps.Metro resource dictionaries. Make sure that all file names are Case Sensitive! -->
+                <!--  MahApps.Metro resource dictionaries. Make sure that all file names are Case Sensitive!  -->
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
-                <!-- Accent and AppTheme setting -->
+                <!--  Accent and AppTheme setting  -->
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Light.Blue.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
-        
+
     </Application.Resources>
 
 </Application>

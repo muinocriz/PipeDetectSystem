@@ -12,6 +12,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Configuration;
+using System.Diagnostics;
+using System.IO;
 using System.IO.Pipes;
 using System.Linq;
 using System.Text;
@@ -30,7 +32,11 @@ namespace MvvmLight4.ViewModel
             DispatcherHelper.Initialize();
             ReceiveStr = "点击按钮选择视频文件";
             Messenger.Default.Register<ObservableCollection<MetaViewModel>>(this, "VideosChooseMessage", ShowReceiveInfo);
-            
+            ModelItem = new ObservableCollection<ModelViewModel>
+            {
+                null,
+                null
+            };
         }
 
         public BackgroundWorker worker;
@@ -127,11 +133,11 @@ namespace MvvmLight4.ViewModel
             }
         }
 
-        private ModelViewModel modelItem;
+        private ObservableCollection<ModelViewModel> modelItem;
         /// <summary>
         /// 选中的模型对象
         /// </summary>
-        public ModelViewModel ModelItem
+        public ObservableCollection<ModelViewModel> ModelItem
         {
             get { return modelItem; }
             set
@@ -200,7 +206,7 @@ namespace MvvmLight4.ViewModel
 
         private bool CanExecuteDetectCmd()
         {
-            return ModelItem != null && VideoList != null;
+            return ModelItem[0] != null && VideoList != null;
         }
 
         private void ExecuteDetectCmd()
@@ -212,18 +218,63 @@ namespace MvvmLight4.ViewModel
                 dict[(int)item.Id] = item.Meta.FramePath;
             }
 
-            DispatcherTimer timer = new DispatcherTimer
-            {
-                Interval = new TimeSpan(0, 0, 5)
-            };
-            timer.Tick += new EventHandler(Timer_Tick);
+            //DispatcherTimer timer = new DispatcherTimer
+            //{
+            //    Interval = new TimeSpan(0, 0, 5)
+            //};
+            //timer.Tick += new EventHandler(Timer_Tick);
 
             //使用cmd运行Python
             string cmdStringTest = ConfigurationManager.ConnectionStrings["DetectCmdString"].ConnectionString;
             Console.WriteLine(JsonConvert.SerializeObject(dict));
-            string cmdString = "test.exe" + " " + JsonConvert.SerializeObject(dict) + " " + ModelItem.ModelModel.Location + @"\" + ModelItem.ModelModel.ModelName;
+            string cmdString = string.Empty;
+            //cmdString = "test.exe" + " " + JsonConvert.SerializeObject(dict) + " " + ModelItem.ModelModel.Location + @"\" + ModelItem.ModelModel.ModelName;
+            try
+            {
+                FileStream aFile = new FileStream("Util/detect.txt", FileMode.Create);
+                StreamWriter sw = new StreamWriter(aFile);
+                string data = JsonConvert.SerializeObject(dict).Replace("\"", "'");
+                sw.WriteLine(data);
+                sw.WriteLine(ModelItem[0].ModelModel.Location + "\\" + ModelItem[0].ModelModel.ModelName);
+                if(ModelItem[1]!=null && !string.IsNullOrEmpty(ModelItem[1].ModelModel.Location))
+                {
+                    sw.WriteLine(ModelItem[1].ModelModel.Location+"\\"+ ModelItem[1].ModelModel.ModelName);
+                }
+                else
+                {
+                    sw.WriteLine("None");
+                }
+                sw.Close();
+                aFile.Close();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("创建文件失败");
+                Console.WriteLine(e.ToString());
+                return;
+            }
             Console.WriteLine("cmdstring: "+cmdString);
-            CmdHelper.RunCmd(cmdStringTest);
+
+            var t = new Task(() =>
+            {
+                Process p = CmdHelper.RunProcess(@"Util/detect.exe", "detect.txt");
+                p.Start();
+                Console.WriteLine("wait for exit");
+                p.WaitForExit();
+                Console.WriteLine("exited");
+                p.Close();
+                Console.WriteLine("closed");
+            });
+            t.Start();
+            t.ContinueWith((task) =>
+            {
+                if (task.IsCompleted)
+                    Console.WriteLine("已完成");
+                else if (task.IsCanceled)
+                    MessageBox.Show("已取消");
+                else if (task.IsFaulted)
+                    MessageBox.Show("任务失败");
+            });
 
             //新建后台进程
             worker = new BackgroundWorker
@@ -234,13 +285,14 @@ namespace MvvmLight4.ViewModel
             worker.ProgressChanged += Worker_ProgressChanged;
             worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
             worker.RunWorkerAsync();
-            timer.Start();
+            //timer.Start();
         }
 
         private void Worker_DoWork(object sender, DoWorkEventArgs e)
         {
             abnormalModels.Clear();
 
+            //管道名称
             pipeReader = new NamedPipeServerStream("SamplePipe", PipeDirection.InOut);
             Console.WriteLine("byte reader connecting");
             pipeReader.WaitForConnection();
@@ -255,6 +307,7 @@ namespace MvvmLight4.ViewModel
             int messageType = 0;
             LogText = "";
             errorMsg = "";
+            string log = "";
             canBackTrackOrExport = false;
 
             while (!completed)
@@ -267,8 +320,12 @@ namespace MvvmLight4.ViewModel
                 }
                 byte[] buffer = new byte[BUFFERSIZE];
                 int nRead = pipeReader.Read(buffer, 0, BUFFERSIZE);
+                Console.WriteLine("buffer:"+buffer);
+                Console.WriteLine("0x16 message:");
+                Console.WriteLine(String.Format("{0:X}", buffer));
                 string line = Encoding.UTF8.GetString(buffer, 0, nRead);
                 Console.WriteLine("line: " + line);
+                Console.WriteLine(String.Format("{0:X}", line));
                 string[] messages = line.Split('_');
                 int.TryParse(messages[0], out messageType);
                 switch (messageType)
@@ -296,7 +353,11 @@ namespace MvvmLight4.ViewModel
                             //存起来，最后一期打包存
                             AbnormalModel abnormalModel = new AbnormalModel(_videoId, _position, _type);
                             abnormalModels.Add(abnormalModel);
-                            worker.ReportProgress(progress,abnormalModel);
+
+                            //日志
+                            log = "帧号：\t" + _position + "\t异常类型\t" + _type;
+
+                            worker.ReportProgress(progress, log);
                         }
                         //初筛结束消息
                         else if(messages.Length == 2 && !string.IsNullOrEmpty(messages[1])&& "filter done".Equals(messages[1]))
@@ -316,6 +377,14 @@ namespace MvvmLight4.ViewModel
                         }
                         break;
                     case 8:
+                        string msg = string.Empty;
+                        for (int i = 1; i < messages.Length; i++)
+                        {
+                            msg += messages[i] + " ";
+                        }
+
+                        log = msg;
+                        worker.ReportProgress(progress, log);
                         break;
                     case 16:
                         break;
@@ -332,29 +401,14 @@ namespace MvvmLight4.ViewModel
                 }
             }
         }
-
-        private void Timer_Tick(object sender, EventArgs e)
-        {
-            DispatcherTimer _timer = (DispatcherTimer)sender;
-            _timer.Stop();
-            if (!pipeReader.IsConnected)
-            {
-                Console.WriteLine("diaoyong shibai ");
-                NamedPipeClientStream npcs = new NamedPipeClientStream("SamplePipe");
-                npcs.Connect();
-                worker.CancelAsync();
-            }
-            else
-                Console.WriteLine("diaoyong chenggong");
-        }
         private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            DispatcherHelper.CheckBeginInvokeOnUI(() => 
+            DispatcherHelper.CheckBeginInvokeOnUI(() =>
             {
                 if (e.UserState != null)
                 {
-                    AbnormalModel am = (AbnormalModel)e.UserState;
-                    string log = DateTime.Now.ToString() + "\r\n帧号：\t" + am.Position + "\t异常类型\t" + am.Type+"\r\n\r\n";
+                    string log = (string)e.UserState;
+                    log = DateTime.Now.ToString() + "\r\n" + log + "\r\n";
                     LogText += log;
                 }
                 DetectProgNum = e.ProgressPercentage;

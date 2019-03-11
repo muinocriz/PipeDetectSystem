@@ -45,12 +45,12 @@ namespace MvvmLight4.Model
             else if (length-Target<250)
             {
                 StartNum = length - Duration;
-                EndNum = length - 1;
+                EndNum = 2*target-Duration-(length-1);
             }
             else
             {
-                StartNum = Target - Duration/2;
-                endNum = Target + Duration/2;
+                StartNum = Target - Duration;
+                endNum = Target + Duration;
             }
             Console.WriteLine("Target：" + Target);
             Console.WriteLine("StartNum：" + StartNum);

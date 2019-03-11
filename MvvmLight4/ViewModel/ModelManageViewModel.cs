@@ -1,10 +1,12 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
+using MvvmLight4.Common;
 using MvvmLight4.Model;
 using MvvmLight4.Service;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -76,9 +78,35 @@ namespace MvvmLight4.ViewModel
         private void ExecuteUpdateModelCmd(DataGridCellEditEndingEventArgs p)
         {
             ModelViewModel mvm = p.Row.DataContext as ModelViewModel;
+            string oldName = mvm.ModelModel.Location + "\\" + mvm.ModelModel.ModelName;
             mvm.ModelModel.ModelName = (p.EditingElement as TextBox).Text;
-            mvm.ModelModel.UpdateTime = DateTime.Now.ToString();
-            int result = ModelService.GetService().UpdateModel(mvm);
+            string newName = (p.EditingElement as TextBox).Text;
+            string args = oldName + " " + newName;
+            //调用PYTHON修改文件夹
+            var t = new Task(() =>
+            {
+                Process process = CmdHelper.RunProcess(@"Util/changeModelName.exe", args);
+                process.Start();
+
+                Console.WriteLine("wait for exit");
+                process.WaitForExit();
+                Console.WriteLine("exited");
+                process.Close();
+                Console.WriteLine("closed");
+            });
+            t.Start();
+            t.ContinueWith((task) =>
+            {
+                if (task.IsCompleted)
+                {
+                    mvm.ModelModel.UpdateTime = DateTime.Now.ToString();
+                    int result = ModelService.GetService().UpdateModel(mvm);
+                }
+                else if (task.IsCanceled)
+                    MessageBox.Show("已取消");
+                else if (task.IsFaulted)
+                    MessageBox.Show("任务失败");
+            });
         }
 
         private RelayCommand<ModelViewModel> deleteModelCmd;

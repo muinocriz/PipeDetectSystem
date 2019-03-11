@@ -20,7 +20,7 @@ namespace MvvmLight4.Common
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             int data = (int)value;
-            if (data != 0)
+            if (data != 0 && data != 6)
                 return Brushes.LightCoral;
             return new SolidColorBrush((Color)ColorConverter.ConvertFromString("#70C5E9"));
         }

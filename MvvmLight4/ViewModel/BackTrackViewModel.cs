@@ -24,25 +24,21 @@ namespace MvvmLight4.ViewModel
     {
         public BackTrackViewModel()
         {
-            Messenger.Default.Register<List<int>>(this, "DVM2BTVM", msg=>
-            {
-                VideoIds = msg;
-            });
+            //Messenger.Default.Register<List<int>>(this, "DVM2BTVM", msg=>
+            //{
+            //    VideoIds = msg;
+            //});
+            
             InitCombobox();
-            InitData();
+
             DispatcherHelper.Initialize();
-            worker = new BackgroundWorker();
-            worker.WorkerReportsProgress = true;
-            worker.WorkerSupportsCancellation = true;
-            worker.DoWork += new DoWorkEventHandler(worker_DoWork);
-            worker.ProgressChanged += new ProgressChangedEventHandler(worker_ProgressChanged);
-            worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(worker_RunWorkerCompleted);
         }
 
+        //图像列表
         public List<string> imagePath = new List<string>();
+        //视频列表
         public List<int> VideoIds = new List<int>();
-        public BackgroundWorker worker;
-        private ManualResetEvent manualReset = new ManualResetEvent(true);
+        private bool stop = false;
 
         private PlayerModel player;
         public PlayerModel Player { get { return player; } set { player = value; RaisePropertyChanged(() => Player); } }
@@ -118,7 +114,7 @@ namespace MvvmLight4.ViewModel
         #endregion
         private RelayCommand loadedCmd;
         /// <summary>
-        /// 加载函数
+        /// 界面加载时函数
         /// </summary>
         public RelayCommand LoadedCmd
         {
@@ -127,11 +123,17 @@ namespace MvvmLight4.ViewModel
                 if (loadedCmd == null)
                     return new RelayCommand(() =>
                     {
+                        //测试数据
+                        VideoIds.Clear();
+                        VideoIds.Add(46);
+                        VideoIds.Add(47);
+
+                        //初始化元数据+异常信息的组合
                         AbnormalVMs = AbnormalService.GetService().SelectAll(VideoIds);
                         ErrorNum = 0;
                         foreach (var item in AbnormalVMs)
                         {
-                            if (item.Abnormal.Type != 0)
+                            if (item.Abnormal.Type != 0 && item.Abnormal.Type != 6)
                                 ErrorNum++;
                         }
                     });
@@ -143,7 +145,7 @@ namespace MvvmLight4.ViewModel
             }
         }
         #region 选择了DataGrid的某一项
-        private RelayCommand<AbnormalViewModel> selectCommand;
+        private readonly RelayCommand<AbnormalViewModel> selectCommand;
         /// <summary>
         /// 选择了DataGrid的某一项
         /// </summary>
@@ -155,42 +157,32 @@ namespace MvvmLight4.ViewModel
                     return new RelayCommand<AbnormalViewModel>((p) => ExecuteSelectCommand(p),CanExecuteSelectCommand);
                 return selectCommand;
             }
-            set
-            {
-                SelectCommand = value;
-            }
         }
 
         private bool CanExecuteSelectCommand(AbnormalViewModel arg)
         {
-            if (worker.IsBusy)
-            {
-                worker.CancelAsync();
-                Console.WriteLine("ExecuteSelectCommand done");
-            }
-            return !worker.IsBusy;
+            return true;
         }
 
         private void ExecuteSelectCommand(AbnormalViewModel p)
         {
+            stop = true;
             //更新左下角显示区域
             SelectedAVM = p;
             CombboxItem = CombboxList[p.Abnormal.Type];
+
             //播放视频
             //找到文件
-            string folderPath = AbnormalService.GetService().SelectFolder(p.Abnormal.VideoId);
-            //逻辑判断
-            if(string.IsNullOrEmpty(folderPath))
-            {
-                MessageBox.Show("未找到视频分帧文件夹存放位置");
-                return;
-            }
+            //string folderPath = AbnormalService.GetService().SelectFolder(p.Abnormal.VideoId);
+            string folderPath = p.Meta.FramePath;
 
-            player = new PlayerModel();
-            player.Target = Convert.ToInt32(p.Abnormal.Position);//目标帧号
+            player = new PlayerModel
+            {
+                Target = Convert.ToInt32(p.Abnormal.Position)//目标帧号
+            };
 
             DirectoryInfo root = new DirectoryInfo(folderPath);
-            FileInfo[] files = root.GetFiles("*.png");
+            FileInfo[] files = root.GetFiles("*.jpg");
             files = files.OrderBy(y => y.Name, new FileComparer()).ToArray();
             foreach (var item in files)
             {
@@ -198,16 +190,28 @@ namespace MvvmLight4.ViewModel
                 imagePath.Add(name);
             }
             player.Calculate(imagePath.Count,120);
-            if(worker.IsBusy)
+
+            //播放函数
+
+            
+            var t = new Task(() =>
             {
-                manualReset.Set();
-                worker.CancelAsync();
-                //MessageBox.Show("正在播放中……");
-            }
-            else
-            {
-            worker.RunWorkerAsync(player);
-            }
+                int nowPic = player.StartNum;
+                int end = player.EndNum;
+                stop = false;
+
+                while(!stop && nowPic <= end)
+                {
+                    DispatcherHelper.CheckBeginInvokeOnUI(() =>
+                    {
+                        ImgSource = imagePath[nowPic];
+                    });
+                    nowPic++;
+                    Thread.Sleep(player.Speed);
+                }
+                stop = true;
+            });
+            t.Start();
         }
         #endregion
         #region ComboxItem被更改
@@ -225,7 +229,7 @@ namespace MvvmLight4.ViewModel
             }
             set
             {
-                TypeChangedCmd = value;
+                typeChangedCmd = value;
             }
         }
 
@@ -239,10 +243,12 @@ namespace MvvmLight4.ViewModel
             {
                 ChangeNum++;
                 SelectedAVM.Abnormal.Type = type;
+
+                //重新计算现有的总异常
                 ErrorNum = 0;
                 foreach (var item in abnormalVMs)
                 {
-                    if (item.Abnormal.Type != 0)
+                    if (item.Abnormal.Type != 0 && item.Abnormal.Type != 6)
                         ErrorNum++;
                 }
             }
@@ -265,7 +271,7 @@ namespace MvvmLight4.ViewModel
 
         private void ExecuteStartCmd()
         {
-            manualReset.Set();
+
         }
         private RelayCommand pauseCmd;
         public RelayCommand PauseCmd
@@ -283,59 +289,26 @@ namespace MvvmLight4.ViewModel
         }
         private void ExecutePauseCmd()
         {
-            manualReset.Reset();
-            //worker.CancelAsync();
+            return;
         }
 
         #region 辅助方法
-        void InitData()
-        {
-            ChangeNum = 0;
-        }
-
         private void InitCombobox()
         {
             CombboxList = new List<ComplexInfoModel>() {
-              new ComplexInfoModel(){ Key="0",Text="无异常" },
-              new ComplexInfoModel(){ Key="1",Text="1" },
-              new ComplexInfoModel(){ Key="2",Text="2" },
-              new ComplexInfoModel(){ Key="3",Text="3" },
-              new ComplexInfoModel(){ Key="4",Text="4" },
-              new ComplexInfoModel(){ Key="5",Text="5" }
+              new ComplexInfoModel(){ Key="0",Text="局部正常" },
+              new ComplexInfoModel(){ Key="1",Text="破裂" },
+              new ComplexInfoModel(){ Key="2",Text="腐蚀" },
+              new ComplexInfoModel(){ Key="3",Text="树根" },
+              new ComplexInfoModel(){ Key="4",Text="结垢" },
+              new ComplexInfoModel(){ Key="5",Text="局部异常5" },
+              new ComplexInfoModel(){ Key="6",Text="全局正常" },
+              new ComplexInfoModel(){ Key="7",Text="障碍" },
+              new ComplexInfoModel(){ Key="8",Text="起伏" },
+              new ComplexInfoModel(){ Key="9",Text="沉积" },
+              new ComplexInfoModel(){ Key="10",Text="错口" },
+              new ComplexInfoModel(){ Key="11",Text="全局异常5"}
             };
-        }
-
-        private void worker_DoWork(object sender, DoWorkEventArgs e)
-        {
-            PlayerModel p = (PlayerModel)e.Argument;
-            int start = p.StartNum;
-            int end = p.EndNum;
-            while (start<=end)
-            {
-                if (worker.CancellationPending)
-                {
-                    Console.WriteLine("here arrived");
-                    e.Cancel = true;
-                    return;
-                }
-                
-                worker.ReportProgress(start++);
-                Thread.Sleep(p.Speed);
-
-                manualReset.WaitOne();
-            }
-        }
-
-        private void worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            DispatcherHelper.CheckBeginInvokeOnUI(() =>
-            {
-                ImgSource = imagePath[e.ProgressPercentage];
-            });
-        }
-        private void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            Console.WriteLine("work done!");
         }
         #endregion
     }

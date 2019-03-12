@@ -12,6 +12,7 @@ namespace MvvmLight4.Service
     {
         ObservableCollection<ExportModel> SelectAll();
         void UpdateExport(ObservableCollection<ExportModel> exports);
-        Dictionary<string,string> SelectChoose();
+        Dictionary<string, string> SelectChoose();
+        List<ExportModel> SelectChooseToList();
     }
 }

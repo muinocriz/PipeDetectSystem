@@ -128,7 +128,7 @@ namespace MvvmLight4.Service
             {
                 conn.Open();
                 var sql = @"SELECT * FROM TB_ABNORMAL,TB_METADATA WHERE TB_ABNORMAL.VIDEOID=TB_METADATA.ID AND TB_ABNORMAL.VIDEOID=@id;";
-                IEnumerable<dynamic> dynamics = conn.Query(sql,new { id=id});
+                IEnumerable<dynamic> dynamics = conn.Query(sql,new { id });
                 foreach (var item in dynamics)
                 {
                     MetaModel mm = new MetaModel();
@@ -137,6 +137,7 @@ namespace MvvmLight4.Service
                     mm.PipeCode = item.PIPECODE;
                     mm.PipeType = (int)item.PIPETYPE;
                     mm.TaskCode = item.TASKCODE;
+                    mm.FramePath = item.FRAMEPATH;
                     mm.Address = item.ADDR;
                     mm.Charge = item.CHARGE;
                     mm.StartTime = item.STARTTIME;

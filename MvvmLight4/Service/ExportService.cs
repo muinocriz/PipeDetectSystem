@@ -70,5 +70,17 @@ namespace MvvmLight4.Service
                 }
             }
         }
+
+        public List<ExportModel> SelectChooseToList()
+        {
+            List<ExportModel> exportModels = new List<ExportModel>();
+            using (IDbConnection conn = SqlHelper.GetConnection())
+            {
+                conn.Open();
+                var sql = @"SELECT ALTERNATIVE,BYNAME,ISCHOOSE FROM TB_EXPORT WHERE ISCHOOSE = 1;";
+                exportModels = conn.Query<ExportModel>(sql).ToList();
+            }
+            return exportModels;
+        }
     }
 }

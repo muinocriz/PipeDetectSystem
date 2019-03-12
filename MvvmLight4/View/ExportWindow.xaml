@@ -119,6 +119,7 @@
                         AutoGenerateColumns="False"
                         CanUserAddRows="False"
                         CanUserDeleteRows="False"
+                        CanUserReorderColumns="False"
                         FontFamily="/MvvmLight4;component/Font/#Source Han Sans CN"
                         GridLinesVisibility="Horizontal"
                         HeadersVisibility="Column"

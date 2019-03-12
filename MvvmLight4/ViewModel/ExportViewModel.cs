@@ -1,12 +1,14 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Threading;
+using MvvmLight4.Common;
 using MvvmLight4.Model;
 using MvvmLight4.Service;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,6 +27,7 @@ namespace MvvmLight4.ViewModel
         private BackgroundWorker worker;
         private List<ComplexInfoModel> combboxList;
         private Dictionary<string, string> dict;
+        private List<ExportModel> exportModelsForExcel;
         private List<AbnormalViewModel> list;
         /// <summary>
         /// 下拉框列表
@@ -240,12 +243,17 @@ namespace MvvmLight4.ViewModel
             //获得所有要选择的项-别名
             dict = new Dictionary<string, string>();
             dict = ExportService.GetService().SelectChoose();
+
+            exportModelsForExcel = new List<ExportModel>();
+            exportModelsForExcel = ExportService.GetService().SelectChooseToList();
+
             //读取所有属性
             list = AbnormalService.GetService().ExportByVideoId(Convert.ToInt32(combboxItem.Key));
             DispatcherHelper.CheckBeginInvokeOnUI(() =>
             {
                 ProVisiable = Visibility.Visible;
             });
+
             //完成写入
             //switch (Way)
             //{
@@ -257,6 +265,7 @@ namespace MvvmLight4.ViewModel
             //    default:
             //        break;
             //}
+
             worker.RunWorkerAsync();
         }
 
@@ -320,13 +329,18 @@ namespace MvvmLight4.ViewModel
             switch (Way)
             {
                 case 0:
-                    SaveService.GetService().SaveXlsxFile(TargetSource, dict, list);
+                    //SaveService.GetService().SaveXlsxFile(TargetSource, dict, list);
+                    SaveService.GetService().SaveXlsxFile(TargetSource, exportModelsForExcel, list);
                     break;
                 case 1:
                     break;
                 default:
                     break;
             }
+            Process process = CmdHelper.RunProcess("excel.exe", TargetSource);
+            process.Start();
+            process.WaitForExit();
+            process.Close();
         }
         #endregion
     }

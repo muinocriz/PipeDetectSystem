@@ -111,10 +111,11 @@ namespace MvvmLight4.ViewModel
                 if (playCmd == null)
                     return new RelayCommand(() =>
                     {
-                        string msg = "showPause";
-                        Messenger.Default.Send<string>(msg, "ButtonVisibility");
                         if (!worker.IsBusy)
                             worker.RunWorkerAsync(player);
+
+                        string msg = "showPause";
+                        Messenger.Default.Send<string>(msg, "ButtonVisibility");
                     });
                 return playCmd;
             }
@@ -136,10 +137,11 @@ namespace MvvmLight4.ViewModel
                 if (pauseCmd == null)
                     return new RelayCommand(() =>
                     {
-                        string msg = "showStart";
-                        Messenger.Default.Send<string>(msg, "ButtonVisibility");
                         if(worker.IsBusy)
                             worker.CancelAsync();
+
+                        string msg = "showStart";
+                        Messenger.Default.Send<string>(msg, "ButtonVisibility");
                     });
                 return pauseCmd;
             }

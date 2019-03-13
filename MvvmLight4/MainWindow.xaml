@@ -1,88 +1,158 @@
-﻿<Controls:MetroWindow x:Class="MvvmLight4.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:ignore="http://www.galasoft.ch/ignore"
-        xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-        mc:Ignorable="d ignore"
-        Title="管道检测系统" Height="167" Width="300" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Icon="Image/pipe.ico"
-        DataContext="{Binding Main, Source={StaticResource Locator}}" FontFamily="/MvvmLight4;component/Font/#Source Han Sans CN">
+﻿<Controls:MetroWindow
+    x:Class="MvvmLight4.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:ignore="http://www.galasoft.ch/ignore"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="管道检测系统"
+    Width="480"
+    Height="240"
+    MinWidth="400"
+    MinHeight="200"
+    DataContext="{Binding Main, Source={StaticResource Locator}}"
+    FontFamily="/MvvmLight4;component/Font/#Source Han Sans CN"
+    Icon="Image/pipe.ico"
+    ResizeMode="CanResizeWithGrip"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d ignore">
     <Grid Button.Click="Button_Click">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        <StackPanel Grid.Column="0" Margin="5">
-            <Button Margin="0 0 0 5" Tag="ImportWindow">
-                <Button.Content>
-                    <StackPanel Orientation="Horizontal">
-                        <Image Source=".\Image\import.ico" Width="24" Height="24"/>
-                        <Label  Content="导入"/>
-                    </StackPanel>
-                </Button.Content>
-            </Button>
-            <Button Margin="0 0 0 5" Tag="FrameWindow">
-                <Button.Content>
-                    <StackPanel Orientation="Horizontal">
-                        <Image Source=".\Image\splite.ico" Width="24" Height="24"/>
-                        <Label  Content="分帧"/>
-                    </StackPanel>
-                </Button.Content>
-            </Button>
-        </StackPanel>
-        <StackPanel Grid.Column="1" Margin="5">
-            <Button Margin="0 0 0 5" Tag="TrainWindow">
-                <Button.Content>
-                    <StackPanel Orientation="Horizontal">
-                        <Image Source=".\Image\train.png" Width="24" Height="24"/>
-                        <Label Content="训练"/>
-                    </StackPanel>
-                </Button.Content>
-            </Button>
-            <Button Margin="0 0 0 5" Tag="MarkFileChooseWindow">
-                <Button.Content>
-                    <StackPanel Orientation="Horizontal">
-                        <Image Source=".\Image\tag.png" Width="24" Height="24"/>
-                        <Label  Content="标注"/>
-                    </StackPanel>
-                </Button.Content>
-            </Button>
-            <Button Tag="ModelManageWindow">
-                <Button.Content>
-                    <StackPanel Orientation="Horizontal">
-                        <Image Source=".\Image\model.png" Width="24" Height="24"/>
-                        <Label  Content="模型"/>
-                    </StackPanel>
-                </Button.Content>
-            </Button>
-        </StackPanel>
-        <StackPanel Grid.Column="2" Margin="5">
-            <Button Margin="0 0 0 5" Tag="DetectWindow">
-                <Button.Content>
-                    <StackPanel Orientation="Horizontal">
-                        <Image Source=".\Image\detect.png" Width="24" Height="24"/>
-                        <Label  Content="检测"/>
-                    </StackPanel>
-                </Button.Content>
-            </Button>
-            <Button Tag="ExportWindow" Margin="0 0 0 5">
-                <Button.Content>
-                    <StackPanel Orientation="Horizontal">
-                        <Image Source=".\Image\export.ico" Width="24" Height="24"/>
-                        <Label  Content="输出"/>
-                    </StackPanel>
-                </Button.Content>
-            </Button>
-            <Button Tag="SetWindow" Margin="0 0 0 5">
-                <Button.Content>
-                    <StackPanel Orientation="Horizontal">
-                        <Image Source=".\Image\cog.png" Width="24" Height="24"/>
-                        <Label  Content="选项"/>
-                    </StackPanel>
-                </Button.Content>
-            </Button>
-        </StackPanel>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <Button
+            Grid.Row="0"
+            Grid.Column="0"
+            Margin="5"
+            Tag="ImportWindow">
+            <Button.Content>
+                <StackPanel Orientation="Horizontal">
+                    <Image
+                        Width="24"
+                        Height="24"
+                        Source=".\Image\import.ico" />
+                    <Label Content="导入" />
+                </StackPanel>
+            </Button.Content>
+        </Button>
+        <Button
+            Grid.Row="1"
+            Grid.Column="0"
+            Margin="5"
+            Tag="FrameWindow">
+            <Button.Content>
+                <StackPanel Orientation="Horizontal">
+                    <Image
+                        Width="24"
+                        Height="24"
+                        Source=".\Image\splite.ico" />
+                    <Label Content="分帧" />
+                </StackPanel>
+            </Button.Content>
+        </Button>
+
+
+        <Button
+            Grid.Row="0"
+            Grid.Column="1"
+            Margin="5"
+            Tag="TrainWindow">
+            <Button.Content>
+                <StackPanel Orientation="Horizontal">
+                    <Image
+                        Width="24"
+                        Height="24"
+                        Source=".\Image\train.png" />
+                    <Label VerticalContentAlignment="Center" Content="训练" />
+                </StackPanel>
+            </Button.Content>
+        </Button>
+        <Button
+            Grid.Row="1"
+            Grid.Column="1"
+            Margin="5"
+            Tag="MarkFileChooseWindow">
+            <Button.Content>
+                <StackPanel Orientation="Horizontal">
+                    <Image
+                        Width="24"
+                        Height="24"
+                        Source=".\Image\tag.png" />
+                    <Label Content="标注" />
+                </StackPanel>
+            </Button.Content>
+        </Button>
+        <Button
+            Grid.Row="2"
+            Grid.Column="1"
+            Margin="5"
+            Tag="ModelManageWindow">
+            <Button.Content>
+                <StackPanel Orientation="Horizontal">
+                    <Image
+                        Width="24"
+                        Height="24"
+                        Source=".\Image\model.png" />
+                    <Label Content="模型" />
+                </StackPanel>
+            </Button.Content>
+        </Button>
+
+
+        <Button
+            Grid.Row="0"
+            Grid.Column="2"
+            Margin="5"
+            Tag="DetectWindow">
+            <Button.Content>
+                <StackPanel Orientation="Horizontal">
+                    <Image
+                        Width="24"
+                        Height="24"
+                        Source=".\Image\detect.png" />
+                    <Label Content="检测" />
+                </StackPanel>
+            </Button.Content>
+        </Button>
+        <Button
+            Grid.Row="1"
+            Grid.Column="2"
+            Margin="5"
+            Tag="ExportWindow">
+            <Button.Content>
+                <StackPanel Orientation="Horizontal">
+                    <Image
+                        Width="24"
+                        Height="24"
+                        Source=".\Image\export.ico" />
+                    <Label Content="输出" />
+                </StackPanel>
+            </Button.Content>
+        </Button>
+        <Button
+            Grid.Row="2"
+            Grid.Column="2"
+            Margin="5"
+            Tag="SetWindow">
+            <Button.Content>
+                <StackPanel Orientation="Horizontal">
+                    <Image
+                        Width="24"
+                        Height="24"
+                        Source=".\Image\cog.png" />
+                    <Label Content="选项" />
+                </StackPanel>
+            </Button.Content>
+        </Button>
+
     </Grid>
 </Controls:MetroWindow>

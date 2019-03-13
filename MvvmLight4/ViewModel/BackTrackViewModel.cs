@@ -24,11 +24,11 @@ namespace MvvmLight4.ViewModel
     {
         public BackTrackViewModel()
         {
-            //Messenger.Default.Register<List<int>>(this, "DVM2BTVM", msg=>
-            //{
-            //    VideoIds = msg;
-            //});
-            
+            Messenger.Default.Register<List<int>>(this, "DVM2BTVM", msg =>
+            {
+                VideoIds = msg;
+            });
+
             InitCombobox();
 
             DispatcherHelper.Initialize();
@@ -123,11 +123,6 @@ namespace MvvmLight4.ViewModel
                 if (loadedCmd == null)
                     return new RelayCommand(() =>
                     {
-                        //测试数据
-                        VideoIds.Clear();
-                        VideoIds.Add(46);
-                        VideoIds.Add(47);
-
                         //初始化元数据+异常信息的组合
                         AbnormalVMs = AbnormalService.GetService().SelectAll(VideoIds);
                         ErrorNum = 0;

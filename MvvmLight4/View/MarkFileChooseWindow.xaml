@@ -13,12 +13,16 @@
     Width="500"
     Height="180"
     DataContext="{Binding Source={StaticResource Locator}, Path=MarkFileChoose}"
+    FontFamily="/MvvmLight4;component/Font/#Source Han Sans CN"
     ResizeMode="NoResize"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
     <StackPanel Margin="5">
         <StackPanel.Resources>
             <common:IntToBoolConverter x:Key="itbc" />
+            <Style TargetType="{x:Type Label}">
+                <Setter Property="FontFamily" Value="/MvvmLight4;component/Font/#Source Han Sans CN" />
+            </Style>
         </StackPanel.Resources>
         <StackPanel Margin="0,0,0,10">
             <StackPanel HorizontalAlignment="Left">

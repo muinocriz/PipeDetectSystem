@@ -12,6 +12,7 @@
     Width="460"
     Height="470"
     DataContext="{Binding Source={StaticResource Locator}, Path=Detect}"
+    FontFamily="/MvvmLight4;component/Font/#Source Han Sans CN"
     ResizeMode="NoResize"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
@@ -21,6 +22,11 @@
         </i:EventTrigger>
     </i:Interaction.Triggers>
     <Grid>
+        <Grid.Resources>
+            <Style TargetType="{x:Type Label}">
+                <Setter Property="FontFamily" Value="/MvvmLight4;component/Font/#Source Han Sans CN" />
+            </Style>
+        </Grid.Resources>
         <StackPanel Margin="5">
             <StackPanel Margin="0,0,0,10">
                 <StackPanel HorizontalAlignment="Left">

@@ -13,6 +13,7 @@
     Width="700"
     Height="450"
     DataContext="{Binding Source={StaticResource Locator}, Path=Video}"
+    FontFamily="/MvvmLight4;component/Font/#Source Han Sans CN"
     ResizeMode="NoResize"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
@@ -24,6 +25,9 @@
     <Grid Margin="10">
         <Grid.Resources>
             <common:IntToBoolConverter x:Key="itbc" />
+            <Style TargetType="{x:Type Label}">
+                <Setter Property="FontFamily" Value="/MvvmLight4;component/Font/#Source Han Sans CN" />
+            </Style>
         </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition />

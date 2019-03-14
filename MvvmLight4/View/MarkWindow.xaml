@@ -15,6 +15,7 @@
     MinWidth="830"
     MinHeight="420"
     DataContext="{Binding Source={StaticResource Locator}, Path=MarkVM}"
+    FontFamily="/MvvmLight4;component/Font/#Source Han Sans CN"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
     <i:Interaction.Triggers>
@@ -32,6 +33,9 @@
     <Grid>
         <Grid.Resources>
             <common:IntToBoolConverter x:Key="itbc" />
+            <Style TargetType="{x:Type Label}">
+                <Setter Property="FontFamily" Value="/MvvmLight4;component/Font/#Source Han Sans CN" />
+            </Style>
         </Grid.Resources>
         <Grid.ColumnDefinitions>
             <ColumnDefinition />

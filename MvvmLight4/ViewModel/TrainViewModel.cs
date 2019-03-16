@@ -10,6 +10,7 @@ using System;
 using System.ComponentModel;
 using System.Configuration;
 using System.Diagnostics;
+using System.IO;
 using System.IO.Pipes;
 using System.Management;
 using System.Text;
@@ -310,18 +311,15 @@ namespace MvvmLight4.ViewModel
         /// </summary>
         private void ExecuteTrainCmd()
         {
+            bool hasPre = CheckPre(Model.Simple);
+            if(hasPre)
+            {
+                MessageBox.Show("您还未进行预处理，请先点击预处理按钮。");
+                return;
+            }
             // 显示终止按钮
             Messenger.Default.Send<string>("showStopButton", "trainMessage");
 
-            //DispatcherTimer timer = new DispatcherTimer
-            //{
-            //    Interval = new TimeSpan(0, 0, 1)
-            //};
-            //timer.Tick += new EventHandler(Timer_Tick);
-
-            //分帧逻辑
-            //使用cmd运行Python  
-            //string cmdStringTest = ConfigurationManager.ConnectionStrings["TrainCmdString"].ConnectionString;
             if (string.IsNullOrEmpty(Model.SourceModel))
                 Model.SourceModel = "";
 
@@ -339,19 +337,6 @@ namespace MvvmLight4.ViewModel
                 p.Start();
                 trainProcessPID = p.Id;
                 Console.WriteLine("trainProcessPID:" + trainProcessPID);
-                //Console.WriteLine("python is started");
-                //string outputData = string.Empty;
-                //string errorData = string.Empty;
-                //p.BeginOutputReadLine();
-                //p.BeginErrorReadLine();
-                //p.OutputDataReceived += (sender, e) =>
-                //{
-                //    outputData += (e.Data + "\n");
-                //};
-                //p.ErrorDataReceived += (sender, e) =>
-                //{
-                //    errorData += (e.Data + "\n");
-                //};
                 Console.WriteLine("wait for exit");
                 p.WaitForExit();
                 Console.WriteLine("exited");
@@ -383,6 +368,24 @@ namespace MvvmLight4.ViewModel
             //timer.Start();
         }
 
+        /// <summary>
+        /// 检查样本位置是否有预处理之后的文件
+        /// </summary>
+        /// <param name="simple">样本位置</param>
+        /// <returns></returns>
+        private bool CheckPre(string simple)
+        {
+            // 如果预处理成功，那么改文件会存放在/bigimg目录下
+            string fileName = simple + @"\" + "val.tfrecords";
+            if(File.Exists(fileName))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
 
         private void Worker_DoWork(object sender, DoWorkEventArgs e)
         {

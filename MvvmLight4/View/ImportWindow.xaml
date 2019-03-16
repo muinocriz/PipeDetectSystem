@@ -9,7 +9,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="导入"
     Width="450"
-    Height="480"
+    Height="500"
     DataContext="{Binding Source={StaticResource Locator}, Path=Import}"
     FontFamily="/MvvmLight4;component/Font/#Source Han Sans CN"
     ResizeMode="NoResize"

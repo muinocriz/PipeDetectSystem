@@ -408,7 +408,7 @@ namespace MvvmLight4.ViewModel
                 if (e.UserState != null)
                 {
                     string log = (string)e.UserState;
-                    log = DateTime.Now.ToString() + "\r\n" + log + "\r\n";
+                    log = DateTime.Now.ToString() + "\r\n" + log + "\r\n\r\n";
                     LogText += log;
                 }
                 DetectProgNum = e.ProgressPercentage;

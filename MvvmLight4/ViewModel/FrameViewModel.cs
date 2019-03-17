@@ -22,16 +22,17 @@ namespace MvvmLight4.ViewModel
     {
         public FrameViewModel()
         {
+            AssignCommands();
             InitCombbox();
-            TargetPath= Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+            TargetPath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
             ProgV = Visibility.Collapsed;
             errorMsg = "";
         }
+
         public BackgroundWorker worker;
         public NamedPipeServerStream pipeReader;
         public string errorMsg = "";
-
-        public int VideoId=0;
+        public int VideoId = 0;
 
         private Visibility progV;
         //进度条可视状态
@@ -49,6 +50,9 @@ namespace MvvmLight4.ViewModel
         }
 
         private string sourcePath;
+        /// <summary>
+        /// 视频地址
+        /// </summary>
         public string SourcePath
         {
             get
@@ -62,6 +66,9 @@ namespace MvvmLight4.ViewModel
             }
         }
         private string targetPath;
+        /// <summary>
+        /// 分帧目的地址
+        /// </summary>
         public string TargetPath
         {
             get
@@ -93,60 +100,24 @@ namespace MvvmLight4.ViewModel
             get { return combboxItem; }
             set { combboxItem = value; RaisePropertyChanged(() => CombboxItem); }
         }
-        private RelayCommand<string> openFileDialogCmd;
-        public RelayCommand<string> OpenFileDialogCmd
-        {
-            get
-            {
-                if (openFileDialogCmd == null)
-                    return new RelayCommand<string>((p) => ExecuteOpenFileDialogCmd(p));
-                return openFileDialogCmd;
-            }
-            set
-            {
-                OpenFileDialogCmd = value;
-            }
-        }
+
+        public RelayCommand<string> OpenFileDialogCmd { get; private set; }
 
         private void ExecuteOpenFileDialogCmd(string p)
         {
-            string filter = @"视频文件|*.avi;*.mp4;*.wmv;*.mpeg|所有文件|*.*"; 
+            string filter = @"视频文件|*.avi;*.mp4;*.wmv;*.mpeg|所有文件|*.*";
             SourcePath = FileDialogService.GetService().OpenFileDialog(filter);
         }
 
         private RelayCommand<string> folderBrowserDialogCmd;
-        public RelayCommand<string> FolderBrowserDialogCmd
-        {
-            get
-            {
-                if (folderBrowserDialogCmd == null)
-                    return new RelayCommand<string>((p) => ExecuteFolderBrowserDialogCmd(p));
-                return folderBrowserDialogCmd;
-            }
-            set
-            {
-                FolderBrowserDialogCmd = value;
-            }
-        }
+        public RelayCommand<string> FolderBrowserDialogCmd { get; private set; }
 
         private void ExecuteFolderBrowserDialogCmd(string p)
         {
             TargetPath = FileDialogService.GetService().OpenFolderBrowserDialog();
         }
-        private RelayCommand frameCmd;
-        public RelayCommand FrameCmd
-        {
-            get
-            {
-                if (frameCmd == null)
-                    return new RelayCommand(() => ExecuteFrameCmd(), CanExecuteFrameCmd);
-                return frameCmd;
-            }
-            set
-            {
-                FrameCmd = value;
-            }
-        }
+
+        public RelayCommand FrameCmd { get; private set; }
 
         private bool CanExecuteFrameCmd()
         {
@@ -159,8 +130,9 @@ namespace MvvmLight4.ViewModel
         /// </summary>
         private void ExecuteFrameCmd()
         {
+            //检查文件是否已经导入
             int hasData = MetaService.GetService().HasVideoPath(SourcePath);
-            if(hasData<=0)
+            if (hasData <= 0)
             {
                 MessageBox.Show("该文件未导入，请重新选择");
                 SourcePath = "";
@@ -170,27 +142,21 @@ namespace MvvmLight4.ViewModel
             //根据模型路径，设置该模型的分帧间隔
             int result = MetaService.GetService().UpdateInterval(SourcePath, Convert.ToInt32(CombboxItem.Key));
 
-            DispatcherTimer timer = new DispatcherTimer();
-            timer.Interval = new TimeSpan(0, 0, 2);
-            timer.Tick += new EventHandler(Timer_Tick);
-
             //分帧逻辑
             //使用cmd运行Python
             string pythonFilePosition = @"Util/testpipe.py";
-            string cmdString = @"python "+ pythonFilePosition + " " + sourcePath + " " + targetPath;
-            //MessageBox.Show("cmdstring: " + cmdString);
+            string cmdString = @"python " + pythonFilePosition + " " + sourcePath + " " + targetPath;
             CmdHelper.RunCmd(cmdString);
 
             //新建后台进程
-            worker = new BackgroundWorker();
-            worker.WorkerReportsProgress = true;
-            worker.WorkerSupportsCancellation = true;
+            worker = new BackgroundWorker
+            {
+                WorkerSupportsCancellation = true
+            };
             worker.DoWork += Worker_DoWork;
-            worker.ProgressChanged += Worker_ProgressChanged;
             worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
 
             worker.RunWorkerAsync();
-            timer.Start();
         }
 
         private void Worker_DoWork(object sender, DoWorkEventArgs e)
@@ -200,7 +166,7 @@ namespace MvvmLight4.ViewModel
                 Console.WriteLine("字节读取管道正在连接...");
                 pipeReader.WaitForConnection();
                 Console.WriteLine("字节读取管道已连接");
-                
+
                 ProgV = Visibility.Visible;
 
                 int progress = 0;
@@ -231,7 +197,6 @@ namespace MvvmLight4.ViewModel
                             if (messages.Length == 2 && int.TryParse(messages[1], out progress))
                             {
                                 Console.WriteLine(messages[1]);
-                                worker.ReportProgress(progress);
                             }
                             break;
                         case 2:
@@ -250,7 +215,7 @@ namespace MvvmLight4.ViewModel
                         case 32:
                             errorMsg = "本次任务由于后台而中断";
                             if (messages.Length > 1)
-                                errorMsg +="\r\n消息：" + messages[1];
+                                errorMsg += "\r\n消息：" + messages[1];
                             e.Cancel = true;
                             return;
                         case 64:
@@ -259,31 +224,8 @@ namespace MvvmLight4.ViewModel
                             break;
                     }
                 }
-                pipeReader.Disconnect();
                 pipeReader.Close();
             }
-        }
-
-        private void Timer_Tick(object sender, EventArgs e)
-        {
-            Console.WriteLine("进入计时器");
-            DispatcherTimer _timer = (DispatcherTimer)sender;
-            _timer.Stop();
-            if (!pipeReader.IsConnected)
-            {
-                Console.WriteLine("调用管道失败");
-                errorMsg = "调用管道失败";
-                NamedPipeClientStream npcs = new NamedPipeClientStream("cutfram_result1");
-                npcs.Connect();
-                worker.CancelAsync();
-            }
-            else
-                Console.WriteLine("调用管道成功");
-        }
-
-        private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            return;
         }
 
         private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -291,7 +233,7 @@ namespace MvvmLight4.ViewModel
             ProgV = Visibility.Collapsed;
             pipeReader.Close();
 
-            if(e.Cancelled || e.Error!=null || !string.IsNullOrEmpty(errorMsg))
+            if (e.Cancelled || e.Error != null || !string.IsNullOrEmpty(errorMsg))
             {
                 MessageBox.Show(errorMsg);
             }
@@ -299,12 +241,13 @@ namespace MvvmLight4.ViewModel
             {
                 string framePathWithDirectory = Path.GetFileNameWithoutExtension(SourcePath);
                 Console.WriteLine("framePathWithDirectory: " + framePathWithDirectory);
-                int result = MetaService.GetService().UpdateFramePathByVideoPath(TargetPath + @"\" + framePathWithDirectory + @"\bigimg", SourcePath);
+                string target = TargetPath + @"\" + framePathWithDirectory + @"\bigimg";
+                int result = MetaService.GetService().UpdateFramePathByVideoPath(target, SourcePath);
                 MessageBox.Show("分帧完成");
             }
             errorMsg = "";
         }
-        #region 辅助函数
+        #region helper function
         /// <summary>
         /// 填充下拉框
         /// </summary>
@@ -317,6 +260,13 @@ namespace MvvmLight4.ViewModel
               new ComplexInfoModel(){ Key="25",Text="1/25" },
             };
             CombboxItem = CombboxList[3];
+        }
+
+        private void AssignCommands()
+        {
+            OpenFileDialogCmd = new RelayCommand<string>((str) => ExecuteOpenFileDialogCmd(str));
+            FolderBrowserDialogCmd = new RelayCommand<string>((p) => ExecuteFolderBrowserDialogCmd(p));
+            FrameCmd = new RelayCommand(() => ExecuteFrameCmd(), CanExecuteFrameCmd);
         }
         #endregion
 

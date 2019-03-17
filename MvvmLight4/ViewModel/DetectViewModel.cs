@@ -218,17 +218,10 @@ namespace MvvmLight4.ViewModel
                 dict[(int)item.Id] = item.Meta.FramePath;
             }
 
-            //DispatcherTimer timer = new DispatcherTimer
-            //{
-            //    Interval = new TimeSpan(0, 0, 5)
-            //};
-            //timer.Tick += new EventHandler(Timer_Tick);
-
             //使用cmd运行Python
             string cmdStringTest = ConfigurationManager.ConnectionStrings["DetectCmdString"].ConnectionString;
             Console.WriteLine(JsonConvert.SerializeObject(dict));
             string cmdString = string.Empty;
-            //cmdString = "test.exe" + " " + JsonConvert.SerializeObject(dict) + " " + ModelItem.ModelModel.Location + @"\" + ModelItem.ModelModel.ModelName;
             try
             {
                 FileStream aFile = new FileStream("Util/detect.txt", FileMode.Create);

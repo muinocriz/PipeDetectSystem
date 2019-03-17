@@ -47,19 +47,11 @@ namespace MvvmLight4.ViewModel
                 {
                     if (error != null)
                     {
-                        // Report error here
                         return;
                     }
 
                     WelcomeTitle = item.Title;
                 });
         }
-
-        ////public override void Cleanup()
-        ////{
-        ////    // Clean up if needed
-
-        ////    base.Cleanup();
-        ////}
     }
 }

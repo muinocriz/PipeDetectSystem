@@ -15,9 +15,10 @@ using System.Windows;
 namespace MvvmLight4.ViewModel
 {
     public class SetViewModel : ViewModelBase
-    {  
+    {
         public SetViewModel()
         {
+            AssignCommands();
             AbnormalTypes = AbnormalService.GetService().GetAbnormalTypeModels();
         }
 
@@ -26,34 +27,37 @@ namespace MvvmLight4.ViewModel
         {
             get => abnormalTypes; set { abnormalTypes = value; RaisePropertyChanged(() => AbnormalTypes); }
         }
-        public ObservableCollection<AbnormalTypeModel> SelectedAbnormalTypes { get; set; }
+        public ObservableCollection<AbnormalTypeModel> SelectedAbnormalTypes { get; private set; }
 
-        private RelayCommand selectAbnormal;
-        public RelayCommand SelectAbnormal
+        public RelayCommand SelectAbnormal { get; private set; }
+        private void ExecuteSelect()
         {
-            get
+            SelectedAbnormalTypes = new ObservableCollection<AbnormalTypeModel>();
+            foreach (var item in AbnormalTypes)
             {
-                if (selectAbnormal == null)
-                    return new RelayCommand(() =>
-                    {
-                        SelectedAbnormalTypes = new ObservableCollection<AbnormalTypeModel>();
-                        foreach (var item in AbnormalTypes)
-                        {
-                            if (item.IsSelected)
-                                SelectedAbnormalTypes.Add(item);
-                        }
-                        string json = JsonConvert.SerializeObject(SelectedAbnormalTypes);
-                        File.WriteAllText("test.txt", json);
-                        MessageBox.Show("已保存");
-                    });
-                return selectAbnormal;
+                if (item.IsSelected)
+                    SelectedAbnormalTypes.Add(item);
             }
-            set
+
+            string json = JsonConvert.SerializeObject(SelectedAbnormalTypes);
+
+            try
             {
-                selectAbnormal = value;
+                File.WriteAllText("test.txt", json);
             }
+            catch (Exception e)
+            {
+                MessageBox.Show("存储异常！\n" + e.ToString());
+            }
+
+            MessageBox.Show("已保存");
         }
 
-
+        #region helper function
+        private void AssignCommands()
+        {
+            SelectAbnormal = new RelayCommand(() =>ExecuteSelect());
+        }
+        #endregion
     }
 }

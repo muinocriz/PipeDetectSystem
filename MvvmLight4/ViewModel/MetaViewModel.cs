@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace MvvmLight4.ViewModel
 {
-    public class MetaViewModel:ViewModelBase
+    public class MetaViewModel : ViewModelBase
     {
         public MetaViewModel()
         {

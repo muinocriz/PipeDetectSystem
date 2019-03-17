@@ -149,7 +149,7 @@ namespace MvvmLight4.ViewModel
             get
             {
                 if (selectCommand == null)
-                    return new RelayCommand<AbnormalViewModel>((p) => ExecuteSelectCommand(p),CanExecuteSelectCommand);
+                    return new RelayCommand<AbnormalViewModel>((p) => ExecuteSelectCommand(p), CanExecuteSelectCommand);
                 return selectCommand;
             }
         }
@@ -184,18 +184,18 @@ namespace MvvmLight4.ViewModel
                 string name = item.FullName;
                 imagePath.Add(name);
             }
-            player.Calculate(imagePath.Count,120);
+            player.Calculate(imagePath.Count, 120);
 
             //播放函数
 
-            
+
             var t = new Task(() =>
             {
                 int nowPic = player.StartNum;
                 int end = player.EndNum;
                 stop = false;
 
-                while(!stop && nowPic <= end)
+                while (!stop && nowPic <= end)
                 {
                     DispatcherHelper.CheckBeginInvokeOnUI(() =>
                     {
@@ -234,7 +234,7 @@ namespace MvvmLight4.ViewModel
             int type = Convert.ToInt32(CombboxItem.Key);
             int result = AbnormalService.GetService().UpdateAbnormalType(SelectedAVM.AbnormalId, type);
             //更改右下角显示
-            if(result == 1)
+            if (result == 1)
             {
                 ChangeNum++;
                 SelectedAVM.Abnormal.Type = type;
@@ -290,20 +290,13 @@ namespace MvvmLight4.ViewModel
         #region 辅助方法
         private void InitCombobox()
         {
-            CombboxList = new List<ComplexInfoModel>() {
-              new ComplexInfoModel(){ Key="0",Text="局部正常" },
-              new ComplexInfoModel(){ Key="1",Text="破裂" },
-              new ComplexInfoModel(){ Key="2",Text="腐蚀" },
-              new ComplexInfoModel(){ Key="3",Text="树根" },
-              new ComplexInfoModel(){ Key="4",Text="结垢" },
-              new ComplexInfoModel(){ Key="5",Text="局部异常5" },
-              new ComplexInfoModel(){ Key="6",Text="全局正常" },
-              new ComplexInfoModel(){ Key="7",Text="障碍" },
-              new ComplexInfoModel(){ Key="8",Text="起伏" },
-              new ComplexInfoModel(){ Key="9",Text="沉积" },
-              new ComplexInfoModel(){ Key="10",Text="错口" },
-              new ComplexInfoModel(){ Key="11",Text="全局异常5"}
-            };
+            CombboxList = new List<ComplexInfoModel>();
+
+            IEnumerable<AbnormalTypeModel> dynamics = AbnormalService.GetService().GetAbnormalTypeModels();
+            foreach (var item in dynamics)
+            {
+                CombboxList.Add(new ComplexInfoModel() { Key = Convert.ToString(item.Type), Text = item.Name });
+            }
         }
         #endregion
     }

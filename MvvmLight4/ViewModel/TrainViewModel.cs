@@ -25,12 +25,18 @@ namespace MvvmLight4.ViewModel
     {
         public TrainViewModel()
         {
-            Model = new ModelModel();
-            Model.Lteration = 201000;
-            Model.Rate = 85;
+            AssignCommands();
+
+            Model = new ModelModel
+            {
+                Lteration = 201000,
+                Rate = 85
+            };
             DispatcherHelper.Initialize();
         }
 
+
+        #region property
         public BackgroundWorker worker;
         public NamedPipeServerStream pipeReader;
         public string errorMsg = "";
@@ -103,51 +109,17 @@ namespace MvvmLight4.ViewModel
                 RaisePropertyChanged(() => OutputText);
             }
         }
+        #endregion
 
-        private RelayCommand loadedCmd;
         /// <summary>
         /// 加载函数
         /// </summary>
-        public RelayCommand LoadedCmd
-        {
-            get
-            {
-                if (loadedCmd == null)
-                    return new RelayCommand(() =>
-                    {
-                        //进度条初始化
-                        //TrainProgVb = Visibility.Hidden;
-                        //TrainProgNum = 0;
+        public RelayCommand LoadedCmd { get; private set; }
 
-                        errorMsg = "";
-                    });
-                return loadedCmd;
-            }
-            set
-            {
-                loadedCmd = value;
-            }
-        }
-
-        private RelayCommand<string> preprocessCmd;
         /// <summary>
         /// 预处理函数
         /// </summary>
-        public RelayCommand<string> PreprocessCmd
-        {
-            get
-            {
-                if (preprocessCmd == null)
-                {
-                    return new RelayCommand<string>((directory) => ExecutePreprocessCmd(directory), CanExecutePreprocessCmd);
-                }
-                return preprocessCmd;
-            }
-            set
-            {
-                preprocessCmd = value;
-            }
-        }
+        public RelayCommand<string> PreprocessCmd { get; private set; }
 
         private void ExecutePreprocessCmd(string directory)
         {
@@ -157,18 +129,6 @@ namespace MvvmLight4.ViewModel
                 p.Start();
                 Console.WriteLine("pid:" + p.Id);
                 Console.WriteLine("python is start");
-                //string outputData = string.Empty;
-                //string errorData = string.Empty;
-                //p.BeginOutputReadLine();
-                //p.BeginErrorReadLine();
-                //p.OutputDataReceived += (sender, e) =>
-                //  {
-                //      outputData += (e.Data + "\n");
-                //  };
-                //p.ErrorDataReceived += (sender, e) =>
-                //{
-                //    errorData += (e.Data + "\n");
-                //};
                 p.WaitForExit();
                 Console.WriteLine("python is exit");
                 p.Close();
@@ -191,20 +151,7 @@ namespace MvvmLight4.ViewModel
             return !string.IsNullOrEmpty(directory);
         }
 
-        private RelayCommand<string> folderBrowserCmd;
-        public RelayCommand<string> FolderBrowserCmd
-        {
-            get
-            {
-                if (folderBrowserCmd == null)
-                    return new RelayCommand<string>((p) => ExecuteFolderBrowserCmd(p));
-                return folderBrowserCmd;
-            }
-            set
-            {
-                FolderBrowserCmd = value;
-            }
-        }
+        public RelayCommand<string> FolderBrowserCmd { get; private set; }
 
         private void ExecuteFolderBrowserCmd(string p)
         {
@@ -224,99 +171,33 @@ namespace MvvmLight4.ViewModel
             }
         }
 
-        private RelayCommand<string> openFileCmd;
-        public RelayCommand<string> OpenFileCmd
-        {
-            get
-            {
-                if (openFileCmd == null)
-                    return new RelayCommand<string>((p) => ExecuteOpenFileCmd(p));
-                return openFileCmd;
-            }
-            set
-            {
-                OpenFileCmd = value;
-            }
-        }
+        public RelayCommand OpenFileCmd { get; private set; }
 
-        private void ExecuteOpenFileCmd(string p)
+        private void ExecuteOpenFileCmd()
         {
             Model.SourceModel = FileDialogService.GetService().OpenFileDialog();
         }
 
-        private RelayCommand stopTrainCmd;
-        public RelayCommand StopTrainCmd
-        {
-            get
-            {
-                if (stopTrainCmd == null)
-                    return new RelayCommand(() =>
-                    {
-                        ColseFun(trainProcessPID);
-
-                        pipeFlag = false;
+        public RelayCommand StopTrainCmd { get; private set; }
 
 
-                    });
-                return stopTrainCmd;
-            }
-            set
-            { stopTrainCmd = value; }
-        }
+        public RelayCommand TrainCmd { get; private set; }
 
-        /// <summary>
-        /// 通过停止python方式停止task
-        /// </summary>
-        /// <param name="trainProcessPID">线程号</param>
-        private void ColseFun(int id)
-        {
-            Process process = Process.GetProcessById(id);
-            ManagementObjectSearcher searcher
-                = new ManagementObjectSearcher("select * from Win32_Process where ParentProcessID=" + id);
-            ManagementObjectCollection moc = searcher.Get();
-            foreach (var mo in moc)
-            {
-                Process proc = Process.GetProcessById(Convert.ToInt32(mo["ProcessID"]));
-                Console.WriteLine("proc id: " + proc.Id);
-                Console.WriteLine("proc is null: " + proc == null);
-                Console.WriteLine("proc.HasExited: " + proc.HasExited);
-                if (!proc.HasExited)
-                    proc.Kill();
-            }
-        }
-
-        private RelayCommand trainCmd;
-        public RelayCommand TrainCmd
-        {
-            get
-            {
-                if (trainCmd == null)
-                    return new RelayCommand(() => ExecuteTrainCmd(), CanExecuteTrainCmd);
-                return trainCmd;
-            }
-            set
-            {
-                TrainCmd = value;
-            }
-        }
 
         private bool CanExecuteTrainCmd()
         {
             return !(string.IsNullOrEmpty(Model.Simple) || string.IsNullOrEmpty(Model.Location) || string.IsNullOrEmpty(Model.ModelName));
         }
 
-        /// <summary>
-        /// 1存储模型数据到数据库
-        /// 2处理模型
-        /// </summary>
         private void ExecuteTrainCmd()
         {
             bool hasPre = CheckPre(Model.Simple);
-            if(hasPre)
+            if (!hasPre)
             {
                 MessageBox.Show("您还未进行预处理，请先点击预处理按钮。");
                 return;
             }
+
             // 显示终止按钮
             Messenger.Default.Send<string>("showStopButton", "trainMessage");
 
@@ -364,27 +245,6 @@ namespace MvvmLight4.ViewModel
             worker.ProgressChanged += Worker_ProgressChanged;
             worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
             worker.RunWorkerAsync();
-
-            //timer.Start();
-        }
-
-        /// <summary>
-        /// 检查样本位置是否有预处理之后的文件
-        /// </summary>
-        /// <param name="simple">样本位置</param>
-        /// <returns></returns>
-        private bool CheckPre(string simple)
-        {
-            // 如果预处理成功，那么改文件会存放在/bigimg目录下
-            string fileName = simple + @"\" + "val.tfrecords";
-            if(File.Exists(fileName))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
         }
 
         private void Worker_DoWork(object sender, DoWorkEventArgs e)
@@ -403,7 +263,7 @@ namespace MvvmLight4.ViewModel
             int messageType = 0;
             errorMsg = "";
 
-            while (pipeFlag &&!completed)
+            while (pipeFlag && !completed)
             {
                 if (worker.CancellationPending)
                 {
@@ -447,11 +307,6 @@ namespace MvvmLight4.ViewModel
                         //训练完成
                         else if (messages.Length == 2 && "Done".Equals(messages[1]))
                         {
-                            //progress = 100;
-                            //worker.ReportProgress(progress);
-                            //检测结束
-                            //Thread.Sleep(1500);
-                            //TrainProgVb = Visibility.Hidden;
                             completed = true;
                         }
                         break;
@@ -461,7 +316,7 @@ namespace MvvmLight4.ViewModel
                             if (messages.Length > 1)
                             {
                                 for (int i = 1; i < messages.Length; i++)
-                                    text += messages[i]+" ";
+                                    text += messages[i] + " ";
                             }
                             worker.ReportProgress(0, text);
                         }
@@ -483,20 +338,6 @@ namespace MvvmLight4.ViewModel
             }
         }
 
-        //private void Timer_Tick(object sender, EventArgs e)
-        //{
-        //    DispatcherTimer _timer = (DispatcherTimer)sender;
-        //    _timer.Stop();
-        //    if (!pipeReader.IsConnected)
-        //    {
-        //        Console.WriteLine("计时器：调用管道失败");
-        //        NamedPipeClientStream npcs = new NamedPipeClientStream("SamplePipe");
-        //        npcs.Connect();
-        //        worker.CancelAsync();
-        //    }
-        //    else
-        //        Console.WriteLine("计时器：调用管道成功");
-        //}
         private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             //TrainProgNum = e.ProgressPercentage;
@@ -537,5 +378,57 @@ namespace MvvmLight4.ViewModel
             Thread.Sleep(200);
             Messenger.Default.Send<string>("closeTrainWindow", "trainMessage");
         }
+
+        #region helper function
+        /// <summary>
+        /// 检查样本位置是否有预处理之后的文件
+        /// </summary>
+        /// <param name="simple">样本位置</param>
+        /// <returns></returns>
+        private bool CheckPre(string simple)
+        {
+            // 如果预处理成功，那么改文件会存放在/bigimg目录下
+            string fileName = simple + @"\" + "val.tfrecords";
+            if (File.Exists(fileName))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 通过停止python方式停止task
+        /// </summary>
+        /// <param name="trainProcessPID">线程号</param>
+        private void ColseFun(int id)
+        {
+            Process process = Process.GetProcessById(id);
+            ManagementObjectSearcher searcher
+                = new ManagementObjectSearcher("select * from Win32_Process where ParentProcessID=" + id);
+            ManagementObjectCollection moc = searcher.Get();
+            foreach (var mo in moc)
+            {
+                Process proc = Process.GetProcessById(Convert.ToInt32(mo["ProcessID"]));
+                Console.WriteLine("proc id: " + proc.Id);
+                Console.WriteLine("proc is null: " + proc == null);
+                Console.WriteLine("proc.HasExited: " + proc.HasExited);
+                if (!proc.HasExited)
+                    proc.Kill();
+            }
+        }
+
+        private void AssignCommands()
+        {
+            PreprocessCmd = new RelayCommand<string>((directory) => ExecutePreprocessCmd(directory), CanExecutePreprocessCmd);
+            TrainCmd = new RelayCommand(() => ExecuteTrainCmd(), CanExecuteTrainCmd);
+            LoadedCmd = new RelayCommand(() => { errorMsg = ""; });
+            FolderBrowserCmd = new RelayCommand<string>((p) => ExecuteFolderBrowserCmd(p));
+            OpenFileCmd = new RelayCommand(() => ExecuteOpenFileCmd());
+            StopTrainCmd = new RelayCommand(() => { ColseFun(trainProcessPID); pipeFlag = false; });
+        }
+        #endregion
     }
 }

@@ -6,7 +6,7 @@
     xmlns:ignore="http://www.galasoft.ch/ignore"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:MvvmLight4.ViewModel"
-    StartupUri="MainWindow.xaml"
+    StartupUri="View/BackTrackWindow.xaml"
     mc:Ignorable="d ignore">
 
     <Application.Resources>

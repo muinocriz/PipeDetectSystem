@@ -20,13 +20,10 @@ namespace MvvmLight4.ViewModel
     {
         public ExportViewModel()
         {
-            InitWorker();
+            LoadWorker();
             DispatcherHelper.Initialize();
-
-            AssignCommands();
         }
 
-        #region property
         private BackgroundWorker worker;
         private List<ComplexInfoModel> combboxList;
         private Dictionary<string, string> dict;
@@ -115,11 +112,37 @@ namespace MvvmLight4.ViewModel
                 RaisePropertyChanged(() => ProVisiable);
             }
         }
-        #endregion
-
-        public RelayCommand LoadedCmd { get; private set; }
-
-        public RelayCommand<ExportModel> CheckCmd { get; private set; }
+        private RelayCommand loadedCmd;
+        public RelayCommand LoadedCmd
+        {
+            get
+            {
+                if (loadedCmd == null)
+                    return new RelayCommand(() => 
+                    {
+                        LoadData();
+                    });
+                return loadedCmd;
+            }
+            set
+            {
+                loadedCmd = value;
+            }
+        }
+        private RelayCommand<ExportModel> checkCmd;
+        public RelayCommand<ExportModel> CheckCmd
+        {
+            get
+            {
+                if (checkCmd == null)
+                    return new RelayCommand<ExportModel>((p) => ExecuteCheckCmd(p), CanExecuteCheckCmd);
+                return checkCmd;
+            }
+            set
+            {
+                CheckCmd = value;
+            }
+        }
 
         private bool CanExecuteCheckCmd(ExportModel arg)
         {
@@ -144,11 +167,21 @@ namespace MvvmLight4.ViewModel
                     }
             }
         }
-
+        private RelayCommand selectAllCmd;
         /// <summary>
         /// 全选
         /// </summary>
-        public RelayCommand SelectAllCmd { get; private set; }
+        public RelayCommand SelectAllCmd
+        {
+            get
+            {
+                if (selectAllCmd == null)
+                    return new RelayCommand(() => ExecuteSelectAllCmd());
+                return selectAllCmd;
+            }
+            set
+            { selectAllCmd = value; }
+        }
 
         private void ExecuteSelectAllCmd()
         {
@@ -159,10 +192,21 @@ namespace MvvmLight4.ViewModel
             }
         }
 
+        private RelayCommand unSelectAllCmd;
         /// <summary>
         /// 全不选
         /// </summary>
-        public RelayCommand UnSelectAllCmd { get; private set; }
+        public RelayCommand UnSelectAllCmd
+        {
+            get
+            {
+                if (unSelectAllCmd == null)
+                    return new RelayCommand(() => ExecuteUnSelectAllCmd());
+                return unSelectAllCmd;
+            }
+            set
+            { unSelectAllCmd = value; }
+        }
 
         private void ExecuteUnSelectAllCmd()
         {
@@ -173,7 +217,18 @@ namespace MvvmLight4.ViewModel
             }
         }
 
-        public RelayCommand ExportCmd { get; private set; }
+        private RelayCommand exportCmd;
+        public RelayCommand ExportCmd
+        {
+            get
+            {
+                if (exportCmd == null)
+                    return new RelayCommand(() => ExecuteExportCmd(), CanExecuteExportCmd);
+                return exportCmd;
+            }
+            set
+            { exportCmd = value; }
+        }
 
         private bool CanExecuteExportCmd()
         {
@@ -199,24 +254,47 @@ namespace MvvmLight4.ViewModel
                 ProVisiable = Visibility.Visible;
             });
 
+            //完成写入
+            //switch (Way)
+            //{
+            //    case 0:
+            //        SaveService.GetService().SaveXlsxFile(TargetSource, dict, list);
+            //        break;
+            //    case 1:
+            //        break;
+            //    default:
+            //        break;
+            //}
+
             worker.RunWorkerAsync();
         }
 
-        public RelayCommand FolderBrowserCmd { get; private set; }
+        private RelayCommand folderBrowserCmd;
+        public RelayCommand FolderBrowserCmd
+        {
+            get
+            {
+                if (folderBrowserCmd == null)
+                    return new RelayCommand(() => ExecuteFolderBrowserCmd());
+                return folderBrowserCmd;
+            }
+            set
+            {
+                FolderBrowserCmd = value;
+            }
+        }
 
         private void ExecuteFolderBrowserCmd()
         {
             TargetSource = FileDialogService.GetService().OpenSaveFileDialog();
         }
 
-        #region helper function
+        #region 附属方法
         private void LoadData()
         {
             CombboxList = AbnormalService.GetService().QueryVideo();
             if (CombboxList.Count > 0)
-            {
                 CombboxItem = CombboxList[0];
-            }
 
             Way = 0;
 
@@ -230,9 +308,14 @@ namespace MvvmLight4.ViewModel
                     item.Byname = item.Alternative;
             }
         }
+        private void LoadWorker()
+        {
+            worker = new BackgroundWorker();
+            worker.DoWork += new DoWorkEventHandler(worker_DoWork);
+            worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(worker_RunWorkerCompleted);
+        }
 
-
-        private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             DispatcherHelper.CheckBeginInvokeOnUI(() =>
             {
@@ -241,11 +324,12 @@ namespace MvvmLight4.ViewModel
             MessageBox.Show("导出 " + TargetSource + " 已完成");
         }
 
-        private void Worker_DoWork(object sender, DoWorkEventArgs e)
+        private void worker_DoWork(object sender, DoWorkEventArgs e)
         {
             switch (Way)
             {
                 case 0:
+                    //SaveService.GetService().SaveXlsxFile(TargetSource, dict, list);
                     SaveService.GetService().SaveXlsxFile(TargetSource, exportModelsForExcel, list);
                     break;
                 case 1:
@@ -253,32 +337,10 @@ namespace MvvmLight4.ViewModel
                 default:
                     break;
             }
-
-            //调用Python执行Excel的完善
             Process process = CmdHelper.RunProcess("excel.exe", TargetSource);
             process.Start();
             process.WaitForExit();
             process.Close();
-        }
-        /// <summary>
-        /// 初始化worker
-        /// </summary>
-        private void InitWorker()
-        {
-            worker = new BackgroundWorker();
-            worker.DoWork += new DoWorkEventHandler(Worker_DoWork);
-            worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(Worker_RunWorkerCompleted);
-        }
-
-
-        private void AssignCommands()
-        {
-            LoadedCmd = new RelayCommand(() => LoadData());
-            CheckCmd = new RelayCommand<ExportModel>((p) => ExecuteCheckCmd(p), CanExecuteCheckCmd);
-            SelectAllCmd = new RelayCommand(() => ExecuteSelectAllCmd());
-            UnSelectAllCmd = new RelayCommand(() => ExecuteUnSelectAllCmd());
-            ExportCmd = new RelayCommand(() => ExecuteExportCmd(), CanExecuteExportCmd);
-            FolderBrowserCmd = new RelayCommand(() => ExecuteFolderBrowserCmd());
         }
         #endregion
     }

@@ -24,7 +24,6 @@ namespace MvvmLight4.ViewModel
         {
             AssignCommands();
             InitCombbox();
-            InitWork();
             TargetPath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
             ProgV = Visibility.Collapsed;
             errorMsg = "";
@@ -102,29 +101,7 @@ namespace MvvmLight4.ViewModel
             set { combboxItem = value; RaisePropertyChanged(() => CombboxItem); }
         }
 
-        #region command
-
-        public RelayCommand CloingCmd { get; private set; }
         public RelayCommand<string> OpenFileDialogCmd { get; private set; }
-        public RelayCommand<string> FolderBrowserDialogCmd { get; private set; }
-        public RelayCommand FrameCmd { get; private set; }
-        #endregion
-
-        private void ExecuteCloingCmd()
-        {
-            Console.WriteLine("ExecuteCloingCmd");
-            if (pipeReader != null && pipeReader.IsConnected)
-            {
-                Console.WriteLine("pipeReader.Close");
-                pipeReader.Close();
-            }
-
-            if (worker != null && worker.IsBusy)
-            {
-                Console.WriteLine("worker.CancelAsync");
-                worker.CancelAsync();
-            }
-        }
 
         private void ExecuteOpenFileDialogCmd(string p)
         {
@@ -132,12 +109,15 @@ namespace MvvmLight4.ViewModel
             SourcePath = FileDialogService.GetService().OpenFileDialog(filter);
         }
 
+        private RelayCommand<string> folderBrowserDialogCmd;
+        public RelayCommand<string> FolderBrowserDialogCmd { get; private set; }
+
         private void ExecuteFolderBrowserDialogCmd(string p)
         {
             TargetPath = FileDialogService.GetService().OpenFolderBrowserDialog();
         }
 
-
+        public RelayCommand FrameCmd { get; private set; }
 
         private bool CanExecuteFrameCmd()
         {
@@ -168,21 +148,28 @@ namespace MvvmLight4.ViewModel
             string cmdString = @"python " + pythonFilePosition + " " + sourcePath + " " + targetPath;
             CmdHelper.RunCmd(cmdString);
 
-            //运行后台进程
+            //新建后台进程
+            worker = new BackgroundWorker
+            {
+                WorkerSupportsCancellation = true
+            };
+            worker.DoWork += Worker_DoWork;
+            worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
+
             worker.RunWorkerAsync();
         }
 
         private void Worker_DoWork(object sender, DoWorkEventArgs e)
         {
-            try
+            using (pipeReader = new NamedPipeServerStream("cutfram_result1", PipeDirection.InOut))
             {
-                pipeReader = new NamedPipeServerStream("cutfram_result1", PipeDirection.InOut);
                 Console.WriteLine("字节读取管道正在连接...");
                 pipeReader.WaitForConnection();
                 Console.WriteLine("字节读取管道已连接");
 
                 ProgV = Visibility.Visible;
 
+                int progress = 0;
                 const int BUFFERSIZE = 256;
                 int messageType = 0;
                 bool completed = false;
@@ -191,41 +178,14 @@ namespace MvvmLight4.ViewModel
                 {
                     if (worker.CancellationPending)
                     {
+                        errorMsg = @"管道未能正确连接";
                         e.Cancel = true;
-                        pipeReader.Close();
                         return;
                     }
-
                     byte[] buffer = new byte[BUFFERSIZE];
-                    int nRead = 0;
-                    try
-                    {
-                        nRead = pipeReader.Read(buffer, 0, BUFFERSIZE);
-                    }
-                    catch (Exception readE)
-                    {
-                        Console.WriteLine("读取管道发生异常");
-                        Console.WriteLine(readE.ToString());
-                        nRead = 0;
-                    }
-
-                    string line = string.Empty;
-                    try
-                    {
-                        line = Encoding.UTF8.GetString(buffer, 0, nRead);
-                    }
-                    catch (Exception getE)
-                    {
-                        Console.WriteLine("转换string发生异常");
-                        Console.WriteLine(getE.ToString());
-                        continue;
-                    }
-
+                    int nRead = pipeReader.Read(buffer, 0, BUFFERSIZE);
+                    string line = Encoding.UTF8.GetString(buffer, 0, nRead);
                     Console.WriteLine("line: " + line);
-
-                    if (string.IsNullOrEmpty(line))
-                        continue;
-
                     string[] messages = line.Split('_');
                     int.TryParse(messages[0], out messageType);
                     switch (messageType)
@@ -234,6 +194,10 @@ namespace MvvmLight4.ViewModel
                             break;
                         case 1:
                             //收到进度
+                            if (messages.Length == 2 && int.TryParse(messages[1], out progress))
+                            {
+                                Console.WriteLine(messages[1]);
+                            }
                             break;
                         case 2:
                             break;
@@ -252,7 +216,6 @@ namespace MvvmLight4.ViewModel
                             errorMsg = "本次任务由于后台而中断";
                             if (messages.Length > 1)
                                 errorMsg += "\r\n消息：" + messages[1];
-                            completed = true;
                             e.Cancel = true;
                             return;
                         case 64:
@@ -263,27 +226,16 @@ namespace MvvmLight4.ViewModel
                 }
                 pipeReader.Close();
             }
-            catch (Exception pipeE)
-            {
-                Console.WriteLine("管道发生异常");
-                Console.WriteLine(pipeE.ToString());
-                pipeReader.Close();
-            }
-
         }
 
         private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             ProgV = Visibility.Collapsed;
-
-            if (pipeReader.IsConnected)
-            {
-                pipeReader.Close();
-            }
+            pipeReader.Close();
 
             if (e.Cancelled || e.Error != null || !string.IsNullOrEmpty(errorMsg))
             {
-                MessageBox.Show("失败：" + errorMsg);
+                MessageBox.Show(errorMsg);
             }
             else
             {
@@ -295,7 +247,6 @@ namespace MvvmLight4.ViewModel
             }
             errorMsg = "";
         }
-
         #region helper function
         /// <summary>
         /// 填充下拉框
@@ -311,33 +262,12 @@ namespace MvvmLight4.ViewModel
             CombboxItem = CombboxList[3];
         }
 
-
-        private void InitWork()
-        {
-            try
-            {
-                worker = new BackgroundWorker
-                {
-                    WorkerSupportsCancellation = true
-                };
-                worker.DoWork += Worker_DoWork;
-                worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("后台任务初始化失败");
-                Console.WriteLine(e.ToString());
-            }
-        }
-
         private void AssignCommands()
         {
             OpenFileDialogCmd = new RelayCommand<string>((str) => ExecuteOpenFileDialogCmd(str));
             FolderBrowserDialogCmd = new RelayCommand<string>((p) => ExecuteFolderBrowserDialogCmd(p));
             FrameCmd = new RelayCommand(() => ExecuteFrameCmd(), CanExecuteFrameCmd);
-            CloingCmd = new RelayCommand(() => ExecuteCloingCmd());
         }
-
         #endregion
 
     }

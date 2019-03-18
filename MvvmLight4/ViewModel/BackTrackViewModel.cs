@@ -24,26 +24,16 @@ namespace MvvmLight4.ViewModel
     {
         public BackTrackViewModel()
         {
-            AssignCommands();
-
             Messenger.Default.Register<List<int>>(this, "DVM2BTVM", msg =>
             {
                 VideoIds = msg;
             });
 
-            VideoIds.Add(46);
-
             InitCombobox();
 
             DispatcherHelper.Initialize();
-
-            tokenSource = new CancellationTokenSource();
-            token = tokenSource.Token;
         }
 
-        #region property
-        private CancellationTokenSource tokenSource;
-        private CancellationToken token;
         //图像列表
         public List<string> imagePath = new List<string>();
         //视频列表
@@ -122,109 +112,121 @@ namespace MvvmLight4.ViewModel
             set { combboxItem = value; RaisePropertyChanged(() => CombboxItem); }
         }
         #endregion
-        #endregion
-
+        private RelayCommand loadedCmd;
         /// <summary>
         /// 界面加载时函数
         /// </summary>
-        public RelayCommand LoadedCmd { get; private set; }
-        private void ExecuteLoadedCmd()
+        public RelayCommand LoadedCmd
         {
-            //初始化元数据+异常信息的组合
-            AbnormalVMs = AbnormalService.GetService().SelectAll(VideoIds);
-
-            ErrorNum = 0;
-
-            foreach (var item in AbnormalVMs)
+            get
             {
-                if (item.Abnormal.Type != 0 && item.Abnormal.Type != 6)
-                {
-                    ErrorNum++;
-                }
+                if (loadedCmd == null)
+                    return new RelayCommand(() =>
+                    {
+                        //初始化元数据+异常信息的组合
+                        AbnormalVMs = AbnormalService.GetService().SelectAll(VideoIds);
+                        ErrorNum = 0;
+                        foreach (var item in AbnormalVMs)
+                        {
+                            if (item.Abnormal.Type != 0 && item.Abnormal.Type != 6)
+                                ErrorNum++;
+                        }
+                    });
+                return loadedCmd;
+            }
+            set
+            {
+                loadedCmd = value;
             }
         }
-
         #region 选择了DataGrid的某一项
+        private readonly RelayCommand<AbnormalViewModel> selectCommand;
         /// <summary>
         /// 选择了DataGrid的某一项
         /// </summary>
-        public RelayCommand<AbnormalViewModel> SelectCommand { get; private set; }
-
-        private bool CanExecuteSelectCommand(AbnormalViewModel p)
+        public RelayCommand<AbnormalViewModel> SelectCommand
         {
-            return !string.IsNullOrEmpty(p.Meta.FramePath);
+            get
+            {
+                if (selectCommand == null)
+                    return new RelayCommand<AbnormalViewModel>((p) => ExecuteSelectCommand(p), CanExecuteSelectCommand);
+                return selectCommand;
+            }
+        }
+
+        private bool CanExecuteSelectCommand(AbnormalViewModel arg)
+        {
+            return true;
         }
 
         private void ExecuteSelectCommand(AbnormalViewModel p)
         {
             stop = true;
-            //tokenSource.Cancel();
             //更新左下角显示区域
             SelectedAVM = p;
             CombboxItem = CombboxList[p.Abnormal.Type];
 
             //播放视频
             //找到文件
+            //string folderPath = AbnormalService.GetService().SelectFolder(p.Abnormal.VideoId);
             string folderPath = p.Meta.FramePath;
 
             player = new PlayerModel
             {
                 Target = Convert.ToInt32(p.Abnormal.Position)//目标帧号
             };
-            try
+
+            DirectoryInfo root = new DirectoryInfo(folderPath);
+            FileInfo[] files = root.GetFiles("*.jpg");
+            files = files.OrderBy(y => y.Name, new FileComparer()).ToArray();
+            foreach (var item in files)
             {
-                DirectoryInfo root = new DirectoryInfo(folderPath);
-                FileInfo[] files = root.GetFiles("*.jpg");
-                files = files.OrderBy(y => y.Name, new FileComparer()).ToArray();
-                foreach (var item in files)
+                string name = item.FullName;
+                imagePath.Add(name);
+            }
+            player.Calculate(imagePath.Count, 120);
+
+            //播放函数
+
+
+            var t = new Task(() =>
+            {
+                int nowPic = player.StartNum;
+                int end = player.EndNum;
+                stop = false;
+
+                while (!stop && nowPic <= end)
                 {
-                    string name = item.FullName;
-                    imagePath.Add(name);
-                }
-                player.Calculate(imagePath.Count, 120);
-
-                //播放函数
-
-
-                var t = new Task(() =>
-                {
-                    int nowPic = player.StartNum;
-                    int end = player.EndNum;
-                    stop = false;
-
-                    while (!stop && nowPic <= end)
+                    DispatcherHelper.CheckBeginInvokeOnUI(() =>
                     {
-                        token.ThrowIfCancellationRequested();
-                        DispatcherHelper.CheckBeginInvokeOnUI(() =>
-                        {
-                            ImgSource = imagePath[nowPic];
-                        });
-                        nowPic++;
-                        Thread.Sleep(player.Speed);
-                    }
-                    stop = true;
-                });
-                t.Start();
-            }
-            catch (PathTooLongException e)
-            {
-                MessageBox.Show("文件路径过长");
-            }
-            catch (ArgumentException e)
-            {
-                MessageBox.Show("该路径下文件错误");
-            }
-            catch(Exception e)
-            {
-                MessageBox.Show("发生异常：" + e.ToString());
-            }
+                        ImgSource = imagePath[nowPic];
+                    });
+                    nowPic++;
+                    Thread.Sleep(player.Speed);
+                }
+                stop = true;
+            });
+            t.Start();
         }
         #endregion
         #region ComboxItem被更改
+        private RelayCommand typeChangedCmd;
         /// <summary>
         /// ComboxItem被更改
         /// </summary>
-        public RelayCommand TypeChangedCmd { get; private set; }
+        public RelayCommand TypeChangedCmd
+        {
+            get
+            {
+                if (typeChangedCmd == null)
+                    return new RelayCommand(() => ExecuteTypeChangedCmd());
+                return typeChangedCmd;
+            }
+            set
+            {
+                typeChangedCmd = value;
+            }
+        }
 
         private void ExecuteTypeChangedCmd()
         {
@@ -235,7 +237,6 @@ namespace MvvmLight4.ViewModel
             if (result == 1)
             {
                 ChangeNum++;
-
                 SelectedAVM.Abnormal.Type = type;
 
                 //重新计算现有的总异常
@@ -243,13 +244,48 @@ namespace MvvmLight4.ViewModel
                 foreach (var item in abnormalVMs)
                 {
                     if (item.Abnormal.Type != 0 && item.Abnormal.Type != 6)
-                    {
                         ErrorNum++;
-                    }
                 }
             }
         }
         #endregion
+        private RelayCommand startCmd;
+        public RelayCommand StartCmd
+        {
+            get
+            {
+                if (startCmd == null)
+                    return new RelayCommand(() => ExecuteStartCmd());
+                return startCmd;
+            }
+            set
+            {
+                startCmd = value;
+            }
+        }
+
+        private void ExecuteStartCmd()
+        {
+
+        }
+        private RelayCommand pauseCmd;
+        public RelayCommand PauseCmd
+        {
+            get
+            {
+                if (pauseCmd == null)
+                    return new RelayCommand(() => ExecutePauseCmd());
+                return pauseCmd;
+            }
+            set
+            {
+                pauseCmd = value;
+            }
+        }
+        private void ExecutePauseCmd()
+        {
+            return;
+        }
 
         #region 辅助方法
         private void InitCombobox()
@@ -261,13 +297,6 @@ namespace MvvmLight4.ViewModel
             {
                 CombboxList.Add(new ComplexInfoModel() { Key = Convert.ToString(item.Type), Text = item.Name });
             }
-        }
-
-        private void AssignCommands()
-        {
-            LoadedCmd = new RelayCommand(() => ExecuteLoadedCmd());
-            SelectCommand = new RelayCommand<AbnormalViewModel>((p) => ExecuteSelectCommand(p), CanExecuteSelectCommand);
-            TypeChangedCmd = new RelayCommand(() => ExecuteTypeChangedCmd());
         }
         #endregion
     }

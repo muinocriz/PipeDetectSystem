@@ -137,6 +137,7 @@
                     <Button
                         Width="80"
                         Command="{Binding OpenFileCmd}"
+                        CommandParameter="M"
                         Content="浏览" />
                 </StackPanel>
             </StackPanel>

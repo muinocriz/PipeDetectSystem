@@ -28,6 +28,7 @@ namespace MvvmLight4.ViewModel
     {
         public DetectViewModel()
         {
+            
             DispatcherHelper.Initialize();
             ReceiveStr = "点击按钮选择视频文件";
             Messenger.Default.Register<ObservableCollection<MetaViewModel>>(this, "VideosChooseMessage", ShowReceiveInfo);

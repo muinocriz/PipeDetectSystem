@@ -57,14 +57,6 @@
                 <!--  控制区域  -->
                 <StackPanel Name="ControlSP">
                     <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
-                        <!--<Button Name="Start" Width="40" Height="40" Padding="0" Command="{Binding StartCmd}">
-                            <Image Source="/Image/开始.png" Margin="5,6"></Image>
-                        </Button>
-                        <Grid Width="10"/>
-                        <Button Name="Pause" Width="40" Height="40" Command="{Binding PauseCmd}">
-                            <Image Source="/Image/暂停.png"></Image>
-                        </Button>
-                        <Grid Width="10"/>-->
                         <Button
                             Name="FullScreen"
                             Width="40"

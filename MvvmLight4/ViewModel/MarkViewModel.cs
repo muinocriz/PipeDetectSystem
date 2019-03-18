@@ -24,6 +24,7 @@ using System.Windows.Media.Imaging;
 
 namespace MvvmLight4.ViewModel
 {
+    //not change
     public class MarkViewModel : ViewModelBase
     {
         public MarkViewModel()

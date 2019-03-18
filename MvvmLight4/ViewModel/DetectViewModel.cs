@@ -24,6 +24,7 @@ using System.Windows.Threading;
 
 namespace MvvmLight4.ViewModel
 {
+    //not change
     public class DetectViewModel : ViewModelBase
     {
         public DetectViewModel()

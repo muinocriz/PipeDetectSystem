@@ -14,6 +14,7 @@ using System.Windows;
 
 namespace MvvmLight4.ViewModel
 {
+    //not change
     public class VideoViewModel : ViewModelBase
     {
         public VideoViewModel()

@@ -20,10 +20,10 @@ namespace MvvmLight4.ViewModel
     {
         public ExportViewModel()
         {
+            AssignCommands();
+
             InitWorker();
             DispatcherHelper.Initialize();
-
-            AssignCommands();
         }
 
         #region property

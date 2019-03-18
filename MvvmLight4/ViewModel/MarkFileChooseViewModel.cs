@@ -15,6 +15,7 @@ using System.Windows;
 
 namespace MvvmLight4.ViewModel
 {
+    //not change
     public class MarkFileChooseViewModel : ViewModelBase
     {
         public MarkFileChooseViewModel()

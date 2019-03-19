@@ -448,7 +448,7 @@ namespace MvvmLight4.ViewModel
         private void ExecuteOpenVSCmd()
         {
             DetectFileChooseWindow sender = new DetectFileChooseWindow();
-            Messenger.Default.Send<int>(VideoList.Count, "DVM2VVM");
+            Messenger.Default.Send(VideoList.Count, "DVM2VVM");
             VideoList.Clear();//每次打开视频选择窗口时，将已选择的视频列表删除，防止重复添加
             sender.Show();
         }
@@ -482,7 +482,7 @@ namespace MvvmLight4.ViewModel
                 if (item.Id != null)
                     list.Add((int)item.Id);
             }
-            Messenger.Default.Send<List<int>>(list, "DVM2BTVM");
+            Messenger.Default.Send(list, "DVM2BTVM");
             sender.Show();
         }
 

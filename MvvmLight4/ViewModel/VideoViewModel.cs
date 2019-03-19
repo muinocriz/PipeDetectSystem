@@ -19,19 +19,26 @@ namespace MvvmLight4.ViewModel
     {
         public VideoViewModel()
         {
-            InitDataGrid();
-            Messenger.Default.Register<int>(this, "DVM2VVM", msg=>
+            InitData();
+            AssignCommands();
+
+            Messenger.Default.Register<int>(this, "DVM2VVM", msg =>
             {
-                if (msg == 0)
+                if (msg == 0 && VideoList != null)
                 {
                     foreach (var item in VideoList)
                     {
                         item.IsChoose = -1;
                     }
+                }
+                if (SelectList != null && SelectList.Count > 0)
+                {
                     SelectList.Clear();
                 }
             });
         }
+
+
 
         private ObservableCollection<MetaViewModel> selectList;
         /// <summary>
@@ -60,45 +67,15 @@ namespace MvvmLight4.ViewModel
             }
         }
 
-
-        private RelayCommand winLoadedCommand;
         /// <summary>
-        /// 退出
+        /// 加载
         /// </summary>
-        public RelayCommand WinLoadedCommand
-        {
-            get
-            {
-                if (winLoadedCommand == null)
-                    return new RelayCommand(() =>
-                    {
-                        InitDataGrid();
-                    });
-                return winLoadedCommand;
-            }
-            set
-            {
-                winLoadedCommand = value;
-            }
-        }
+        public RelayCommand WinLoadedCommand { get; private set; }
 
         /// <summary>
         /// 选中命令
         /// </summary>
-        private RelayCommand<MetaViewModel> checkCmd;
-        public RelayCommand<MetaViewModel> CheckCmd
-        {
-            get
-            {
-                if (checkCmd == null)
-                    return new RelayCommand<MetaViewModel>((p) => ExecuteCheckCmd(p));
-                return checkCmd;
-            }
-            set
-            {
-                CheckCmd = value;
-            }
-        }
+        public RelayCommand<MetaViewModel> CheckCmd { get; private set; }
 
         private void ExecuteCheckCmd(MetaViewModel p)
         {
@@ -125,32 +102,31 @@ namespace MvvmLight4.ViewModel
         /// <summary>
         /// 选择完毕命令
         /// </summary>
-        private RelayCommand<Window> chooseCmd;
-        public RelayCommand<Window> ChooseCmd
-        {
-            get
-            {
-                if (chooseCmd == null)
-                    return new RelayCommand<Window>((window) => ExecuteChooseCmd(window));
-                return chooseCmd;
-            }
-            set
-            {
-                ChooseCmd = value;
-            }
-        }
+        public RelayCommand<Window> ChooseCmd { get; private set; }
 
         private void ExecuteChooseCmd(Window window)
         {
-            Messenger.Default.Send<ObservableCollection<MetaViewModel>>(selectList, "VideosChooseMessage");
+            Messenger.Default.Send(selectList, "VideosChooseMessage");
             window.Close();
         }
 
         #region 附属方法
-        private void InitDataGrid()
+        private void InitData()
+        {
+            SelectList = new ObservableCollection<MetaViewModel>();
+        }
+
+        private void ExecuteLoadCmd()
         {
             VideoList = MetaService.GetService().SelectAllFramed();
-            SelectList = new ObservableCollection<MetaViewModel>();
+
+        }
+
+        private void AssignCommands()
+        {
+            WinLoadedCommand = new RelayCommand(() => ExecuteLoadCmd());
+            CheckCmd = new RelayCommand<MetaViewModel>((p) => ExecuteCheckCmd(p));
+            ChooseCmd = new RelayCommand<Window>((window) => ExecuteChooseCmd(window));
         }
         #endregion
     }

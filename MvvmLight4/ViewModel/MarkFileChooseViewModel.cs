@@ -15,11 +15,11 @@ using System.Windows;
 
 namespace MvvmLight4.ViewModel
 {
-    //not change
     public class MarkFileChooseViewModel : ViewModelBase
     {
         public MarkFileChooseViewModel()
         {
+            AssignCommands();
             InitData();
         }
 
@@ -48,20 +48,11 @@ namespace MvvmLight4.ViewModel
         #endregion
 
         #region 命令
-        private RelayCommand<string> folderBrowserCmd;
-        public RelayCommand<string> FolderBrowserCmd
-        {
-            get
-            {
-                if (folderBrowserCmd == null)
-                    return new RelayCommand<string>((p) => ExecuteFolderBrowserCmd(p));
-                return folderBrowserCmd;
-            }
-            set
-            {
-                FolderBrowserCmd = value;
-            }
-        }
+        /// <summary>
+        /// 打开文件夹
+        /// </summary>
+        public RelayCommand<string> FolderBrowserCmd { get; private set; }
+
 
         private void ExecuteFolderBrowserCmd(string p)
         {
@@ -70,23 +61,11 @@ namespace MvvmLight4.ViewModel
                 SavePath = path;
         }
 
-        private RelayCommand submitCmd;
         /// <summary>
         /// 点击确定
         /// </summary>
-        public RelayCommand SubmitCmd
-        { 
-            get
-            {
-                if (submitCmd == null)
-                    return new RelayCommand(() => ExecuteSubmitCmd(),CanExecuteSubmitCmd);
-                return submitCmd;
-            }
-            set
-            {
-                SubmitCmd = value;
-            }
-        }
+        public RelayCommand SubmitCmd { get; private set; }
+
 
         private bool CanExecuteSubmitCmd()
         {
@@ -99,7 +78,7 @@ namespace MvvmLight4.ViewModel
 
             bool check = CheckFramePath(framePath);
 
-            if(check)
+            if (check)
             {
                 List<string> msg = new List<string>
                 {
@@ -125,7 +104,7 @@ namespace MvvmLight4.ViewModel
             {
                 DirectoryInfo root = new DirectoryInfo(framePath);
                 FileInfo[] files = root.GetFiles("*.jpg");
-                return files.Count()>0;
+                return files.Count() > 0;
             }
             catch (Exception e)
             {
@@ -146,7 +125,13 @@ namespace MvvmLight4.ViewModel
 
             StringMessage = new string[2];
             //默认保存路径为桌面
-            SavePath= Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory); 
+            SavePath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+        }
+
+        private void AssignCommands()
+        {
+            FolderBrowserCmd = new RelayCommand<string>((p) => ExecuteFolderBrowserCmd(p));
+            SubmitCmd = new RelayCommand(() => ExecuteSubmitCmd(), CanExecuteSubmitCmd);
         }
         #endregion
     }

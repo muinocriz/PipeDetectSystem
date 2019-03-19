@@ -20,10 +20,11 @@ namespace MvvmLight4.ViewModel
     {
         public ModelManageViewModel()
         {
-            //Models = ModelService.GetService().LoadData();
-
+            AssignCommands();
         }
 
+
+        #region 属性
         private ObservableCollection<ModelViewModel> models;
         /// <summary>
         /// 所有模型
@@ -40,41 +41,17 @@ namespace MvvmLight4.ViewModel
                 RaisePropertyChanged(() => Models);
             }
         }
+        #endregion
 
-        private RelayCommand loadedCmd;
-        public RelayCommand LoadedCmd
+        public RelayCommand LoadedCmd { get; private set; }
+
+        private void ExecuteLoadCmd()
         {
-            get
-            {
-                if (loadedCmd == null)
-                    return new RelayCommand(() =>
-                    {
-                        Models = ModelService.GetService().LoadData();
-                    });
-                return loadedCmd;
-            }
-            set
-            {
-                loadedCmd = value;
-            }
+            Models = ModelService.GetService().LoadData();
         }
 
-        private RelayCommand<DataGridCellEditEndingEventArgs> updateModelCmd;
-        public RelayCommand<DataGridCellEditEndingEventArgs> UpdateModelCmd
-        {
-            get
-            {
-                if (updateModelCmd == null)
-                {
-                    return new RelayCommand<DataGridCellEditEndingEventArgs>((p) => ExecuteUpdateModelCmd(p));
-                }
-                return updateModelCmd;
-            }
-            set
-            {
-                UpdateModelCmd = value;
-            }
-        }
+        public RelayCommand<DataGridCellEditEndingEventArgs> UpdateModelCmd { get; private set; }
+
 
         private void ExecuteUpdateModelCmd(DataGridCellEditEndingEventArgs p)
         {
@@ -110,20 +87,7 @@ namespace MvvmLight4.ViewModel
             });
         }
 
-        private RelayCommand<ModelViewModel> deleteModelCmd;
-        public RelayCommand<ModelViewModel> DeleteModelCmd
-        {
-            get
-            {
-                if (deleteModelCmd == null)
-                    return new RelayCommand<ModelViewModel>((p) => ExecuteDeleteModelCmd(p), CanExecuteDeleteModelCmd);
-                return deleteModelCmd;
-            }
-            set
-            {
-                DeleteModelCmd = value;
-            }
-        }
+        public RelayCommand<ModelViewModel> DeleteModelCmd { get; private set; }
 
         private bool CanExecuteDeleteModelCmd(ModelViewModel arg)
         {
@@ -154,6 +118,15 @@ namespace MvvmLight4.ViewModel
                 MessageBox.Show("删除失败，该数据可能已被更改");
             }
         }
+
+        #region 辅助方法
+        private void AssignCommands()
+        {
+            LoadedCmd = new RelayCommand(() => ExecuteLoadCmd());
+            UpdateModelCmd = new RelayCommand<DataGridCellEditEndingEventArgs>((p) => ExecuteUpdateModelCmd(p));
+            DeleteModelCmd = new RelayCommand<ModelViewModel>((p) => ExecuteDeleteModelCmd(p), CanExecuteDeleteModelCmd);
+        }
+        #endregion
     }
 
     public class ModelViewModel : ViewModelBase

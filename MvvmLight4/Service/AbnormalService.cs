@@ -141,7 +141,6 @@ namespace MvvmLight4.Service
                     mm.Address = item.ADDR;
                     mm.Charge = item.CHARGE;
                     mm.StartTime = item.STARTTIME;
-                    mm.EndTime = item.ENDTIME;
                     am.VideoId = (int)item.VIDEOID;
                     am.Type = (int)item.ABNORMALTYPE;
                     am.Position = item.FRAMEPOSITION;

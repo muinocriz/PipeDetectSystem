@@ -46,6 +46,11 @@ namespace MvvmLight4.Service
             }
         }
 
+        /// <summary>
+        /// 导入界面导入数据
+        /// </summary>
+        /// <param name="meta">元信息类</param>
+        /// <returns>行数</returns>
         public int InsertData(MetaModel meta)
         {
             int insertedRows = 0;
@@ -58,20 +63,20 @@ namespace MvvmLight4.Service
                                                                         ADDR,
                                                                         CHARGE,
                                                                         STARTTIME,
-                                                                        ENDTIME,
                                                                         VIDEOPATH,
                                                                         HEADTIME,
-                                                                        TAILTIME) VALUES(
+                                                                        TAILTIME,
+                                                                        GC) VALUES(
                                                                         @PIPECODE,
                                                                         @PIPETYPE,
                                                                         @TASKCODE,
                                                                         @ADDR,
                                                                         @CHARGE,
                                                                         @STARTTIME,
-                                                                        @ENDTIME,
                                                                         @VIDEOPATH,
                                                                         @HEADTIME,
-                                                                        @TAILTIME)",
+                                                                        @TAILTIME,
+                                                                        @GC)",
                     new
                     {
                         PIPECODE = meta.PipeCode,
@@ -80,10 +85,10 @@ namespace MvvmLight4.Service
                         ADDR = meta.Address,
                         CHARGE = meta.Charge,
                         STARTTIME = meta.StartTime,
-                        ENDTIME = meta.EndTime,
                         VIDEOPATH = meta.VideoPath,
                         HEADTIME = meta.HeadTime,
-                        TAILTIME = meta.TailTime
+                        TAILTIME = meta.TailTime,
+                        GC=meta.GC
                     });
             }
             return insertedRows;

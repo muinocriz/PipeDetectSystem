@@ -16,6 +16,12 @@
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d ignore">
     <Grid Button.Click="Button_Click">
+        <Grid.Resources>
+            <Style TargetType="{x:Type Label}">
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="FontWeight" Value="Normal" />
+            </Style>
+        </Grid.Resources>
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
             <ColumnDefinition />
@@ -151,6 +157,5 @@
                 </StackPanel>
             </Button.Content>
         </Button>
-
     </Grid>
 </Controls:MetroWindow>

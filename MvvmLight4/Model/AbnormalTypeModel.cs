@@ -46,22 +46,27 @@ namespace MvvmLight4.Model
 
         private int type;
         /// <summary>
-        /// 类型
+        /// 缺陷编号
         /// </summary>
         public int Type { get => type; set { type = value; RaisePropertyChanged(() => Type); } }
 
         private string name;
         /// <summary>
-        /// 异常名字
+        /// 缺陷名称
         /// </summary>
         public string Name { get => name; set { name = value; RaisePropertyChanged(() => Name); } }
 
         private string category;
         /// <summary>
-        /// 异常分类 局部异常/全局异常
+        /// 缺陷类别
+        /// 结构性缺陷、功能性缺陷
         /// </summary>
         public string Category { get => category; set { category = value; RaisePropertyChanged(() => Category); } }
+
         private bool isSelected;
+        /// <summary>
+        /// 选中状态
+        /// </summary>
         public bool IsSelected { get => isSelected; set { isSelected = value; RaisePropertyChanged(() => IsSelected); } }
     }
 }

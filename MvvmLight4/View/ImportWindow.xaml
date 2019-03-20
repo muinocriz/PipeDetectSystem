@@ -9,7 +9,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="导入"
     Width="450"
-    Height="500"
+    Height="530"
     DataContext="{Binding Source={StaticResource Locator}, Path=Import}"
     FontFamily="/MvvmLight4;component/Font/#Source Han Sans CN"
     ResizeMode="NoResize"
@@ -19,6 +19,7 @@
         <Grid.Resources>
             <common:IntToBoolConverter x:Key="itbc" />
             <Style TargetType="{x:Type Label}">
+                <Setter Property="FontWeight" Value="Normal" />
                 <Setter Property="FontFamily" Value="/MvvmLight4;component/Font/#Source Han Sans CN" />
             </Style>
         </Grid.Resources>
@@ -37,6 +38,7 @@
                         Name="txtViewPath"
                         Width="250"
                         Margin="0,0,10,0"
+                        VerticalContentAlignment="Center"
                         Text="{Binding VideoPath}" />
                     <Button
                         Width="80"
@@ -48,6 +50,11 @@
             </StackPanel>
             <!--  Meta info  -->
             <StackPanel>
+                <StackPanel.Resources>
+                    <Style BasedOn="{StaticResource MetroTextBox}" TargetType="{x:Type TextBox}">
+                        <Setter Property="VerticalContentAlignment" Value="Center" />
+                    </Style>
+                </StackPanel.Resources>
                 <StackPanel HorizontalAlignment="Left">
                     <Label
                         Width="100"
@@ -60,17 +67,20 @@
                             Name="txtPipeType"
                             Width="80"
                             Content="管道编号：" />
-                        <TextBox Width="250" Text="{Binding PipeCode}" />
+                        <TextBox
+                            Width="250"
+                            Controls:TextBoxHelper.Watermark="起始井号-终止井号"
+                            Text="{Binding PipeCode}" />
                     </StackPanel>
                     <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
-                        <Label Width="80" Content="任务编号：" />
+                        <Label Width="80" Content="项目名称：" />
                         <TextBox
                             Name="txtTaskCodel"
                             Width="250"
                             Text="{Binding TaskCode}" />
                     </StackPanel>
                     <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
-                        <Label Width="80" Content="管道类型：" />
+                        <Label Width="80" Content="管线类型：" />
                         <RadioButton
                             Content="污水管道"
                             GroupName="PipeType"
@@ -82,7 +92,14 @@
                             IsChecked="{Binding PipeType, Converter={StaticResource itbc}, ConverterParameter=1}" />
                     </StackPanel>
                     <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
-                        <Label Width="80" Content="地址：" />
+                        <Label Width="80" Content="管材：" />
+                        <TextBox
+                            Name="txtGC"
+                            Width="250"
+                            Text="{Binding GC, UpdateSourceTrigger=PropertyChanged}" />
+                    </StackPanel>
+                    <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
+                        <Label Width="80" Content="道路名称：" />
                         <TextBox
                             Name="txtAddress"
                             Width="250"
@@ -96,30 +113,29 @@
                             Text="{Binding Charge, UpdateSourceTrigger=PropertyChanged}" />
                     </StackPanel>
                     <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
-                        <Label Width="80" Content="时间段：" />
+                        <Label Width="80" Content="项目时间：" />
                         <Controls:DateTimePicker
                             Name="txtBeginTime"
-                            Width="123"
+                            Width="250"
                             Margin="0,0,4,0"
-                            Controls:TextBoxHelper.Watermark="开始时间"
+                            Controls:TextBoxHelper.Watermark="项目时间"
                             Culture="zh-CN"
                             SelectedDateTime="{Binding StartTime}"
-                            SelectedTimeFormat="Short" />
-                        <Controls:DateTimePicker
-                            Name="txtEndTime"
-                            Width="123"
-                            Controls:TextBoxHelper.Watermark="结束时间"
-                            Culture="zh-CN"
-                            SelectedDateTime="{Binding EndTime}"
                             SelectedTimeFormat="Short" />
                     </StackPanel>
                     <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
                         <Label Width="80" Content="开头时间：" />
-                        <TextBox Width="250" Text="{Binding HeadTime}" />
+                        <TextBox
+                            Width="250"
+                            Controls:TextBoxHelper.Watermark="进入管道时间（可选）"
+                            Text="{Binding HeadTime}" />
                     </StackPanel>
                     <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
                         <Label Width="80" Content="尾部时间：" />
-                        <TextBox Width="250" Text="{Binding TailTime}" />
+                        <TextBox
+                            Width="250"
+                            Controls:TextBoxHelper.Watermark="退出管道时间（可选）"
+                            Text="{Binding TailTime}" />
                     </StackPanel>
                 </StackPanel>
             </StackPanel>

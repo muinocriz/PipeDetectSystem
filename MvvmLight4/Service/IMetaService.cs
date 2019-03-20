@@ -19,5 +19,6 @@ namespace MvvmLight4.Service
         int HasVideoPath(string path);
         int UpdateFramePathByVideoPath(string FramePath,string VideoPath);
         ObservableCollection<MetaModel> SelectNotFrame();
+        ObservableCollection<ExportMeta> SelectAllDetected();
     }
 }

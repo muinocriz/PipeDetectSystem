@@ -6,6 +6,7 @@ using MvvmLight4.Service;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -49,7 +50,7 @@ namespace MvvmLight4.ViewModel
             }
             foreach (var item in l)
             {
-                Console.WriteLine(item.PipeCode);
+                Debug.WriteLine(item.PipeCode);
             }
 
             // send message

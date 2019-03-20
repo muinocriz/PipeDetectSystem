@@ -19,6 +19,12 @@ namespace MvvmLight4.Service
             return metaService;
         }
 
+        /// <summary>
+        /// 分帧界面
+        /// 检测视频是否已导入
+        /// </summary>
+        /// <param name="path">视频位置</param>
+        /// <returns></returns>
         public int HasVideoPath(string path)
         {
             using (IDbConnection conn = SqlHelper.GetConnection())
@@ -29,7 +35,12 @@ namespace MvvmLight4.Service
                 return Count;
             }
         }
-
+        
+        /// <summary>
+        /// 分帧文件选择界面
+        /// 加载已导入未分帧的视频信息
+        /// </summary>
+        /// <returns></returns>
         public ObservableCollection<MetaModel> SelectNotFrame()
         {
             ObservableCollection<MetaModel> models = new ObservableCollection<MetaModel>();
@@ -47,7 +58,8 @@ namespace MvvmLight4.Service
         }
 
         /// <summary>
-        /// 导入界面导入数据
+        /// 导入界面
+        /// 导入数据
         /// </summary>
         /// <param name="meta">元信息类</param>
         /// <returns>行数</returns>
@@ -93,8 +105,10 @@ namespace MvvmLight4.Service
             }
             return insertedRows;
         }
+
         /// <summary>
-        /// 标注视频选择窗口，根据选择的视频ID返回分帧之后文件所在位置
+        /// 标注视频选择窗口
+        /// 根据选择的视频ID返回分帧之后文件所在位置
         /// </summary>
         /// <param name="id">视频ID</param>
         /// <returns>分帧之后文件所在位置</returns>
@@ -110,10 +124,10 @@ namespace MvvmLight4.Service
         }
 
         /// <summary>
+        /// 标注界面
         /// 获取已分帧的视频列表
         /// </summary>
         /// <returns></returns>
-
         public List<ComplexInfoModel> QueryVideoFramed()
         {
             List<ComplexInfoModel> l = new List<ComplexInfoModel>();
@@ -133,6 +147,11 @@ namespace MvvmLight4.Service
             return l;
         }
 
+        /// <summary>
+        /// 检测文件选择界面
+        /// 获取所有分帧的视频列表
+        /// </summary>
+        /// <returns></returns>
         public ObservableCollection<MetaViewModel> SelectAllFramed()
         {
             ObservableCollection<MetaViewModel> mvms = new ObservableCollection<MetaViewModel>();
@@ -159,7 +178,34 @@ namespace MvvmLight4.Service
         }
 
         /// <summary>
-        /// 分帧页面，将分帧位置保存到数据库
+        /// 输出界面
+        /// 获取所有已检测过的视频信息
+        /// </summary>
+        /// <returns>包含视频id和项目信息的类</returns>
+        public ObservableCollection<ExportMeta> SelectAllDetected()
+        {
+            ObservableCollection<ExportMeta> models = new ObservableCollection<ExportMeta>();
+            using (IDbConnection conn = SqlHelper.GetConnection())
+            {
+                conn.Open();
+                var sql = @"SELECT DISTINCT VIDEOID,TASKCODE FROM TB_METADATA,TB_ABNORMAL WHERE TB_METADATA.ID = TB_ABNORMAL.VIDEOID ORDER BY VIDEOID DESC;";
+                IEnumerable<dynamic> dynamics = conn.Query(sql);
+                foreach (var item in dynamics)
+                {
+                    ExportMeta exportMeta = new ExportMeta
+                    {
+                        VideoId = Convert.ToInt32(item.VIDEOID),
+                        TaskCode = item.TASKCODE
+                    };
+                    models.Add(exportMeta);
+                }
+                return models;
+            }
+        }
+
+        /// <summary>
+        /// 分帧页面
+        /// 将分帧位置保存到数据库
         /// </summary>
         /// <param name="FramePath">分帧文件夹位置</param>
         /// <param name="VideoPath">源文件位置</param>
@@ -179,6 +225,13 @@ namespace MvvmLight4.Service
             }
         }
 
+        /// <summary>
+        /// 分帧界面
+        /// 更新分帧间距
+        /// </summary>
+        /// <param name="path">视频位置</param>
+        /// <param name="i">每秒帧数</param>
+        /// <returns></returns>
         public int UpdateInterval(string path, int i)
         {
             using (IDbConnection conn = SqlHelper.GetConnection())

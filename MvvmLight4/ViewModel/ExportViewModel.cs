@@ -1,5 +1,6 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
+using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
 using MvvmLight4.Common;
 using MvvmLight4.Model;
@@ -13,6 +14,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace MvvmLight4.ViewModel
 {
@@ -21,7 +23,7 @@ namespace MvvmLight4.ViewModel
         public ExportViewModel()
         {
             AssignCommands();
-
+            InitData();
             InitWorker();
             DispatcherHelper.Initialize();
         }
@@ -32,6 +34,19 @@ namespace MvvmLight4.ViewModel
         private Dictionary<string, string> dict;
         private List<ExportModel> exportModelsForExcel;
         private List<AbnormalViewModel> list;
+
+        private ObservableCollection<ExportMeta> exportList;
+        /// <summary>
+        /// 可供输出的任务列表
+        /// </summary>
+        public ObservableCollection<ExportMeta> ExportList
+        {
+            get { return exportList; }
+            set { exportList = value; RaisePropertyChanged(() => ExportList); }
+        }
+
+
+
         /// <summary>
         /// 下拉框列表
         /// </summary>
@@ -77,7 +92,9 @@ namespace MvvmLight4.ViewModel
         }
 
         private bool? selectAll;
-        //全选
+        /// <summary>
+        /// 全选
+        /// </summary>
         public bool? SelectAll
         {
             get
@@ -92,6 +109,9 @@ namespace MvvmLight4.ViewModel
         }
 
         private ObservableCollection<ExportModel> exports;
+        /// <summary>
+        /// 要输出的属性
+        /// </summary>
         public ObservableCollection<ExportModel> Exports
         {
             get { return exports; }
@@ -172,6 +192,29 @@ namespace MvvmLight4.ViewModel
                 ExecuteCheckCmd(item);
             }
         }
+        /// <summary>
+        /// 批量分帧命令
+        /// </summary>
+        public RelayCommand<object> ExportListCmd { get; private set; }
+        private void ExecuteExportListCmd(object obj)
+        {
+            DataGrid d = (DataGrid)obj;
+            List<ExportMeta> l = new List<ExportMeta>();
+            foreach (var item in d.SelectedItems)
+            {
+                l.Add(item as ExportMeta);
+            }
+
+            foreach (var item in l)
+            {
+                Debug.WriteLine(item.TaskCode);
+            }
+
+            //send Message
+            //按钮禁止点击
+            //显示进度条
+            Messenger.Default.Send("exportIsRunning", "EVM2EV");
+        }
 
         public RelayCommand ExportCmd { get; private set; }
 
@@ -210,25 +253,10 @@ namespace MvvmLight4.ViewModel
         }
 
         #region helper function
-        private void LoadData()
+        private void ExecuteLoadedCmd()
         {
-            CombboxList = AbnormalService.GetService().QueryVideo();
-            if (CombboxList.Count > 0)
-            {
-                CombboxItem = CombboxList[0];
-            }
-
+            ExportList = MetaService.GetService().SelectAllDetected();
             Way = 0;
-
-            ProVisiable = Visibility.Hidden;
-
-            Exports = ExportService.GetService().SelectAll();
-            foreach (var item in Exports)
-            {
-                //对选中但是还未有别名的项，将别名初始化为原名
-                if (item.IsChoose != 0 && string.IsNullOrEmpty(item.Byname))
-                    item.Byname = item.Alternative;
-            }
         }
 
 
@@ -253,12 +281,6 @@ namespace MvvmLight4.ViewModel
                 default:
                     break;
             }
-
-            //调用Python执行Excel的完善
-            Process process = CmdHelper.RunProcess("excel.exe", TargetSource);
-            process.Start();
-            process.WaitForExit();
-            process.Close();
         }
         /// <summary>
         /// 初始化worker
@@ -273,13 +295,27 @@ namespace MvvmLight4.ViewModel
 
         private void AssignCommands()
         {
-            LoadedCmd = new RelayCommand(() => LoadData());
+            LoadedCmd = new RelayCommand(() => ExecuteLoadedCmd());
             CheckCmd = new RelayCommand<ExportModel>((p) => ExecuteCheckCmd(p), CanExecuteCheckCmd);
             SelectAllCmd = new RelayCommand(() => ExecuteSelectAllCmd());
             UnSelectAllCmd = new RelayCommand(() => ExecuteUnSelectAllCmd());
             ExportCmd = new RelayCommand(() => ExecuteExportCmd(), CanExecuteExportCmd);
             FolderBrowserCmd = new RelayCommand(() => ExecuteFolderBrowserCmd());
+            ExportListCmd = new RelayCommand<object>((obj) => ExecuteExportListCmd(obj));
+        }
+
+        private void InitData()
+        {
+            Way = 0;
+            ExportList = new ObservableCollection<ExportMeta>();
         }
         #endregion
+    }
+
+    public class ExportMeta
+    {
+        public ExportMeta() { }
+        public int VideoId { get; set; }
+        public string TaskCode { get; set; }
     }
 }

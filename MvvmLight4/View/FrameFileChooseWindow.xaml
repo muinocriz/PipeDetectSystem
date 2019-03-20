@@ -39,7 +39,7 @@
                 <DataGridTextColumn
                     Width="1*"
                     Binding="{Binding TaskCode}"
-                    Header="任务编号"
+                    Header="项目名称"
                     IsReadOnly="True" />
             </DataGrid.Columns>
         </DataGrid>

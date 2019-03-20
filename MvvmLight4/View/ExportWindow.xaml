@@ -22,144 +22,90 @@
             <mvvm:EventToCommand Command="{Binding LoadedCmd}" />
         </i:EventTrigger>
     </i:Interaction.Triggers>
-    <Grid>
+    <Grid Margin="20,20,20,10">
         <Grid.Resources>
             <common:IntToBoolConverter x:Key="itbc" />
-            <Style TargetType="{x:Type Label}">
-                <Setter Property="FontFamily" Value="/MvvmLight4;component/Font/#Source Han Sans CN" />
-            </Style>
         </Grid.Resources>
-        <StackPanel Margin="5">
-            <StackPanel Margin="0,0,0,10">
-                <StackPanel HorizontalAlignment="Left">
-                    <Label
-                        Width="100"
-                        Content="基本设置"
-                        FontSize="16" />
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <Label Width="100" Content="文件选择：" />
-                    <ComboBox
-                        Width="250"
-                        DisplayMemberPath="Text"
-                        ItemsSource="{Binding CombboxList}"
-                        SelectedItem="{Binding CombboxItem}"
-                        SelectedValuePath="Key">
-                        <i:Interaction.Triggers>
-                            <i:EventTrigger EventName="DropDownClosed">
-                                <mvvm:EventToCommand Command="{Binding VideoSelectCmd}" CommandParameter="{Binding ElementName=TypeCB, Path=SelectedItem}" />
-                            </i:EventTrigger>
-                        </i:Interaction.Triggers>
-                    </ComboBox>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <Label Width="100" Content="输出类型：" />
-                    <RadioButton
-                        Content="Excel"
-                        GroupName="OutputType"
-                        IsChecked="{Binding Way, Converter={StaticResource itbc}, ConverterParameter=0}" />
-                    <!--<RadioButton GroupName="OutputType" Margin="53 0 0 0" Content="Word" IsChecked="{Binding Way,Converter={StaticResource itbc},ConverterParameter=1}"/>-->
-                </StackPanel>
-                <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
-                    <Label Width="100" Content="输出位置：" />
-                    <TextBox
-                        Width="250"
-                        Margin="0,0,10,0"
-                        Text="{Binding TargetSource, UpdateSourceTrigger=PropertyChanged}" />
-                    <Button
-                        Width="80"
-                        Command="{Binding FolderBrowserCmd}"
-                        Content="浏览" />
-                </StackPanel>
-            </StackPanel>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50" />
+            <RowDefinition Height="50" />
+            <RowDefinition />
+            <RowDefinition Height="20" />
+            <RowDefinition Height="40" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="80" />
+            <ColumnDefinition />
+            <ColumnDefinition Width="10" />
+            <ColumnDefinition Width="80" />
+        </Grid.ColumnDefinitions>
+        <Label
+            Grid.Row="0"
+            Grid.Column="0"
+            VerticalAlignment="Center"
+            Content="文件类型" />
+        <RadioButton
+            Grid.Row="0"
+            Grid.Column="1"
+            Content="Excel表格(.xslx)"
+            GroupName="OutputType"
+            IsChecked="{Binding Way, Converter={StaticResource itbc}, ConverterParameter=0}" />
+        <Label
+            Grid.Row="1"
+            Grid.Column="0"
+            VerticalAlignment="Center"
+            Content="输出位置" />
+        <TextBox
+            Grid.Row="1"
+            Grid.Column="1"
+            Height="30"
+            VerticalAlignment="Center"
+            HorizontalContentAlignment="Left"
+            VerticalContentAlignment="Center"
+            Text="{Binding TargetSource, UpdateSourceTrigger=PropertyChanged}" />
+        <Button
+            Grid.Row="1"
+            Grid.Column="3"
+            Height="30"
+            Command="{Binding FolderBrowserCmd}"
+            Content="浏览" />
+        <DataGrid
+            x:Name="ExportDG"
+            Grid.Row="2"
+            Grid.Column="1"
+            AutoGenerateColumns="False"
+            CanUserAddRows="False"
+            CanUserDeleteRows="False"
+            CanUserReorderColumns="False"
+            CanUserSortColumns="False"
+            HeadersVisibility="None"
+            HorizontalScrollBarVisibility="Hidden"
+            ItemsSource="{Binding ExportList}"
+            VerticalScrollBarVisibility="Auto">
+            <DataGrid.Columns>
+                <DataGridTextColumn
+                    Width="1*"
+                    Binding="{Binding TaskCode}"
+                    Header="任务名称"
+                    IsReadOnly="True" />
+            </DataGrid.Columns>
+        </DataGrid>
+        <ProgressBar
+            Name="ExportProg"
+            Grid.Row="3"
+            Grid.Column="0"
+            Grid.ColumnSpan="4"
+            VerticalAlignment="Center"
+            IsIndeterminate="True" />
 
-            <StackPanel Margin="0,0,0,10">
-                <StackPanel HorizontalAlignment="Left">
-                    <Label
-                        Width="100"
-                        Content="高级设置"
-                        FontSize="16" />
-                </StackPanel>
-                <StackPanel Margin="67,0,0,0">
-                    <DataGrid
-                        Name="ExDG"
-                        MaxHeight="320"
-                        Margin="33,0,45,0"
-                        AutoGenerateColumns="False"
-                        CanUserAddRows="False"
-                        CanUserDeleteRows="False"
-                        CanUserReorderColumns="False"
-                        FontFamily="/MvvmLight4;component/Font/#Source Han Sans CN"
-                        GridLinesVisibility="Horizontal"
-                        HeadersVisibility="Column"
-                        HorizontalScrollBarVisibility="Hidden"
-                        ItemsSource="{Binding Exports}"
-                        VerticalScrollBarVisibility="Auto">
-                        <DataGrid.Columns>
-                            <!--<DataGridCheckBoxColumn Header="输出" Width="50" Binding="{Binding IsChoose,Converter={StaticResource itbc},ConverterParameter=1}"/>-->
-                            <DataGridTemplateColumn Header="输出">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <CheckBox
-                                            HorizontalAlignment="Center"
-                                            VerticalAlignment="Center"
-                                            Command="{Binding Export.CheckCmd, Source={StaticResource Locator}}"
-                                            CommandParameter="{Binding ElementName=ExDG, Path=SelectedItem}"
-                                            IsChecked="{Binding IsChoose, Converter={StaticResource itbc}, ConverterParameter=1, UpdateSourceTrigger=PropertyChanged}" />
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                            <DataGridTextColumn
-                                Width="150"
-                                Binding="{Binding Alternative}"
-                                Header="备选项"
-                                IsReadOnly="True" />
-                            <DataGridTextColumn
-                                Width="150"
-                                Binding="{Binding Byname}"
-                                Header="别名" />
-                        </DataGrid.Columns>
-                    </DataGrid>
-                    <CheckBox
-                        Margin="0,10,0,0"
-                        Content="全选/全不选"
-                        IsChecked="{Binding SelectAll}"
-                        IsThreeState="True">
-                        <i:Interaction.Triggers>
-                            <i:EventTrigger EventName="Checked">
-                                <mvvm:EventToCommand Command="{Binding SelectAllCmd}" />
-                            </i:EventTrigger>
-                            <i:EventTrigger EventName="Unchecked">
-                                <mvvm:EventToCommand Command="{Binding UnSelectAllCmd}" />
-                            </i:EventTrigger>
-                        </i:Interaction.Triggers>
-                    </CheckBox>
-                </StackPanel>
-            </StackPanel>
-            <StackPanel
-                Margin="0,20,0,0"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Bottom">
-                <Button
-                    Width="80"
-                    Margin="0,0,14,0"
-                    Command="{Binding ExportCmd}"
-                    Content="输出"
-                    Style="{StaticResource AccentedSquareButtonStyle}" />
-            </StackPanel>
-            <StackPanel
-                Margin="0,5,0,0"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Bottom">
-                <ProgressBar
-                    Width="80"
-                    Height="10"
-                    Margin="0,0,14,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    IsIndeterminate="True"
-                    Visibility="{Binding ProVisiable}" />
-            </StackPanel>
-        </StackPanel>
+        <Button
+            Name="ExportBtn"
+            Grid.Row="5"
+            Grid.Column="3"
+            Height="30"
+            Command="{Binding ExportListCmd}"
+            CommandParameter="{Binding ElementName=ExportDG}"
+            Content="导出"
+            Style="{StaticResource AccentedSquareButtonStyle}" />
     </Grid>
 </Controls:MetroWindow>

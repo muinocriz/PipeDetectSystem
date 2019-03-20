@@ -138,7 +138,7 @@
                         Width="24"
                         Height="24"
                         Source=".\Image\export.ico" />
-                    <Label Content="输出" />
+                    <Label Content="导出" />
                 </StackPanel>
             </Button.Content>
         </Button>

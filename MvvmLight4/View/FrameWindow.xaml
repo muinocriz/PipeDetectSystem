@@ -9,8 +9,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:mvvm="http://www.galasoft.ch/mvvmlight"
     Title="分帧"
-    Width="470"
-    Height="200"
+    Width="600"
+    Height="220"
     DataContext="{Binding Source={StaticResource Locator}, Path=Frame}"
     FontFamily="/MvvmLight4;component/Font/#Source Han Sans CN"
     ResizeMode="NoResize"
@@ -21,76 +21,68 @@
             <mvvm:EventToCommand Command="{Binding CloingCmd}" />
         </i:EventTrigger>
     </i:Interaction.Triggers>
-    <StackPanel Margin="5">
-        <StackPanel.Resources>
-            <Style TargetType="{x:Type Label}">
-                <Setter Property="FontFamily" Value="/MvvmLight4;component/Font/#Source Han Sans CN" />
-            </Style>
-        </StackPanel.Resources>
-        <!--  basic settings  -->
-        <StackPanel Margin="0,0,0,10">
-            <StackPanel HorizontalAlignment="Left">
-                <Label
-                    Width="100"
-                    Content="基本设置"
-                    FontSize="16" />
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <Label Width="100" Content="选择分帧视频：" />
-                <TextBox
-                    Width="250"
-                    Margin="0,0,10,0"
-                    Text="{Binding SourcePath, UpdateSourceTrigger=PropertyChanged}" />
-                <Button
-                    Width="80"
-                    Command="{Binding OpenFileDialogCmd}"
-                    CommandParameter="Source"
-                    Content="浏览" />
-            </StackPanel>
-            <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
-                <Label Width="100" Content="输出位置：" />
-                <TextBox
-                    Width="250"
-                    Margin="0,0,10,0"
-                    Text="{Binding TargetPath, UpdateSourceTrigger=PropertyChanged}" />
-                <Button
-                    Width="80"
-                    Command="{Binding FolderBrowserDialogCmd}"
-                    CommandParameter="Target"
-                    Content="浏览" />
-            </StackPanel>
-        </StackPanel>
-        <StackPanel Visibility="Collapsed">
-            <StackPanel HorizontalAlignment="Left">
-                <Label
-                    Width="120"
-                    Content="分帧间隔（秒）"
-                    FontSize="16" />
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <ComboBox
-                    Width="95"
-                    Margin="5,0,0,0"
-                    DisplayMemberPath="Text"
-                    ItemsSource="{Binding CombboxList}"
-                    SelectedItem="{Binding CombboxItem}"
-                    SelectedValuePath="Key" />
-            </StackPanel>
-        </StackPanel>
-        <StackPanel HorizontalAlignment="Right">
-            <Button
-                Width="80"
-                Margin="0,0,18,0"
-                Command="{Binding FrameCmd}"
-                Content="分帧"
-                Style="{StaticResource AccentedSquareButtonStyle}" />
-        </StackPanel>
-        <StackPanel Margin="10">
-            <ProgressBar
-                Width="420"
-                Height="12"
-                IsIndeterminate="True"
-                Visibility="{Binding ProgV}" />
-        </StackPanel>
-    </StackPanel>
+    <Grid Margin="20,5">
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition Height="20" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="120" />
+            <ColumnDefinition />
+            <ColumnDefinition Width="80" />
+        </Grid.ColumnDefinitions>
+        <Label
+            Grid.Row="0"
+            Grid.Column="0"
+            VerticalAlignment="Center"
+            Content="分帧视频" />
+        <Button
+            x:Name="OpenBtn"
+            Grid.Row="0"
+            Grid.Column="1"
+            Grid.ColumnSpan="2"
+            Height="30"
+            Command="{Binding OpenFrameVideosCmd}"
+            CommandParameter="{Binding ElementName=OpenBtn}"
+            Content="{Binding BtnContent}" />
+        <Label
+            Grid.Row="1"
+            Grid.Column="0"
+            VerticalAlignment="Center"
+            Content="存储位置" />
+        <TextBox
+            Grid.Row="1"
+            Grid.Column="1"
+            Height="30"
+            Margin="0,0,10,0"
+            VerticalAlignment="Center"
+            HorizontalContentAlignment="Left"
+            VerticalContentAlignment="Center"
+            Controls:TextBoxHelper.Watermark="分帧文件文件存放位置"
+            Text="{Binding TargetPath, UpdateSourceTrigger=PropertyChanged}" />
+        <Button
+            Grid.Row="1"
+            Grid.Column="2"
+            Height="30"
+            Command="{Binding FolderBrowserDialogCmd}"
+            Content="浏览" />
+        <ProgressBar
+            Name="FrameProg"
+            Grid.Row="2"
+            Grid.Column="0"
+            Grid.ColumnSpan="3"
+            Height="10"
+            Visibility="{Binding ProgV}"
+            VerticalAlignment="Center"
+            Value="{Binding ProgressValue}" />
+        <Button
+            Grid.Row="3"
+            Grid.Column="2"
+            Height="30"
+            Command="{Binding FrameListCmd}"
+            Content="分帧"
+            Style="{StaticResource AccentedSquareButtonStyle}" />
+    </Grid>
 </Controls:MetroWindow>

@@ -52,6 +52,7 @@ namespace MvvmLight4.ViewModel
             SimpleIoc.Default.Register<MarkViewModel>();
             SimpleIoc.Default.Register<MarkFileChooseViewModel>();
             SimpleIoc.Default.Register<SetViewModel>();
+            SimpleIoc.Default.Register<FrameFileChooseViewModel>();
         }
 
         /// <summary>
@@ -150,6 +151,15 @@ namespace MvvmLight4.ViewModel
             {
                 //return ServiceLocator.Current.GetInstance<MarkFileChooseViewModel>();
                 return new SetViewModel();
+            }
+        }
+
+        public FrameFileChooseViewModel FrameFCVM
+        {
+            get
+            {
+                //return ServiceLocator.Current.GetInstance<MarkFileChooseViewModel>();
+                return new FrameFileChooseViewModel();
             }
         }
         /// <summary>

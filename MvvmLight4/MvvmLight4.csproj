@@ -176,6 +176,7 @@
     <Compile Include="ViewModel\AbnormalViewModel.cs" />
     <Compile Include="ViewModel\DetectViewModel.cs" />
     <Compile Include="ViewModel\ExportViewModel.cs" />
+    <Compile Include="ViewModel\FrameFileChooseViewModel.cs" />
     <Compile Include="ViewModel\FrameViewModel.cs" />
     <Compile Include="ViewModel\ImportViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
@@ -198,6 +199,9 @@
     </Compile>
     <Compile Include="View\ExportWindow.xaml.cs">
       <DependentUpon>ExportWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\FrameFileChooseWindow.xaml.cs">
+      <DependentUpon>FrameFileChooseWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\FrameWindow.xaml.cs">
       <DependentUpon>FrameWindow.xaml</DependentUpon>
@@ -249,6 +253,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\ExportWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\FrameFileChooseWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

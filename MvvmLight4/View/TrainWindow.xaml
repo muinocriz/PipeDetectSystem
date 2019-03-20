@@ -140,13 +140,6 @@
                         Content="浏览" />
                 </StackPanel>
             </StackPanel>
-
-            <!--<StackPanel Margin="0 20 0 0">
-                <Canvas Visibility="{Binding Train.TrainProgVb}" DataContext="{Binding Source={StaticResource Locator}}">
-                    <ProgressBar Margin="80 7 0 0" HorizontalAlignment="Left" Width="250" Value="{Binding Train.TrainProgNum}" />
-                    <Button Margin="340 0 0 0" Width="80" Content="停止生成" Command="{Binding Train.StopTrainCmd}"/>
-                </Canvas>
-            </StackPanel>-->
             <StackPanel Margin="25,0,25,10">
                 <TextBox
                     Name="OutputTextBox"

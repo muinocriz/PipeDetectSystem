@@ -41,7 +41,6 @@
         <Grid Grid.Column="0" Margin="20,40,20,10">
             <StackPanel>
                 <!--  播放区域  -->
-
                 <Grid
                     Name="grid"
                     Height="300"
@@ -53,7 +52,6 @@
                         Source="{Binding ImgSource}"
                         Visibility="Visible" />
                 </Grid>
-
                 <!--  控制区域  -->
                 <StackPanel Name="ControlSP">
                     <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
@@ -67,7 +65,6 @@
                         </Button>
                     </StackPanel>
                 </StackPanel>
-
                 <!--  数据显示区域  -->
                 <StackPanel
                     Name="DetailSP"
@@ -147,7 +144,6 @@
                 <RowDefinition />
                 <RowDefinition Height="60" />
             </Grid.RowDefinitions>
-
             <!--  标题  -->
             <Label
                 Grid.Row="0"
@@ -157,7 +153,6 @@
                 Content="初步筛选列表"
                 FontSize="14"
                 FontWeight="Bold" />
-
             <!--  列表  -->
             <DataGrid
                 Name="ADG"
@@ -192,7 +187,6 @@
                         Header="是否异常" />
                 </DataGrid.Columns>
             </DataGrid>
-
             <!--  展示台  -->
             <StackPanel
                 Grid.Row="2"

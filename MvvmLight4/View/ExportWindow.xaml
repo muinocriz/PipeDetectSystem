@@ -80,41 +80,6 @@
                         Content="高级设置"
                         FontSize="16" />
                 </StackPanel>
-                <!--<StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <StackPanel Width="150">
-                        <ListBox Height="250" BorderThickness="2" BorderBrush="#CC119EDA">
-                            <ListBoxItem Content="1"/>
-                            <ListBoxItem Content="2"/>
-                            <ListBoxItem Content="3"/>
-                            <ListBoxItem Content="4"/>
-                            <ListBoxItem Content="5"/>
-                            <ListBoxItem Content="6"/>
-                            <ListBoxItem Content="7"/>
-                            <ListBoxItem Content="8"/>
-                            <ListBoxItem Content="9"/>
-                        </ListBox>
-                    </StackPanel>
-
-                    <StackPanel Width="100" VerticalAlignment="Center">
-                        <Button Width="80" Content="添加"/>
-                        <Grid Height="20"/>
-                        <Button Width="80" Content="删除"/>
-                    </StackPanel>
-
-                    <StackPanel Width="150">
-                        <ListBox Height="250" BorderThickness="2" BorderBrush="#CC119EDA">
-                            <ListBoxItem Content="1"/>
-                            <ListBoxItem Content="2"/>
-                            <ListBoxItem Content="3"/>
-                            <ListBoxItem Content="4"/>
-                            <ListBoxItem Content="5"/>
-                            <ListBoxItem Content="6"/>
-                            <ListBoxItem Content="7"/>
-                            <ListBoxItem Content="8"/>
-                            <ListBoxItem Content="9"/>
-                        </ListBox>
-                    </StackPanel>
-                </StackPanel>-->
                 <StackPanel Margin="67,0,0,0">
                     <DataGrid
                         Name="ExDG"

@@ -49,7 +49,6 @@
                 <RowDefinition />
                 <RowDefinition Height="70" />
             </Grid.RowDefinitions>
-
             <Grid
                 Grid.Row="0"
                 Margin="5,0"

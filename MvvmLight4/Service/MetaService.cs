@@ -30,6 +30,22 @@ namespace MvvmLight4.Service
             }
         }
 
+        public ObservableCollection<MetaModel> SelectNotFrame()
+        {
+            ObservableCollection<MetaModel> models = new ObservableCollection<MetaModel>();
+            using (IDbConnection conn = SqlHelper.GetConnection())
+            {
+                conn.Open();
+                var sql = @"SELECT * FROM TB_METADATA WHERE FRAMEPATH IS NULL OR FRAMEPATH = '' ORDER BY ID DESC;";
+                IEnumerable<dynamic> dynamics = conn.Query<MetaModel>(sql).ToList();
+                foreach (var item in dynamics)
+                {
+                    models.Add(item);
+                }
+                return models;
+            }
+        }
+
         public int InsertData(MetaModel meta)
         {
             int insertedRows = 0;
@@ -83,7 +99,7 @@ namespace MvvmLight4.Service
             {
                 conn.Open();
                 var sql = @"SELECT DISTINCT FRAMEPATH FROM TB_METADATA WHERE ID = @ID;";
-                string framePath = Convert.ToString(conn.Query(sql, new { ID = id }).FirstOrDefault().FRAMEPATH) ;
+                string framePath = Convert.ToString(conn.Query(sql, new { ID = id }).FirstOrDefault().FRAMEPATH);
                 return framePath;
             }
         }
@@ -114,12 +130,12 @@ namespace MvvmLight4.Service
 
         public ObservableCollection<MetaViewModel> SelectAllFramed()
         {
-            ObservableCollection<MetaViewModel> mvms=new ObservableCollection<MetaViewModel>();
+            ObservableCollection<MetaViewModel> mvms = new ObservableCollection<MetaViewModel>();
             using (IDbConnection conn = SqlHelper.GetConnection())
             {
                 conn.Open();
                 var sql = @"SELECT * FROM TB_METADATA WHERE FRAMEPATH IS NOT NULL ORDER BY ID DESC;";
-                IEnumerable<dynamic> dynamics=conn.Query(sql);
+                IEnumerable<dynamic> dynamics = conn.Query(sql);
                 foreach (var item in dynamics)
                 {
                     MetaViewModel mvm = new MetaViewModel();
@@ -151,7 +167,8 @@ namespace MvvmLight4.Service
                 var sql = @"UPDATE TB_METADATA SET FRAMEPATH=@FramePath WHERE VIDEOPATH=@VideoPath";
                 int result = conn.Execute(sql, new
                 {
-                    FramePath,VideoPath
+                    FramePath,
+                    VideoPath
                 });
                 return result;
             }

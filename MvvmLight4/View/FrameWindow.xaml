@@ -29,7 +29,7 @@
             <RowDefinition />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="120" />
+            <ColumnDefinition Width="80" />
             <ColumnDefinition />
             <ColumnDefinition Width="80" />
         </Grid.ColumnDefinitions>
@@ -74,10 +74,11 @@
             Grid.Column="0"
             Grid.ColumnSpan="3"
             Height="10"
-            Visibility="{Binding ProgV}"
             VerticalAlignment="Center"
+            Visibility="{Binding ProgV}"
             Value="{Binding ProgressValue}" />
         <Button
+            Name="SubmitBtn"
             Grid.Row="3"
             Grid.Column="2"
             Height="30"

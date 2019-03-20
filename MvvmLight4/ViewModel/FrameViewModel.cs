@@ -158,6 +158,7 @@ namespace MvvmLight4.ViewModel
             //int result = task.Result;
             //int result1 = task1.Result;
             //Debug.WriteLine("Task返回结果：{0}======={1}", result,result1);
+            Messenger.Default.Send("frameIsRunning", "FVM2FV");
             worker.RunWorkerAsync();
         }
 
@@ -223,16 +224,14 @@ namespace MvvmLight4.ViewModel
                     return;
             }
             //command = "-i" + " " + videoPath + " " + target + "\\%6d.jpg";
-            Console.WriteLine(DateTime.Now);
+            Debug.WriteLine(DateTime.Now);
             p.StartInfo.FileName = "ffmpeg.exe";
             p.StartInfo.Arguments = command;
             p.StartInfo.UseShellExecute = true;
             p.StartInfo.CreateNoWindow = false;
             p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             p.Start();
-            Console.WriteLine("1");
             p.WaitForExit();
-            Console.WriteLine("2");
             p.Close();
             p.Dispose();
         }
@@ -240,18 +239,31 @@ namespace MvvmLight4.ViewModel
 
         private void ExecuteCloingCmd()
         {
-            Console.WriteLine("ExecuteCloingCmd");
+            Debug.WriteLine("ExecuteCloingCmd");
             if (pipeReader != null && pipeReader.IsConnected)
             {
-                Console.WriteLine("pipeReader.Close");
+                Debug.WriteLine("pipeReader.Close");
                 pipeReader.Close();
             }
 
             if (worker != null && worker.IsBusy)
             {
-                Console.WriteLine("worker.CancelAsync");
+                Debug.WriteLine("worker.CancelAsync");
                 worker.CancelAsync();
             }
+            Process[] processes = Process.GetProcessesByName("ffmpeg");
+            if(processes!=null && processes.Length>0)
+            {
+                foreach (var item in processes)
+                {
+                    Debug.WriteLine("进程 {0} 被销毁", item.Id);
+                    item.Kill();
+                }
+            }
+            //重置界面状态
+            MetaList.Clear();
+            //按钮
+            Messenger.Default.Send("frameClosing", "FVM2FV");
         }
 
         private void ExecuteOpenFileDialogCmd(string p)
@@ -298,8 +310,8 @@ namespace MvvmLight4.ViewModel
             }
             catch (Exception e)
             {
-                Console.WriteLine("创建文件失败");
-                Console.WriteLine(e.ToString());
+                Debug.WriteLine("创建文件失败");
+                Debug.WriteLine(e.ToString());
                 return;
             }
 
@@ -321,9 +333,9 @@ namespace MvvmLight4.ViewModel
         //    try
         //    {
         //        pipeReader = new NamedPipeServerStream("cutfram_result1", PipeDirection.InOut);
-        //        Console.WriteLine("字节读取管道正在连接...");
+        //        Debug.WriteLine("字节读取管道正在连接...");
         //        pipeReader.WaitForConnection();
-        //        Console.WriteLine("字节读取管道已连接");
+        //        Debug.WriteLine("字节读取管道已连接");
 
         //        //ProgV = Visibility.Visible;
 
@@ -348,8 +360,8 @@ namespace MvvmLight4.ViewModel
         //            }
         //            catch (Exception readE)
         //            {
-        //                Console.WriteLine("读取管道发生异常");
-        //                Console.WriteLine(readE.ToString());
+        //                Debug.WriteLine("读取管道发生异常");
+        //                Debug.WriteLine(readE.ToString());
         //                nRead = 0;
         //            }
 
@@ -360,12 +372,12 @@ namespace MvvmLight4.ViewModel
         //            }
         //            catch (Exception getE)
         //            {
-        //                Console.WriteLine("转换string发生异常");
-        //                Console.WriteLine(getE.ToString());
+        //                Debug.WriteLine("转换string发生异常");
+        //                Debug.WriteLine(getE.ToString());
         //                continue;
         //            }
 
-        //            Console.WriteLine("line: " + line);
+        //            Debug.WriteLine("line: " + line);
 
         //            if (string.IsNullOrEmpty(line))
         //                continue;
@@ -409,8 +421,8 @@ namespace MvvmLight4.ViewModel
         //    }
         //    catch (Exception pipeE)
         //    {
-        //        Console.WriteLine("管道发生异常");
-        //        Console.WriteLine(pipeE.ToString());
+        //        Debug.WriteLine("管道发生异常");
+        //        Debug.WriteLine(pipeE.ToString());
         //        pipeReader.Close();
         //    }
 
@@ -418,7 +430,7 @@ namespace MvvmLight4.ViewModel
 
         //private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         //{
-        //    Console.WriteLine("in Worker_RunWorkerCompleted");
+        //    Debug.WriteLine("in Worker_RunWorkerCompleted");
         //    //ProgV = Visibility.Collapsed;
 
         //    if (pipeReader.IsConnected)
@@ -433,10 +445,10 @@ namespace MvvmLight4.ViewModel
         //    else
         //    {
         //        string framePathWithDirectory = Path.GetFileNameWithoutExtension(SourcePath);
-        //        Console.WriteLine("framePathWithDirectory: " + framePathWithDirectory);
+        //        Debug.WriteLine("framePathWithDirectory: " + framePathWithDirectory);
         //        string target = TargetPath + @"\" + framePathWithDirectory + @"\bigimg";
         //        int result = MetaService.GetService().UpdateFramePathByVideoPath(target, SourcePath);
-        //        Console.WriteLine("分帧完成");
+        //        Debug.WriteLine("分帧完成");
         //    }
         //    errorMsg = "";
         //}
@@ -454,7 +466,7 @@ namespace MvvmLight4.ViewModel
             {
                 worker = new BackgroundWorker
                 {
-                    WorkerSupportsCancellation = false,
+                    WorkerSupportsCancellation = true,
                     WorkerReportsProgress = true
                 };
                 worker.DoWork += Worker_DoWork;
@@ -463,8 +475,8 @@ namespace MvvmLight4.ViewModel
             }
             catch (Exception e)
             {
-                Console.WriteLine("后台任务初始化失败");
-                Console.WriteLine(e.ToString());
+                Debug.WriteLine("后台任务初始化失败");
+                Debug.WriteLine(e.ToString());
             }
         }
 
@@ -479,6 +491,12 @@ namespace MvvmLight4.ViewModel
             worker.ReportProgress(0);
             for (int i = 0; i < MetaList.Count; i++)
             {
+                if (!File.Exists(MetaList[i].VideoPath))
+                {
+                    Debug.WriteLine("视频 {0} 不存在", MetaList[i].VideoPath);
+                    continue;
+                }
+
                 Stopwatch watch = new Stopwatch();
                 watch.Start();
 
@@ -486,17 +504,26 @@ namespace MvvmLight4.ViewModel
 
                 //小图
                 string target = TargetPath + @"\" + framePathWithDirectory + @"\smallimg";
-                Directory.CreateDirectory(target);
-                Cut(MetaList[i].VideoPath, target, 1);
-
                 //大图
                 string target1 = TargetPath + @"\" + framePathWithDirectory + @"\bigimg";
-                Directory.CreateDirectory(target1);
+
+                try
+                {
+                    Directory.CreateDirectory(target);
+                    Directory.CreateDirectory(target1);
+                }
+                catch (Exception fileExpt)
+                {
+                    Debug.WriteLine("创建文件夹失败：" + fileExpt.ToString());
+                    return;
+                }
+
+                Cut(MetaList[i].VideoPath, target, 1);
                 Cut(MetaList[i].VideoPath, target1, 0);
 
                 watch.Stop();
                 TimeSpan timespan = watch.Elapsed;  //获取当前实例测量得出的总时间
-                Debug.WriteLine("打开窗口代码执行时间：{0}(毫秒)", timespan.TotalMilliseconds);  //总毫秒数
+                Debug.WriteLine("本次视频分帧执行时间：{0}(毫秒)", timespan.TotalMilliseconds);  //总毫秒数
 
                 MetaService.GetService().UpdateFramePathByVideoPath(target1, MetaList[i].VideoPath);
                 worker.ReportProgress(100 * (i + 1) / MetaList.Count);
@@ -511,11 +538,20 @@ namespace MvvmLight4.ViewModel
         }
         private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            MessageBox.Show("完成");
+            if (e.Cancelled || e.Error != null)
+            {
+                MessageBox.Show("失败");
+            }
+            else
+            {
+                MessageBox.Show("完成");
+            }
+
             DispatcherHelper.CheckBeginInvokeOnUI(() =>
             {
                 ProgV = Visibility.Hidden;
             });
+            Messenger.Default.Send("frameIsFinished", "FVM2FV");
         }
         private void AssignCommands()
         {
@@ -531,17 +567,24 @@ namespace MvvmLight4.ViewModel
         {
             MetaList = list;
             string content = "共选择" + list.Count + "个样本";
+            Debug.WriteLine(content);
             BtnContent = content;
         }
 
         private void InitData()
         {
-            TargetPath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+            try
+            {
+                TargetPath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+            }
+            catch (Exception)
+            {
+                TargetPath=@"C:\";
+            }
             BtnContent = "请点击";
             ProgV = Visibility.Hidden;
             MetaList = new List<MetaModel>();
         }
         #endregion
-
     }
 }

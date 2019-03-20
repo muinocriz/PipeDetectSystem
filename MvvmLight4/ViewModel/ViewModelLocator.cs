@@ -87,7 +87,8 @@ namespace MvvmLight4.ViewModel
         {
             get
             {
-                return ServiceLocator.Current.GetInstance<FrameViewModel>();
+                //return ServiceLocator.Current.GetInstance<FrameViewModel>();
+                return new FrameViewModel();
             }
         }
         public TrainViewModel Train

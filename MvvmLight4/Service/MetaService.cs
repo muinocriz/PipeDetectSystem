@@ -94,7 +94,7 @@ namespace MvvmLight4.Service
                         PIPECODE = meta.PipeCode,
                         PIPETYPE = meta.PipeType,
                         TASKCODE = meta.TaskCode,
-                        ADDR = meta.Address,
+                        ADDR = meta.Addr,
                         CHARGE = meta.Charge,
                         STARTTIME = meta.StartTime,
                         VIDEOPATH = meta.VideoPath,
@@ -166,7 +166,7 @@ namespace MvvmLight4.Service
                     mvm.Id = (int)item.ID;
                     MetaModel mm = new MetaModel();
                     mm.VideoPath = item.VIDEOPATH;
-                    mm.Address = item.ADDR;
+                    mm.Addr = item.ADDR;
                     mm.TaskCode = item.TASKCODE;
                     mm.StartTime = item.STARTTIME;
                     mm.FramePath = item.FRAMEPATH;

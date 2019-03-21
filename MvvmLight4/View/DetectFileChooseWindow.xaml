@@ -77,7 +77,7 @@
                         IsReadOnly="True" />
                     <DataGridTextColumn
                         Width="150"
-                        Binding="{Binding Meta.Address}"
+                        Binding="{Binding Meta.Addr}"
                         Header="任务地址"
                         IsReadOnly="True" />
                 </DataGrid.Columns>

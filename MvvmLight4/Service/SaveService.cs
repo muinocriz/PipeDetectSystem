@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NPOI.XSSF.UserModel;
-using NPOI.SS.UserModel;
 using System.IO;
-using System.Collections.Generic;
-using System.Text;
 using MvvmLight4.ViewModel;
-using MvvmLight4.Common;
 using MvvmLight4.Model;
+using System.Diagnostics;
+using NPOI.SS.UserModel;
 
 namespace MvvmLight4.Service
 {
@@ -163,7 +158,7 @@ namespace MvvmLight4.Service
             int i = 0;
             int j = 0;
 
-            for ( i = 0; i < exportModelsForExcel.Count; i++)
+            for (i = 0; i < exportModelsForExcel.Count; i++)
             {
                 if (exportModelsForExcel[i].Alternative.Equals("Type"))
                 {
@@ -239,7 +234,7 @@ namespace MvvmLight4.Service
             }
 
             int fileColumn;
-            if(hasAType)
+            if (hasAType)
             {
                 fileColumn = exportModelsForExcel.Count + 1;
             }
@@ -251,7 +246,7 @@ namespace MvvmLight4.Service
                 s1.GetRow(0).CreateCell(fileColumn).SetCellValue("图片编号");
                 for (int k = 1; k < i; k++)
                 {
-                    Type t1 = list[k-1].Meta.GetType();
+                    Type t1 = list[k - 1].Meta.GetType();
                     Type t2 = list[k - 1].Abnormal.GetType();
                     string data = Convert.ToString(t1.GetProperty("FramePath").GetValue(list[k - 1].Meta)) + "\\" + Convert.ToString(t2.GetProperty("Position").GetValue(list[k - 1].Abnormal)) + ".jpg";
                     s1.GetRow(k).CreateCell(fileColumn).SetCellValue(data);
@@ -281,5 +276,104 @@ namespace MvvmLight4.Service
             workbook.Write(sw);
             sw.Close();
         }
+
+        /// <summary>
+        /// 批量导出
+        /// </summary>
+        /// <param name="targetSource">目标地址</param>
+        /// <param name="exportDatas">数据</param>
+        /// <param name="typeDict">异常类型</param>
+        public void SaveXlsxFileBatch(string targetSource, List<ExportData> exportDatas, Dictionary<int, AbnormalTypeModel> typeDict)
+        {
+            IWorkbook workbook = new XSSFWorkbook();
+            ISheet s1 = workbook.CreateSheet("Sheet1");
+
+            //输出标题
+            IRow row = s1.CreateRow(0);
+            for (int i = 0; i < header.Length; i++)
+            {
+                Debug.WriteLine("列      {0};   值     {1}", i, header[i]);
+                ICell Cell = row.CreateCell(i);
+                Cell.SetCellValue(header[i]);
+            }
+            int count = 1;
+            for (int i = 0; i < exportDatas.Count; i++)
+            {
+                for (int j = 0; j < exportDatas[i].AbnormalModels.Count; j++)
+                {
+                    AbnormalModel abnormalModel = exportDatas[i].AbnormalModels[j];
+                    MetaModel metaModel = exportDatas[i].Meta;
+
+                    IRow row1 = s1.CreateRow(count);
+
+                    row1.CreateCell(0).SetCellValue(count);
+
+                    row1.CreateCell(1).SetCellValue(metaModel.TaskCode);
+                    row1.CreateCell(2).SetCellValue(metaModel.StartTime);
+                    row1.CreateCell(3).SetCellValue(metaModel.Addr);
+                    row1.CreateCell(4).SetCellValue(metaModel.PipeCode.Split('-')[0]);
+                    row1.CreateCell(5).SetCellValue(metaModel.PipeCode.Split('-')[1]);
+
+                    int type = metaModel.PipeType;
+                    if (type == 1)
+                    {
+                        row1.CreateCell(9).SetCellValue("雨水");
+                    }
+                    else
+                    {
+                        row1.CreateCell(9).SetCellValue("污水");
+                    }
+
+                    row1.CreateCell(10).SetCellValue(metaModel.GC);
+
+                    int qxmc = abnormalModel.Type;
+                    string name = typeDict[qxmc].Name;
+                    row1.CreateCell(18).SetCellValue(name);
+
+                    int qxlb = abnormalModel.Type;
+                    string category = typeDict[qxlb].Category;
+                    row1.CreateCell(19).SetCellValue(category);
+
+                    string numFormat = string.Format("{0:D6}", Convert.ToInt32(abnormalModel.Position));
+                    string picName = metaModel.PipeCode + "-" + numFormat + ".jpg";
+                    row1.CreateCell(25).SetCellValue(picName);
+
+                    count += 1;
+                }
+            }
+
+            FileStream sw = File.Create(targetSource);
+            workbook.Write(sw);
+            sw.Close();
+            return;
+        }
+
+        public string[] header = {
+        "序号",
+        "项目名称",
+        "项目时间",
+        "道路名称",
+        "起始井号",
+        "终止井号",
+        "有无管线点",
+        "管线点点号",
+        "管线点个数",
+        "管线类型",
+        "管材",
+        "管径",
+        "检测方向",
+        "管长(m)",
+        "起始埋深(m)",
+        "终止埋深(m)",
+        "切片位置",
+        "缺陷位置(m)",
+        "缺陷名称",
+        "缺陷类别",
+        "等级",
+        "时钟表示",
+        "备注",
+        "是否修复",
+        "描述",
+        "图片名称"};
     }
 }

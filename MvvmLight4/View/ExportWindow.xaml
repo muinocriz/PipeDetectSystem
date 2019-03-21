@@ -12,9 +12,11 @@
     Title="输出"
     Width="500"
     Height="550"
+    MinWidth="500"
+    MinHeight="550"
     DataContext="{Binding Source={StaticResource Locator}, Path=Export}"
     FontFamily="/MvvmLight4;component/Font/#Source Han Sans CN"
-    ResizeMode="NoResize"
+    ResizeMode="CanResizeWithGrip"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
     <i:Interaction.Triggers>
@@ -47,9 +49,17 @@
         <RadioButton
             Grid.Row="0"
             Grid.Column="1"
-            Content="Excel表格(.xslx)"
             GroupName="OutputType"
-            IsChecked="{Binding Way, Converter={StaticResource itbc}, ConverterParameter=0}" />
+            IsChecked="{Binding Way, Converter={StaticResource itbc}, ConverterParameter=0}">
+            <RadioButton.ContentTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Height="20" Source="../Image/excel.png" />
+                        <Label Content="Excel文件(.xlsx)" />
+                    </StackPanel>
+                </DataTemplate>
+            </RadioButton.ContentTemplate>
+        </RadioButton>
         <Label
             Grid.Row="1"
             Grid.Column="0"
@@ -96,7 +106,8 @@
             Grid.Column="0"
             Grid.ColumnSpan="4"
             VerticalAlignment="Center"
-            IsIndeterminate="True" />
+            IsIndeterminate="True"
+            Visibility="Hidden" />
 
         <Button
             Name="ExportBtn"

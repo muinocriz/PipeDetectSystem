@@ -56,10 +56,10 @@ namespace MvvmLight4.Service
             dialog.FileName = "export";
             dialog.DefaultExt = ".xlsx";
             dialog.Filter = "Excel 工作簿(*.xlsx)|*.xlsx|Word 文档(*.docx)|*.docx";
-            Nullable<bool> result = dialog.ShowDialog();
+            var result = dialog.ShowDialog();
             if (result == true)
                 return dialog.FileName;
-            return null;
+            return "";
         }
     }
 }

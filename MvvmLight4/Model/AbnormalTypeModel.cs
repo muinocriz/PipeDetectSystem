@@ -58,8 +58,8 @@ namespace MvvmLight4.Model
 
         private string category;
         /// <summary>
-        /// 缺陷类别
-        /// 结构性缺陷、功能性缺陷
+        /// 缺陷分类
+        /// 全局异常、局部异常
         /// </summary>
         public string Category { get => category; set { category = value; RaisePropertyChanged(() => Category); } }
 

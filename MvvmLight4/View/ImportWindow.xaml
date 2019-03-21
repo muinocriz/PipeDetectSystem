@@ -103,7 +103,7 @@
                         <TextBox
                             Name="txtAddress"
                             Width="250"
-                            Text="{Binding Address, UpdateSourceTrigger=PropertyChanged}" />
+                            Text="{Binding Addr, UpdateSourceTrigger=PropertyChanged}" />
                     </StackPanel>
                     <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
                         <Label Width="80" Content="负责人：" />

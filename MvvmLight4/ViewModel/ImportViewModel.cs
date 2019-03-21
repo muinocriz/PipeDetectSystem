@@ -38,7 +38,7 @@ namespace MvvmLight4.ViewModel
 
         private bool CanExecuteSubmitCmd()
         {
-            return !(string.IsNullOrEmpty(Meta.VideoPath) || string.IsNullOrEmpty(Meta.PipeCode) || string.IsNullOrEmpty(Meta.TaskCode) || string.IsNullOrEmpty(Meta.Address) || string.IsNullOrEmpty(Meta.Charge));
+            return !(string.IsNullOrEmpty(Meta.VideoPath) || string.IsNullOrEmpty(Meta.PipeCode) || string.IsNullOrEmpty(Meta.TaskCode) || string.IsNullOrEmpty(Meta.Addr) || string.IsNullOrEmpty(Meta.Charge));
         }
 
         private void ExecuteSubmitCmd()

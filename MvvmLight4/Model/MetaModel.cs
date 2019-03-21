@@ -28,11 +28,11 @@ namespace MvvmLight4.Model
         /// </summary>
         public string TaskCode { get => taskCode; set { taskCode = value; RaisePropertyChanged(() => TaskCode); } }
 
-        private string address;
+        private string addr;
         /// <summary>
         /// 道路名称
         /// </summary>
-        public string Address { get => address; set { address = value; RaisePropertyChanged(() => Address); } }
+        public string Addr { get => addr; set { addr = value; RaisePropertyChanged(() => Addr); } }
 
         private string charge;
         /// <summary>

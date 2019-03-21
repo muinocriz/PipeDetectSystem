@@ -89,7 +89,7 @@
                         <Label
                             Grid.Row="0"
                             Grid.Column="1"
-                            Content="{Binding SelectedAVM.Meta.Address}" />
+                            Content="{Binding SelectedAVM.Meta.Addr}" />
                         <Label
                             Grid.Row="0"
                             Grid.Column="2"

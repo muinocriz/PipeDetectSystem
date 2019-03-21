@@ -32,7 +32,7 @@ namespace MvvmLight4.Service
             using (IDbConnection conn = SqlHelper.GetConnection())
             {
                 conn.Open();
-                var sql = @"SELECT ADDR,PIPECODE,PIPETYPE,STARTTIME,ABNORMALTYPE,FRAMEPOSITION,TB_ABNORMAL.ID AS TID,VIDEOID AS VID,FRAMEPATH 
+                var sql = @"SELECT ADDR,PIPECODE,PIPETYPE,STARTTIME,TB_ABNORMAL.TYPE,POSITION,TB_ABNORMAL.ID AS TID,VIDEOID AS VID,FRAMEPATH 
                             FROM TB_ABNORMAL,TB_METADATA 
                             WHERE TB_METADATA.ID IN @ids AND TB_ABNORMAL.VIDEOID = TB_METADATA.ID;";
                 IEnumerable<dynamic> dynamics = conn.Query(sql, new { ids = list.ToArray() });
@@ -42,7 +42,7 @@ namespace MvvmLight4.Service
                     AbnormalModel am = new AbnormalModel();
                     AbnormalViewModel avm = new AbnormalViewModel();
 
-                    mm.Address = item.ADDR;
+                    mm.Addr = item.ADDR;
                     mm.PipeCode = item.PIPECODE;
                     mm.PipeType = (int)item.PIPETYPE;
                     mm.FramePath = item.FRAMEPATH;
@@ -53,8 +53,8 @@ namespace MvvmLight4.Service
                         mm.StartTime = "未填写";
 
                     am.VideoId = (int)item.VID;
-                    am.Type = (int)item.ABNORMALTYPE;
-                    am.Position = item.FRAMEPOSITION;
+                    am.Type = (int)item.TYPE;
+                    am.Position = item.POSITION;
                     avm.AbnormalId = (int)item.TID;
 
                     avm.Meta = mm;
@@ -92,8 +92,8 @@ namespace MvvmLight4.Service
             using (IDbConnection conn = SqlHelper.GetConnection())
             {
                 conn.Open();
-                var sql = @"UPDATE TB_ABNORMAL SET ABNORMALTYPE = @type WHERE ID = @id";
-                return conn.Execute(sql, new { type = type, id = id });
+                var sql = @"UPDATE TB_ABNORMAL SET TYPE = @type WHERE ID = @id";
+                return conn.Execute(sql, new { type, id });
             }
         }
 
@@ -138,12 +138,12 @@ namespace MvvmLight4.Service
                     mm.PipeType = (int)item.PIPETYPE;
                     mm.TaskCode = item.TASKCODE;
                     mm.FramePath = item.FRAMEPATH;
-                    mm.Address = item.ADDR;
+                    mm.Addr = item.ADDR;
                     mm.Charge = item.CHARGE;
                     mm.StartTime = item.STARTTIME;
                     am.VideoId = (int)item.VIDEOID;
-                    am.Type = (int)item.ABNORMALTYPE;
-                    am.Position = item.FRAMEPOSITION;
+                    am.Type = (int)item.TYPE;
+                    am.Position = item.POSITION;
                     avm.Meta = mm;
                     avm.Abnormal = am;
                     list.Add(avm);
@@ -154,7 +154,8 @@ namespace MvvmLight4.Service
         }
 
         /// <summary>
-        /// 将检测界面获得的异常批量存入数据库
+        /// 检测界面
+        /// 将获得的异常批量存入数据库
         /// </summary>
         /// <param name="abnormalModels">异常类型</param>
         /// <returns>存入数量</returns>
@@ -165,12 +166,35 @@ namespace MvvmLight4.Service
                 conn.Open();
                 using (var trans = conn.BeginTransaction())
                 {
-                    var sql = @"INSERT INTO TB_ABNORMAL(VIDEOID,FRAMEPOSITION,ABNORMALTYPE) VALUES(@VideoId,@Position,@Type);";
+                    var sql = @"INSERT INTO TB_ABNORMAL(VIDEOID,POSITION,TYPE) VALUES(@VideoId,@Position,@Type);";
                     var executeResult =  conn.Execute(sql,abnormalModels,trans);
                     trans.Commit();
                     return executeResult;
                 }
             }
+        }
+
+        /// <summary>
+        /// 导出界面
+        /// 查找所有异常类型，存入字典中
+        /// key:    Type
+        /// value:  AbnormalTypeModel
+        /// </summary>
+        /// <returns></returns>
+        internal Dictionary<int, AbnormalTypeModel> GetAbnormalTypeModelsToDict()
+        {
+            Dictionary<int, AbnormalTypeModel> dics = new Dictionary<int, AbnormalTypeModel>();
+            using (IDbConnection conn = SqlHelper.GetConnection())
+            {
+                conn.Open();
+                var sql = @"SELECT * FROM TB_ABNORMALLIST;";
+                IEnumerable<dynamic> dynamics = conn.Query<AbnormalTypeModel>(sql).ToList();
+                foreach (var item in dynamics)
+                {
+                    dics[item.Type] = item;
+                }
+            }
+            return dics;
         }
 
         public ObservableCollection<AbnormalTypeModel> GetAbnormalTypeModels()

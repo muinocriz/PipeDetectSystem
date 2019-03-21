@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -138,7 +139,7 @@ namespace MvvmLight4.ViewModel
                 if (pauseCmd == null)
                     return new RelayCommand(() =>
                     {
-                        if(worker.IsBusy)
+                        if (worker.IsBusy)
                             worker.CancelAsync();
 
                         string msg = "showStart";
@@ -235,7 +236,7 @@ namespace MvvmLight4.ViewModel
                 DispatcherHelper.CheckBeginInvokeOnUI(() =>
                 {
                     //CurrentThumbnailPath = Marks[Marks.Count - 2].Path;
-                    CurrentThumbnailPathNew =  BitmapFrame.Create(new Uri(Marks[Marks.Count - 2].Path + "_1" + ".jpg"), BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+                    CurrentThumbnailPathNew = BitmapFrame.Create(new Uri(Marks[Marks.Count - 2].Path + "_1" + ".jpg"), BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
                 });
             }
             else
@@ -254,7 +255,7 @@ namespace MvvmLight4.ViewModel
                 //AbnormalNums[a]--;
                 Marks.RemoveAt(Marks.Count - 1);
             });
-            
+
             //删除文件
             if (File.Exists(p + "_1" + ".jpg"))
                 File.Delete(p + "_1" + ".jpg");
@@ -286,7 +287,7 @@ namespace MvvmLight4.ViewModel
         private bool CanExecuteMarkCmd(Image img)
         {
             Point p = Mouse.GetPosition(img);
-            return !(p.X/img.ActualWidth < 0.11 || p.Y/img.ActualHeight < 0.20 || (img.ActualWidth - p.X) / img.ActualWidth < 0.11 || (img.ActualHeight - p.Y)/ img.ActualHeight < 0.20) && AbnormalType!=null;
+            return !(p.X / img.ActualWidth < 0.11 || p.Y / img.ActualHeight < 0.20 || (img.ActualWidth - p.X) / img.ActualWidth < 0.11 || (img.ActualHeight - p.Y) / img.ActualHeight < 0.20) && AbnormalType != null;
         }
 
         private void ExecuteMarkCmd(Image img)
@@ -326,19 +327,19 @@ namespace MvvmLight4.ViewModel
             //    default:
             //        break;
             //}
-            
-            if ("局部".Equals(AbnormalType.Category))
+
+            if (AbnormalType.Type <= 6)
             {
-                Console.WriteLine("局部异常");
+                Debug.WriteLine("局部异常");
                 ImageHelper.Caijianpic(imagePath[CurrentFramePosition], path + "_1" + ".jpg", p.X * 1.0 / img.ActualWidth, p.Y * 1.0 / img.ActualHeight, 416, 416);
                 ImageHelper.Caijianpic(imagePath[CurrentFramePosition], path + "_2" + ".jpg", p.X * 1.0 / img.ActualWidth, p.Y * 1.0 / img.ActualHeight, 299, 299);
             }
-            if ("全局".Equals(AbnormalType.Category))
+            if (AbnormalType.Type >= 7)
             {
-                Console.WriteLine("全局异常");
+                Debug.WriteLine("全局异常");
                 ImageHelper.SavePic(imagePath[CurrentFramePosition], path + "_1" + ".jpg");
             }
-            Console.WriteLine("" + p.X * 1.0 / img.ActualWidth + "---" + p.Y * 1.0 / img.ActualHeight);
+            Debug.WriteLine("" + p.X * 1.0 / img.ActualWidth + "---" + p.Y * 1.0 / img.ActualHeight);
             //MarkModel mark = new MarkModel(Convert.ToString(currentFramePosition), currentAbnormalType, p.X * 1.0 / img.ActualWidth, p.Y * 1.0 / img.ActualHeight, path);
             MarkModel mark = new MarkModel(Convert.ToString(currentFramePosition), AbnormalType.Type, p.X * 1.0 / img.ActualWidth, p.Y * 1.0 / img.ActualHeight, path);
             Marks.Add(mark);
@@ -444,7 +445,7 @@ namespace MvvmLight4.ViewModel
             //新建标记类
             Marks = new ObservableCollection<MarkModel>();
             //加载datagrid中的数据
-            if(File.Exists("test.txt"))
+            if (File.Exists("test.txt"))
             {
                 string data = File.ReadAllText("test.txt");
                 AbnormalTypes = JsonConvert.DeserializeObject<ObservableCollection<AbnormalTypeModel>>(data);
@@ -476,7 +477,7 @@ namespace MvvmLight4.ViewModel
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.ToString());
+                Debug.WriteLine(e.ToString());
                 return;
             }
         }
@@ -495,9 +496,9 @@ namespace MvvmLight4.ViewModel
         private void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             if (e.Cancelled)
-                Console.WriteLine("任务已取消");
+                Debug.WriteLine("任务已取消");
             else
-                Console.WriteLine("本视频标注完成");
+                Debug.WriteLine("本视频标注完成");
         }
 
         private void worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -516,7 +517,7 @@ namespace MvvmLight4.ViewModel
             {
                 if (worker.CancellationPending)
                 {
-                    Console.WriteLine("worker.CancellationPending");
+                    Debug.WriteLine("worker.CancellationPending");
                     e.Cancel = true;
                     return;
                 }

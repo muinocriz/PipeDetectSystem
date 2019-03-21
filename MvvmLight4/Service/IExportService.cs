@@ -1,4 +1,5 @@
 ﻿using MvvmLight4.Model;
+using MvvmLight4.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,5 +15,6 @@ namespace MvvmLight4.Service
         void UpdateExport(ObservableCollection<ExportModel> exports);
         Dictionary<string, string> SelectChoose();
         List<ExportModel> SelectChooseToList();
+        List<ExportData> GetExportListData(List<ExportMeta> l);
     }
 }

@@ -16,6 +16,5 @@ namespace MvvmLight4.Model
         public string Alternative { get => alternative; set { alternative = value;RaisePropertyChanged(() => Alternative); } }
         public int IsChoose { get => isChoose; set { isChoose = value; RaisePropertyChanged(() => IsChoose); } }
         public string Byname { get => byname; set { byname = value; RaisePropertyChanged(() => Byname); } }
-
     }
 }

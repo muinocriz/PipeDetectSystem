@@ -29,13 +29,17 @@ namespace MvvmLight4.View
 
         private void GetMsg(string msg)
         {
-            if(!string.IsNullOrEmpty(msg))
+            if (!string.IsNullOrEmpty(msg))
             {
                 switch (msg)
                 {
                     case "exportIsRunning":
                         ExportBtn.IsEnabled = false;
                         ExportProg.Visibility = Visibility.Visible;
+                        break;
+                    case "exportIsFinished":
+                        ExportBtn.IsEnabled = true;
+                        ExportProg.Visibility = Visibility.Hidden;
                         break;
                     default:
                         break;

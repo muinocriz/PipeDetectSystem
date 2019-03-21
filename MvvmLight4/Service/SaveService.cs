@@ -16,6 +16,7 @@ namespace MvvmLight4.Service
         public static SaveService GetService() { return saveService; }
 
         /// <summary>
+        /// 导出界面
         /// 保存Word文件,暂未实现
         /// </summary>
         /// <param name="filePath">位置</param>
@@ -26,6 +27,7 @@ namespace MvvmLight4.Service
         }
 
         /// <summary>
+        /// 导出界面
         /// 保存为excel
         /// </summary>
         /// <param name="filePath">保存位置</param>
@@ -278,6 +280,7 @@ namespace MvvmLight4.Service
         }
 
         /// <summary>
+        /// 导出界面
         /// 批量导出
         /// </summary>
         /// <param name="targetSource">目标地址</param>
@@ -319,9 +322,13 @@ namespace MvvmLight4.Service
                     {
                         row1.CreateCell(9).SetCellValue("雨水");
                     }
-                    else
+                    else if (type == 0)
                     {
                         row1.CreateCell(9).SetCellValue("污水");
+                    }
+                    else
+                    {
+                        row1.CreateCell(9).SetCellValue("雨水");
                     }
 
                     row1.CreateCell(10).SetCellValue(metaModel.GC);
@@ -345,6 +352,48 @@ namespace MvvmLight4.Service
             FileStream sw = File.Create(targetSource);
             workbook.Write(sw);
             sw.Close();
+            ExportImg(targetSource, exportDatas);
+            return;
+        }
+
+        /// <summary>
+        /// 导出界面
+        /// 将图片重命名+保存到指定的文件夹
+        /// </summary>
+        /// <param name="targetSource"></param>
+        /// <param name="exportDatas"></param>
+        private void ExportImg(string targetSource, List<ExportData> exportDatas)
+        {
+            string newFolderPath = Path.GetDirectoryName(targetSource) + @"\result";
+            for (int i = 0; i < exportDatas.Count; i++)
+            {
+                string oldFolderPath = exportDatas[i].Meta.FramePath;
+                for (int j = 0; j < exportDatas[i].AbnormalModels.Count; j++)
+                {
+                    int position = Convert.ToInt32(exportDatas[i].AbnormalModels[j].Position);
+                    string oldFileName = string.Format("{0:D6}", Convert.ToInt32(position));
+                    string oldPath = oldFolderPath + @"\" + oldFileName + ".jpg";
+
+                    string picName = exportDatas[i].Meta.PipeCode + "-" + oldFileName + ".jpg";
+                    string newPath = newFolderPath + @"\" + picName;
+
+                    try
+                    {
+                        //如果不存在文件夹，就创建一个文件夹
+                        if (!Directory.Exists(newFolderPath))
+                        {
+                            Directory.CreateDirectory(newFolderPath);
+                        }
+                        File.Copy(oldPath, newPath, true);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.WriteLine(e.ToString());
+                        Debug.WriteLine("异常发生于 {0} 向 {1} 复制的过程中", oldPath, newPath);
+                        continue;
+                    }
+                }
+            }
             return;
         }
 

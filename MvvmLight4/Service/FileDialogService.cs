@@ -21,7 +21,6 @@ namespace MvvmLight4.Service
         /// </summary>
         /// <param name="srcFilter">默认初始位置，可为空</param>
         /// <returns>文件绝对位置字符串</returns>
-
         public string OpenFileDialog(string srcFilter = "")
         {
             var dialog = new Microsoft.Win32.OpenFileDialog();
@@ -46,6 +45,7 @@ namespace MvvmLight4.Service
             dialog.ShowDialog();
             return dialog.SelectedPath;
         }
+
         /// <summary>
         /// 打开另存为对话框
         /// </summary>

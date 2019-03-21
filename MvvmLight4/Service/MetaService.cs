@@ -22,6 +22,7 @@ namespace MvvmLight4.Service
         /// <summary>
         /// 分帧界面
         /// 检测视频是否已导入
+        /// 已弃用
         /// </summary>
         /// <param name="path">视频位置</param>
         /// <returns></returns>
@@ -228,6 +229,7 @@ namespace MvvmLight4.Service
         /// <summary>
         /// 分帧界面
         /// 更新分帧间距
+        /// 已弃用
         /// </summary>
         /// <param name="path">视频位置</param>
         /// <param name="i">每秒帧数</param>

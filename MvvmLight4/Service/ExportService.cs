@@ -18,6 +18,12 @@ namespace MvvmLight4.Service
         private ExportService() { }
         public static ExportService GetService() { return exportService; }
 
+        /// <summary>
+        /// 导出界面
+        /// 获取所有可供输出的异常
+        /// 已弃用
+        /// </summary>
+        /// <returns></returns>
         public ObservableCollection<ExportModel> SelectAll()
         {
             ObservableCollection<ExportModel> ems = new ObservableCollection<ExportModel>();
@@ -38,6 +44,12 @@ namespace MvvmLight4.Service
             return ems;
         }
 
+        /// <summary>
+        /// 导出界面
+        /// 获取选择的属性
+        /// 已弃用
+        /// </summary>
+        /// <returns></returns>
         public Dictionary<string, string> SelectChoose()
         {
             Dictionary<string, string> keyValuePairs = new Dictionary<string, string>();
@@ -54,6 +66,12 @@ namespace MvvmLight4.Service
             return keyValuePairs;
         }
 
+        /// <summary>
+        /// 导出界面
+        /// 更新输出属性的选择状态
+        /// 已弃用
+        /// </summary>
+        /// <param name="exports"></param>
         public void UpdateExport(ObservableCollection<ExportModel> exports)
         {
             using (IDbConnection conn = SqlHelper.GetConnection())
@@ -72,6 +90,12 @@ namespace MvvmLight4.Service
             }
         }
 
+        /// <summary>
+        /// 导出界面
+        /// 将选择的属性输出为List
+        /// 已弃用
+        /// </summary>
+        /// <returns></returns>
         public List<ExportModel> SelectChooseToList()
         {
             List<ExportModel> exportModels = new List<ExportModel>();
@@ -86,7 +110,10 @@ namespace MvvmLight4.Service
 
         /// <summary>
         /// 导出界面
-        /// 根据选择的列表，查到相关信息
+        /// 根据选择的列表，查到
+        /// 输出辅助VM类
+        /// --元信息
+        /// --每个元信息对应的异常列表
         /// </summary>
         /// <param name="l">导出任务编号列表</param>
         /// <returns></returns>

@@ -20,7 +20,9 @@ namespace MvvmLight4.Service
         {
             return modelService;
         }
+
         /// <summary>
+        /// 训练界面
         /// 添加模型
         /// </summary>
         /// <param name="modelModel"></param>
@@ -45,6 +47,7 @@ namespace MvvmLight4.Service
         }
 
         /// <summary>
+        /// 模型管理界面
         /// 删除指定模型
         /// </summary>
         /// <param name="modelViewModel"></param>
@@ -62,6 +65,8 @@ namespace MvvmLight4.Service
         }
 
         /// <summary>
+        /// 模型管理界面
+        /// 检测界面
         /// 加载所有模型的详细信息
         /// </summary>
         /// <returns></returns>
@@ -89,6 +94,7 @@ namespace MvvmLight4.Service
         }
 
         /// <summary>
+        /// 模型管理界面
         /// 修改模型名字
         /// </summary>
         /// <param name="modelViewModel"></param>

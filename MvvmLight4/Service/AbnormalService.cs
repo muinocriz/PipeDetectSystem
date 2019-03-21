@@ -23,6 +23,7 @@ namespace MvvmLight4.Service
         }
 
         /// <summary>
+        /// 人工回溯界面
         /// 获得要显示在人工回溯界面的所有异常
         /// </summary>
         /// <returns></returns>
@@ -82,6 +83,7 @@ namespace MvvmLight4.Service
         }
 
         /// <summary>
+        /// 人工回溯界面
         /// 更新异常类型
         /// </summary>
         /// <param name="id">异常所在的数据库ID</param>
@@ -117,6 +119,7 @@ namespace MvvmLight4.Service
         }
 
         /// <summary>
+        /// 导出界面
         /// 获得某个视频的元信息和所有检测结果信息
         /// </summary>
         /// <param name="id">视频id</param>
@@ -197,6 +200,11 @@ namespace MvvmLight4.Service
             return dics;
         }
 
+        /// <summary>
+        /// 设置界面
+        /// 获取异常类型列表
+        /// </summary>
+        /// <returns></returns>
         public ObservableCollection<AbnormalTypeModel> GetAbnormalTypeModels()
         {
             ObservableCollection<AbnormalTypeModel> models = new ObservableCollection<AbnormalTypeModel>();

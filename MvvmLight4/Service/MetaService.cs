@@ -198,7 +198,7 @@ namespace MvvmLight4.Service
                                 FROM TB_METADATA,TB_ABNORMAL 
                                 WHERE TB_METADATA.ID = TB_ABNORMAL.VIDEOID 
                                 ORDER BY VIDEOID DESC 
-                                LIMIT 100;";
+                                LIMIT 500;";
                 IEnumerable<dynamic> dynamics = conn.Query(sql);
                 foreach (var item in dynamics)
                 {

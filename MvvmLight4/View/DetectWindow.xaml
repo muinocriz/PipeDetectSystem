@@ -10,7 +10,7 @@
     xmlns:mvvm="http://www.galasoft.ch/mvvmlight"
     Title="检测"
     Width="460"
-    Height="470"
+    Height="510"
     DataContext="{Binding Source={StaticResource Locator}, Path=Detect}"
     FontFamily="/MvvmLight4;component/Font/#Source Han Sans CN"
     ResizeMode="NoResize"
@@ -60,6 +60,16 @@
                         DisplayMemberPath="ModelModel.ModelName"
                         ItemsSource="{Binding ModelList}"
                         SelectedItem="{Binding ModelItem[1]}"
+                        SelectedValuePath="Id" />
+                </StackPanel>
+                <!--  仪器选择  -->
+                <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
+                    <Label Width="80" Content="仪器：" />
+                    <ComboBox
+                        Width="250"
+                        DisplayMemberPath="Name"
+                        ItemsSource="{Binding Instruments}"
+                        SelectedItem="{Binding SelectedInstrument}"
                         SelectedValuePath="Id" />
                 </StackPanel>
             </StackPanel>

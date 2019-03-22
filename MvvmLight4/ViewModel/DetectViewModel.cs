@@ -161,6 +161,34 @@ namespace MvvmLight4.ViewModel
             }
         }
 
+        private ObservableCollection<Instrument> instruments;
+        /// <summary>
+        /// 仪器列表
+        /// </summary>
+        public ObservableCollection<Instrument> Instruments
+        {
+            get { return instruments; }
+            set
+            {
+                instruments = value;
+                RaisePropertyChanged(() => Instruments);
+            }
+        }
+
+        private Instrument selectedInstrument;
+        /// <summary>
+        /// 选择的仪器名称
+        /// </summary>
+        public Instrument SelectedInstrument
+        {
+            get { return selectedInstrument; }
+            set
+            {
+                selectedInstrument = value;
+                RaisePropertyChanged(() => SelectedInstrument);
+            }
+        }
+
         private RelayCommand loadedCmd;
         public RelayCommand LoadedCmd
         {
@@ -206,7 +234,7 @@ namespace MvvmLight4.ViewModel
 
         private bool CanExecuteDetectCmd()
         {
-            return ModelItem[0] != null && VideoList != null;
+            return ModelItem[0] != null && VideoList != null && SelectedInstrument != null;
         }
 
         private void ExecuteDetectCmd()
@@ -229,9 +257,9 @@ namespace MvvmLight4.ViewModel
                 string data = JsonConvert.SerializeObject(dict).Replace("\"", "'");
                 sw.WriteLine(data);
                 sw.WriteLine(ModelItem[0].ModelModel.Location + "\\" + ModelItem[0].ModelModel.ModelName);
-                if(ModelItem[1]!=null && !string.IsNullOrEmpty(ModelItem[1].ModelModel.Location))
+                if (ModelItem[1] != null && !string.IsNullOrEmpty(ModelItem[1].ModelModel.Location))
                 {
-                    sw.WriteLine(ModelItem[1].ModelModel.Location+"\\"+ ModelItem[1].ModelModel.ModelName);
+                    sw.WriteLine(ModelItem[1].ModelModel.Location + "\\" + ModelItem[1].ModelModel.ModelName);
                 }
                 else
                 {
@@ -246,11 +274,11 @@ namespace MvvmLight4.ViewModel
                 Console.WriteLine(e.ToString());
                 return;
             }
-            Console.WriteLine("cmdstring: "+cmdString);
+            Console.WriteLine("cmdstring: " + cmdString);
 
             var t = new Task(() =>
             {
-                Process p = CmdHelper.RunProcess(@"Util/detect.exe", "detect.txt");
+                Process p = CmdHelper.RunProcess(SelectedInstrument.Path, "detect.txt");
                 p.Start();
                 Console.WriteLine("wait for exit");
                 p.WaitForExit();
@@ -313,7 +341,7 @@ namespace MvvmLight4.ViewModel
                 }
                 byte[] buffer = new byte[BUFFERSIZE];
                 int nRead = pipeReader.Read(buffer, 0, BUFFERSIZE);
-                Console.WriteLine("buffer:"+buffer);
+                Console.WriteLine("buffer:" + buffer);
                 Console.WriteLine("0x16 message:");
                 Console.WriteLine(String.Format("{0:X}", buffer));
                 string line = Encoding.UTF8.GetString(buffer, 0, nRead);
@@ -353,7 +381,7 @@ namespace MvvmLight4.ViewModel
                             worker.ReportProgress(progress, log);
                         }
                         //初筛结束消息
-                        else if(messages.Length == 2 && !string.IsNullOrEmpty(messages[1])&& "filter done".Equals(messages[1]))
+                        else if (messages.Length == 2 && !string.IsNullOrEmpty(messages[1]) && "filter done".Equals(messages[1]))
                         {
                             Console.WriteLine("filter done true");
                             //初筛结束
@@ -361,7 +389,7 @@ namespace MvvmLight4.ViewModel
                             DetectProgVb = Visibility.Visible;
                         }
                         //检测结束消息
-                        else if(messages.Length == 2 && "Done".Equals(messages[1]))
+                        else if (messages.Length == 2 && "Done".Equals(messages[1]))
                         {
                             progress = 100;
                             worker.ReportProgress(progress);
@@ -420,8 +448,8 @@ namespace MvvmLight4.ViewModel
             else
             {
                 //批量存入
-                if (abnormalModels!=null && abnormalModels.Count>0)
-                AbnormalService.GetService().AddAbnormal(abnormalModels);
+                if (abnormalModels != null && abnormalModels.Count > 0)
+                    AbnormalService.GetService().AddAbnormal(abnormalModels);
                 //清空
                 abnormalModels.Clear();
                 canBackTrackOrExport = true;
@@ -517,9 +545,23 @@ namespace MvvmLight4.ViewModel
         }
 
         #region 辅助函数
+        /// <summary>
+        /// 初始化下拉列表
+        /// </summary>
         private void InitComboBox()
         {
+            //初始化模型列表
             ModelList = ModelService.GetService().LoadData();
+
+            //初始化仪器列表
+            Instruments = new ObservableCollection<Instrument>
+            {
+                new Instrument() { Name = "中仪1", Path = @"Util/detect.exe" },
+                new Instrument() { Name = "其它仪器", Path = @"Util/detect.exe" }
+            };
+
+            //设置仪器列表默认选中项目
+            SelectedInstrument = Instruments[0];
         }
         private void ShowReceiveInfo(ObservableCollection<MetaViewModel> obj)
         {
@@ -536,7 +578,17 @@ namespace MvvmLight4.ViewModel
                 }
             }
         }
-
         #endregion
     }
+
+    #region helper class
+    public class Instrument
+    {
+        private string _path;
+        private string _name;
+
+        public string Name { get => _name; set => _name = value; }
+        public string Path { get => _path; set => _path = value; }
+    }
+    #endregion
 }

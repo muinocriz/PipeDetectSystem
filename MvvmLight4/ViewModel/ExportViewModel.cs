@@ -141,8 +141,17 @@ namespace MvvmLight4.ViewModel
         #endregion
 
         public RelayCommand LoadedCmd { get; private set; }
+        public RelayCommand CloingCmd { get; private set; }
+        private void ExecuteCloingCmd()
+        {
+            if (worker != null && worker.IsBusy)
+            {
+                Debug.WriteLine("worker.CancelAsync");
+                worker.CancelAsync();
+            }
+        }
 
-        //public RelayCommand<ExportModel> CheckCmd { get; private set; }
+        public RelayCommand<ExportModel> CheckCmd { get; private set; }
 
         private bool CanExecuteCheckCmd(ExportModel arg)
         {
@@ -326,6 +335,7 @@ namespace MvvmLight4.ViewModel
             //ExportCmd = new RelayCommand(() => ExecuteExportCmd(), CanExecuteExportCmd);
             FolderBrowserCmd = new RelayCommand(() => ExecuteFolderBrowserCmd());
             ExportListCmd = new RelayCommand<object>((obj) => ExecuteExportListCmd(obj), CanExecuteExportListCmd);
+            CloingCmd = new RelayCommand(() => ExecuteCloingCmd());
         }
 
         private void InitData()

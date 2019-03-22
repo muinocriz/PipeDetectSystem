@@ -15,7 +15,7 @@
     FontFamily="/MvvmLight4;component/Font/#Source Han Sans CN"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
-    <Grid>
+    <Grid Background="#33119EDA">
         <Grid.Resources>
             <Style TargetType="{x:Type Label}">
                 <Setter Property="FontFamily" Value="/MvvmLight4;component/Font/#Source Han Sans CN" />
@@ -23,15 +23,21 @@
         </Grid.Resources>
         <TabControl Controls:TabControlHelper.Underlined="SelectedTabItem" TabStripPlacement="Left">
             <TabItem FontFamily="/MvvmLight4;component/Font/#Source Han Sans CN" Header="标注设置">
-                <Grid Background="Azure">
+                <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="100" />
+                        <RowDefinition Height="10" />
                         <RowDefinition />
                         <RowDefinition Height="30" />
                     </Grid.RowDefinitions>
                     <Grid Grid.Row="1" Margin="5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="176*" />
+                            <ColumnDefinition Width="279*" />
+                        </Grid.ColumnDefinitions>
                         <DataGrid
                             Name="MarkSetDataGrid"
+                            Grid.ColumnSpan="2"
+                            Margin="0,0,0.8,0.6"
                             AutoGenerateColumns="False"
                             CanUserAddRows="False"
                             CanUserDeleteRows="False"
@@ -53,8 +59,14 @@
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
                                 <DataGridTextColumn
+                                    Width="1*"
                                     Binding="{Binding Name}"
-                                    Header="异常名称"
+                                    Header="缺陷名称"
+                                    IsReadOnly="True" />
+                                <DataGridTextColumn
+                                    Width="1*"
+                                    Binding="{Binding Category}"
+                                    Header="缺陷类别"
                                     IsReadOnly="True" />
                             </DataGrid.Columns>
                         </DataGrid>

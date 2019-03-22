@@ -447,8 +447,15 @@ namespace MvvmLight4.ViewModel
             //加载datagrid中的数据
             if (File.Exists("test.txt"))
             {
-                string data = File.ReadAllText("test.txt");
-                AbnormalTypes = JsonConvert.DeserializeObject<ObservableCollection<AbnormalTypeModel>>(data);
+                try
+                {
+                    string data = File.ReadAllText("test.txt");
+                    AbnormalTypes = JsonConvert.DeserializeObject<ObservableCollection<AbnormalTypeModel>>(data);
+                }
+                catch (Exception)
+                {
+                    AbnormalTypes = null;
+                }
             }
             if (AbnormalTypes == null || AbnormalTypes.Count == 0)
             {

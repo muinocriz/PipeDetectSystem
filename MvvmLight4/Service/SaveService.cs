@@ -295,7 +295,6 @@ namespace MvvmLight4.Service
             IRow row = s1.CreateRow(0);
             for (int i = 0; i < header.Length; i++)
             {
-                Debug.WriteLine("列      {0};   值     {1}", i, header[i]);
                 ICell Cell = row.CreateCell(i);
                 Cell.SetCellValue(header[i]);
             }
@@ -314,8 +313,18 @@ namespace MvvmLight4.Service
                     row1.CreateCell(1).SetCellValue(metaModel.TaskCode);
                     row1.CreateCell(2).SetCellValue(metaModel.StartTime);
                     row1.CreateCell(3).SetCellValue(metaModel.Addr);
-                    row1.CreateCell(4).SetCellValue(metaModel.PipeCode.Split('-')[0]);
-                    row1.CreateCell(5).SetCellValue(metaModel.PipeCode.Split('-')[1]);
+
+                    string[]qszh = metaModel.PipeCode.Split('-');
+                    if(qszh.Length==2)
+                    {
+                        row1.CreateCell(4).SetCellValue(metaModel.PipeCode.Split('-')[0]);
+                        row1.CreateCell(5).SetCellValue(metaModel.PipeCode.Split('-')[1]);
+                    }
+                    else
+                    {
+                        row1.CreateCell(4).SetCellValue("");
+                        row1.CreateCell(5).SetCellValue("");
+                    }                 
 
                     int type = metaModel.PipeType;
                     if (type == 1)
@@ -352,6 +361,7 @@ namespace MvvmLight4.Service
             FileStream sw = File.Create(targetSource);
             workbook.Write(sw);
             sw.Close();
+
             ExportImg(targetSource, exportDatas);
             return;
         }

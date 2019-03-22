@@ -36,7 +36,7 @@ namespace MvvmLight4.Service
                 return Count;
             }
         }
-        
+
         /// <summary>
         /// 分帧文件选择界面
         /// 加载已导入未分帧的视频信息
@@ -48,7 +48,9 @@ namespace MvvmLight4.Service
             using (IDbConnection conn = SqlHelper.GetConnection())
             {
                 conn.Open();
-                var sql = @"SELECT * FROM TB_METADATA WHERE FRAMEPATH IS NULL OR FRAMEPATH = '' ORDER BY ID DESC;";
+                var sql = @"SELECT * FROM TB_METADATA 
+                                WHERE FRAMEPATH IS NULL OR FRAMEPATH = '' 
+                                ORDER BY ID DESC;";
                 IEnumerable<dynamic> dynamics = conn.Query<MetaModel>(sql).ToList();
                 foreach (var item in dynamics)
                 {
@@ -80,28 +82,28 @@ namespace MvvmLight4.Service
                                                                         HEADTIME,
                                                                         TAILTIME,
                                                                         GC) VALUES(
-                                                                        @PIPECODE,
-                                                                        @PIPETYPE,
-                                                                        @TASKCODE,
-                                                                        @ADDR,
-                                                                        @CHARGE,
-                                                                        @STARTTIME,
-                                                                        @VIDEOPATH,
-                                                                        @HEADTIME,
-                                                                        @TAILTIME,
+                                                                        @PipeCode,
+                                                                        @PipeType,
+                                                                        @TaskCode,
+                                                                        @Addr,
+                                                                        @Charge,
+                                                                        @StartTime,
+                                                                        @VideoPath,
+                                                                        @HeadTime,
+                                                                        @TailTime,
                                                                         @GC)",
                     new
                     {
-                        PIPECODE = meta.PipeCode,
-                        PIPETYPE = meta.PipeType,
-                        TASKCODE = meta.TaskCode,
-                        ADDR = meta.Addr,
-                        CHARGE = meta.Charge,
-                        STARTTIME = meta.StartTime,
-                        VIDEOPATH = meta.VideoPath,
-                        HEADTIME = meta.HeadTime,
-                        TAILTIME = meta.TailTime,
-                        GC=meta.GC
+                        meta.PipeCode,
+                        meta.PipeType,
+                        meta.TaskCode,
+                        meta.Addr,
+                        meta.Charge,
+                        meta.StartTime,
+                        meta.VideoPath,
+                        meta.HeadTime,
+                        meta.TailTime,
+                        meta.GC
                     });
             }
             return insertedRows;
@@ -135,7 +137,10 @@ namespace MvvmLight4.Service
             using (IDbConnection conn = SqlHelper.GetConnection())
             {
                 conn.Open();
-                var sql = @"SELECT ID,TASKCODE FROM TB_METADATA WHERE FRAMEPATH IS NOT NULL ORDER BY ID DESC;";
+                var sql = @"SELECT ID,TASKCODE 
+                                FROM TB_METADATA 
+                                WHERE FRAMEPATH IS NOT NULL 
+                                ORDER BY ID DESC;";
                 IEnumerable<dynamic> dynamics = conn.Query(sql);
                 foreach (var item in dynamics)
                 {
@@ -189,7 +194,11 @@ namespace MvvmLight4.Service
             using (IDbConnection conn = SqlHelper.GetConnection())
             {
                 conn.Open();
-                var sql = @"SELECT DISTINCT VIDEOID,TASKCODE FROM TB_METADATA,TB_ABNORMAL WHERE TB_METADATA.ID = TB_ABNORMAL.VIDEOID ORDER BY VIDEOID DESC;";
+                var sql = @"SELECT DISTINCT VIDEOID,TASKCODE 
+                                FROM TB_METADATA,TB_ABNORMAL 
+                                WHERE TB_METADATA.ID = TB_ABNORMAL.VIDEOID 
+                                ORDER BY VIDEOID DESC 
+                                LIMIT 100;";
                 IEnumerable<dynamic> dynamics = conn.Query(sql);
                 foreach (var item in dynamics)
                 {

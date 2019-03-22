@@ -43,6 +43,12 @@ namespace MvvmLight4.ViewModel
 
         private void ExecuteSubmitCmd()
         {
+            string tag = Meta.PipeCode;
+            if(tag.Split('-').Length!=2)
+            {
+                MessageBox.Show(@"管线编号不正确,应为“起始井号-终止井号”");
+                return;
+            }
             int result = MetaService.GetService().InsertData(Meta);
             if (result == 1)
             {

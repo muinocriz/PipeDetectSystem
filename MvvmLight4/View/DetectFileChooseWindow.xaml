@@ -61,22 +61,17 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTextColumn
-                        Width="150"
-                        Binding="{Binding Meta.VideoPath}"
-                        Header="文件路径"
-                        IsReadOnly="True" />
-                    <DataGridTextColumn
-                        Width="150"
+                        Width="1*"
                         Binding="{Binding Meta.TaskCode}"
                         Header="任务编号"
                         IsReadOnly="True" />
                     <DataGridTextColumn
-                        Width="150"
+                        Width="1*"
                         Binding="{Binding Meta.StartTime}"
                         Header="开始时间"
                         IsReadOnly="True" />
                     <DataGridTextColumn
-                        Width="150"
+                        Width="1*"
                         Binding="{Binding Meta.Addr}"
                         Header="任务地址"
                         IsReadOnly="True" />

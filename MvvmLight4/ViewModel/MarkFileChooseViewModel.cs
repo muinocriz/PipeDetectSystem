@@ -66,7 +66,6 @@ namespace MvvmLight4.ViewModel
         /// </summary>
         public RelayCommand SubmitCmd { get; private set; }
 
-
         private bool CanExecuteSubmitCmd()
         {
             return CombboxItem != null && !string.IsNullOrEmpty(SavePath);

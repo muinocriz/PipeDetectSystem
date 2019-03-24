@@ -10,6 +10,9 @@ namespace MvvmLight4.Model
     public class ComplexInfoModel : ObservableObject
     {
         private string key;
+        /// <summary>
+        /// 键
+        /// </summary>
         public string Key
         {
             get { return key; }
@@ -17,6 +20,9 @@ namespace MvvmLight4.Model
 
         }
         private string text;
+        /// <summary>
+        /// 值
+        /// </summary>
         public string Text
         {
             get { return text; }

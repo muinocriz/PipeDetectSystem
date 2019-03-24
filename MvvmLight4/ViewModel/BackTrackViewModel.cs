@@ -44,15 +44,25 @@ namespace MvvmLight4.ViewModel
         #region property
         private CancellationTokenSource tokenSource;
         private CancellationToken token;
-        //图像列表
+        /// <summary>
+        /// 图像列表
+        /// </summary>
         public List<string> imagePath = new List<string>();
-        //视频列表
+        /// <summary>
+        /// 视频列表
+        /// </summary>
         public List<int> VideoIds = new List<int>();
         private bool stop = false;
 
         private PlayerModel player;
+        /// <summary>
+        /// 播放类
+        /// </summary>
         public PlayerModel Player { get { return player; } set { player = value; RaisePropertyChanged(() => Player); } }
         private string imgSource;
+        /// <summary>
+        /// 播放文件的位置
+        /// </summary>
         public string ImgSource { get { return imgSource; } set { imgSource = value; RaisePropertyChanged(() => ImgSource); } }
         #region 右下展示板
         //总数由abnormalVMs.Count直接生成切无需更改
@@ -252,6 +262,9 @@ namespace MvvmLight4.ViewModel
         #endregion
 
         #region 辅助方法
+        /// <summary>
+        /// 初始化下拉列表
+        /// </summary>
         private void InitCombobox()
         {
             CombboxList = new List<ComplexInfoModel>();

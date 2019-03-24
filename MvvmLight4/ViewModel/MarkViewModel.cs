@@ -294,7 +294,6 @@ namespace MvvmLight4.ViewModel
         {
             Point p = Mouse.GetPosition(img);
             //拍照
-            //MessageBox.Show("" + img.ActualHeight + "-" + img.ActualWidth + " " + p.Y + "-" + p.X);
             //添加到结果集合
 
             //"201901081636_1234_3_157_1.png"
@@ -305,6 +304,7 @@ namespace MvvmLight4.ViewModel
 
             //"C:\Users\超\Desktop\2019-01-02 16-08-00" + "/2/"
             string path = SavePath + @"/" + Convert.ToString(AbnormalType.Type) + @"/" + filename;
+
             //switch (currentAbnormalType)
             //{
             //    case 0:
@@ -340,15 +340,13 @@ namespace MvvmLight4.ViewModel
                 ImageHelper.SavePic(imagePath[CurrentFramePosition], path + "_1" + ".jpg");
             }
             Debug.WriteLine("" + p.X * 1.0 / img.ActualWidth + "---" + p.Y * 1.0 / img.ActualHeight);
-            //MarkModel mark = new MarkModel(Convert.ToString(currentFramePosition), currentAbnormalType, p.X * 1.0 / img.ActualWidth, p.Y * 1.0 / img.ActualHeight, path);
+
             MarkModel mark = new MarkModel(Convert.ToString(currentFramePosition), AbnormalType.Type, p.X * 1.0 / img.ActualWidth, p.Y * 1.0 / img.ActualHeight, path);
             Marks.Add(mark);
             DispatcherHelper.CheckBeginInvokeOnUI(() =>
             {
-                //CurrentThumbnailPath = mark.Path;
                 CurrentThumbnailPathNew = BitmapFrame.Create(new Uri(mark.Path + "_1" + ".jpg"), BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
             });
-            //AbnormalNums[mark.Type]++;
         }
         #endregion
         #region 打开窗口

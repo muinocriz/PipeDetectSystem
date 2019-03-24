@@ -25,6 +25,9 @@ namespace MvvmLight4.ViewModel
 
         #region property
         private ObservableCollection<MetaModel> metas;
+        /// <summary>
+        /// 元信息列表
+        /// </summary>
         public ObservableCollection<MetaModel> Metas
         {
             get

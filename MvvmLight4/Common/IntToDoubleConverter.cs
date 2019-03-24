@@ -10,6 +10,15 @@ namespace MvvmLight4.Common
 {
     class IntToDoubleConverter : IValueConverter
     {
+        /// <summary>
+        /// 训练界面
+        /// 装换学习率和检测次数
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="targetType"></param>
+        /// <param name="parameter"></param>
+        /// <param name="culture"></param>
+        /// <returns></returns>
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value == null)

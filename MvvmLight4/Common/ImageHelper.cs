@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -18,7 +19,7 @@ namespace MvvmLight4.Common
         /// <param name="y">显示图像中心纵坐标    /   显示图像高度</param>
         /// <param name="width">截图宽</param>
         /// <param name="height">截图高</param>
-        public static void Caijianpic(String picPath,String savePath, double x, double y, int width, int height)
+        public static void Caijianpic(String picPath, String savePath, double x, double y, int width, int height)
         {
             using (System.Drawing.Image img = System.Drawing.Image.FromStream(new System.IO.MemoryStream(System.IO.File.ReadAllBytes(picPath))))
             {
@@ -33,6 +34,7 @@ namespace MvvmLight4.Common
                     img.Dispose();
                     return;
                 }
+
                 //定义Bitmap对象
                 using (System.Drawing.Bitmap bmpImage = new System.Drawing.Bitmap(img))
                 {
@@ -53,8 +55,15 @@ namespace MvvmLight4.Common
         /// <param name="savePath">新位置</param>
         public static void SavePic(String picPath, String savePath)
         {
-            File.Copy(picPath, savePath, true);
-            return;
+            try
+            {
+                File.Copy(picPath, savePath, true);
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine("保存 {0} 到 {1} 失败", picPath, savePath);
+                Debug.WriteLine("原因：{0}", e.ToString());
+            }
         }
     }
 }

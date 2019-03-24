@@ -140,7 +140,6 @@
     </ApplicationDefinition>
     <Compile Include="Common\BGConverter.cs" />
     <Compile Include="Common\CmdHelper.cs" />
-    <Compile Include="Common\ContainProperty.cs" />
     <Compile Include="Common\FileComparer.cs" />
     <Compile Include="Common\ImageHelper.cs" />
     <Compile Include="Common\IntToAbnormalConverter.cs" />

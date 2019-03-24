@@ -72,26 +72,28 @@ namespace MvvmLight4.Service
             using (IDbConnection conn = SqlHelper.GetConnection())
             {
                 conn.Open();
-                insertedRows = conn.Execute(@"INSERT INTO TB_METADATA ( PIPECODE,
-                                                                        PIPETYPE,
-                                                                        TASKCODE,
-                                                                        ADDR,
-                                                                        CHARGE,
-                                                                        STARTTIME,
-                                                                        VIDEOPATH,
-                                                                        HEADTIME,
-                                                                        TAILTIME,
-                                                                        GC) VALUES(
-                                                                        @PipeCode,
-                                                                        @PipeType,
-                                                                        @TaskCode,
-                                                                        @Addr,
-                                                                        @Charge,
-                                                                        @StartTime,
-                                                                        @VideoPath,
-                                                                        @HeadTime,
-                                                                        @TailTime,
-                                                                        @GC)",
+                insertedRows = conn.Execute(@"INSERT INTO TB_METADATA 
+                                                ( PIPECODE,
+                                                PIPETYPE,
+                                                TASKCODE,
+                                                ADDR,
+                                                CHARGE,
+                                                STARTTIME,
+                                                VIDEOPATH,
+                                                HEADTIME,
+                                                TAILTIME,
+                                                GC) 
+                                            VALUES(
+                                                @PipeCode,
+                                                @PipeType,
+                                                @TaskCode,
+                                                 @Addr,
+                                                 @Charge,
+                                                 @StartTime,
+                                                 @VideoPath,
+                                                 @HeadTime,
+                                                 @TailTime,
+                                                 @GC)",
                     new
                     {
                         meta.PipeCode,
@@ -164,7 +166,7 @@ namespace MvvmLight4.Service
             using (IDbConnection conn = SqlHelper.GetConnection())
             {
                 conn.Open();
-                var sql = @"SELECT * FROM TB_METADATA WHERE FRAMEPATH IS NOT NULL ORDER BY ID DESC;";
+                var sql = @"SELECT * FROM TB_METADATA WHERE FRAMEPATH IS NOT NULL AND FRAMEPATH != '' ORDER BY ID DESC LIMIT 500;";
                 IEnumerable<dynamic> dynamics = conn.Query(sql);
                 foreach (var item in dynamics)
                 {
@@ -197,8 +199,7 @@ namespace MvvmLight4.Service
                 var sql = @"SELECT DISTINCT VIDEOID,TASKCODE 
                                 FROM TB_METADATA,TB_ABNORMAL 
                                 WHERE TB_METADATA.ID = TB_ABNORMAL.VIDEOID 
-                                ORDER BY VIDEOID DESC 
-                                LIMIT 500;";
+                                ORDER BY VIDEOID DESC;";
                 IEnumerable<dynamic> dynamics = conn.Query(sql);
                 foreach (var item in dynamics)
                 {

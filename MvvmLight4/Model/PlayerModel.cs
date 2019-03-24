@@ -12,19 +12,29 @@ namespace MvvmLight4.Model
     public class PlayerModel: ObservableObject
     {
         private int target;
-        //目标帧号
+        /// <summary>
+        /// 目标帧号
+        /// </summary>
         public int Target { get => target; set { target = value; RaisePropertyChanged(() => Target); } }
         private int speed;
-        //模仿速度
+        /// <summary>
+        /// 模仿速度
+        /// </summary>
         public int Speed { get => speed; set { speed = value; RaisePropertyChanged(() => Speed); } }
         private string folder;
-        //该帧所在的文件夹绝对路径
+        /// <summary>
+        /// 该帧所在的文件夹绝对路径
+        /// </summary>
         public string Folder { get => folder; set { folder = value; RaisePropertyChanged(() => Folder); } }
         private int startNum;
-        //开始帧帧号
+        /// <summary>
+        /// 开始帧帧号
+        /// </summary>
         public int StartNum { get => startNum; set { startNum = value; RaisePropertyChanged(() => StartNum); } }
         private int endNum;
-        //结束帧帧号
+        /// <summary>
+        /// 结束帧帧号
+        /// </summary>
         public int EndNum { get => endNum; set { endNum = value; RaisePropertyChanged(() => EndNum); } }
 
         public PlayerModel()

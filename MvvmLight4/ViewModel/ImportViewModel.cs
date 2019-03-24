@@ -21,6 +21,9 @@ namespace MvvmLight4.ViewModel
         }
 
         private MetaModel meta;
+        /// <summary>
+        /// 元数据
+        /// </summary>
         public MetaModel Meta
         {
             get

@@ -14,11 +14,6 @@ namespace MvvmLight4.Common
         /// <summary>
         /// 执行cmd命令
         /// 多命令请使用批处理命令连接符：
-        /// <![CDATA[
-        /// &:同时执行两个命令
-        /// |:将上一个命令的输出,作为下一个命令的输入
-        /// &&：当&&前的命令成功时,才执行&&后的命令
-        /// ||：当||前的命令失败时,才执行||后的命令]]>
         /// </summary>
         /// <param name="cmd">要执行的命令</param>
         public static int RunCmd(string cmd)
@@ -45,6 +40,12 @@ namespace MvvmLight4.Common
             }
         }
 
+        /// <summary>
+        /// 执行Cmd命令
+        /// </summary>
+        /// <param name="cmd">命令</param>
+        /// <param name="arguments">参数</param>
+        /// <returns></returns>
         public static Process RunProcess(string cmd,string arguments="")
         {
             try

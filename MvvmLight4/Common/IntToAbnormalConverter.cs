@@ -10,6 +10,14 @@ namespace MvvmLight4.Common
 {
     class IntToAbnormalConverter : IValueConverter
     {
+        /// <summary>
+        /// 异常转换
+        /// </summary>
+        /// <param name="value">异常值</param>
+        /// <param name="targetType"></param>
+        /// <param name="parameter"></param>
+        /// <param name="culture">异常、无异常</param>
+        /// <returns></returns>
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value == null)

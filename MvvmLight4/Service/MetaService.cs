@@ -170,14 +170,20 @@ namespace MvvmLight4.Service
                 IEnumerable<dynamic> dynamics = conn.Query(sql);
                 foreach (var item in dynamics)
                 {
-                    MetaViewModel mvm = new MetaViewModel();
-                    mvm.Id = (int)item.ID;
-                    MetaModel mm = new MetaModel();
-                    mm.VideoPath = item.VIDEOPATH;
-                    mm.Addr = item.ADDR;
-                    mm.TaskCode = item.TASKCODE;
-                    mm.StartTime = item.STARTTIME;
-                    mm.FramePath = item.FRAMEPATH;
+                    MetaViewModel mvm = new MetaViewModel
+                    {
+                        Id = (int)item.ID
+                    };
+                    MetaModel mm = new MetaModel
+                    {
+                        VideoPath = item.VIDEOPATH,
+                        Addr = item.ADDR,
+                        TaskCode = item.TASKCODE,
+                        StartTime = item.STARTTIME,
+                        FramePath = item.FRAMEPATH,
+                        HeadTime = item.HEADTIME,
+                        TailTime = item.TAILTIME
+                    };
                     mvm.Meta = mm;
                     mvms.Add(mvm);
                 }

@@ -241,20 +241,23 @@ namespace MvvmLight4.ViewModel
         {
             //检测逻辑
             Dictionary<int, string> dict = new Dictionary<int, string>();
+            List<Video> videos = new List<Video>();
             foreach (var item in VideoList)
             {
-                dict[(int)item.Id] = item.Meta.FramePath;
+                //dict[(int)item.Id] = item.Meta.FramePath;
+                videos.Add(new Video() { Id = (int)item.Id, Path = item.Meta.FramePath, Head = item.Meta.HeadTime, Tail = item.Meta.TailTime });
             }
 
             //使用cmd运行Python
             string cmdStringTest = ConfigurationManager.ConnectionStrings["DetectCmdString"].ConnectionString;
             Console.WriteLine(JsonConvert.SerializeObject(dict));
             string cmdString = string.Empty;
+
             try
             {
                 FileStream aFile = new FileStream("Util/detect.txt", FileMode.Create);
                 StreamWriter sw = new StreamWriter(aFile);
-                string data = JsonConvert.SerializeObject(dict).Replace("\"", "'");
+                string data = JsonConvert.SerializeObject(videos).Replace("\"", "'");
                 sw.WriteLine(data);
                 sw.WriteLine(ModelItem[0].ModelModel.Location + "\\" + ModelItem[0].ModelModel.ModelName);
                 if (ModelItem[1] != null && !string.IsNullOrEmpty(ModelItem[1].ModelModel.Location))
@@ -265,6 +268,11 @@ namespace MvvmLight4.ViewModel
                 {
                     sw.WriteLine("None");
                 }
+                string[] positions = SelectedInstrument.Path.Split('-');
+                for (int i = 0; i < positions.Length; i++)
+                {
+                    sw.WriteLine(positions[i]);
+                }
                 sw.Close();
                 aFile.Close();
             }
@@ -274,11 +282,10 @@ namespace MvvmLight4.ViewModel
                 Console.WriteLine(e.ToString());
                 return;
             }
-            Console.WriteLine("cmdstring: " + cmdString);
 
             var t = new Task(() =>
             {
-                Process p = CmdHelper.RunProcess(SelectedInstrument.Path, "detect.txt");
+                Process p = CmdHelper.RunProcess(@"Util/detect.exe", "detect.txt");
                 p.Start();
                 Console.WriteLine("wait for exit");
                 p.WaitForExit();
@@ -300,7 +307,8 @@ namespace MvvmLight4.ViewModel
             //新建后台进程
             worker = new BackgroundWorker
             {
-                WorkerReportsProgress = true
+                WorkerReportsProgress = true,
+                WorkerSupportsCancellation = true
             };
             worker.DoWork += Worker_DoWork;
             worker.ProgressChanged += Worker_ProgressChanged;
@@ -556,8 +564,8 @@ namespace MvvmLight4.ViewModel
             //初始化仪器列表
             Instruments = new ObservableCollection<Instrument>
             {
-                new Instrument() { Name = "中仪1", Path = @"Util/detect.exe" },
-                new Instrument() { Name = "其它仪器", Path = @"Util/detect.exe" }
+                new Instrument() { Name = "中仪1", Path = @"910-1062-1035-1030" },
+                new Instrument() { Name = "其它仪器", Path = @"910-1062-1035-1030" }
             };
 
             //设置仪器列表默认选中项目
@@ -589,6 +597,14 @@ namespace MvvmLight4.ViewModel
 
         public string Name { get => _name; set => _name = value; }
         public string Path { get => _path; set => _path = value; }
+    }
+
+    public class Video
+    {
+        public int Id { get; set; }
+        public string Path { get; set; }
+        public string Head { get; set; }
+        public string Tail { get; set; }
     }
     #endregion
 }

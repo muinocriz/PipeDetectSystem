@@ -127,14 +127,14 @@
                         <Label Width="80" Content="开头时间：" />
                         <TextBox
                             Width="250"
-                            Controls:TextBoxHelper.Watermark="进入管道时间（可选）"
+                            Controls:TextBoxHelper.Watermark="分分:秒秒"
                             Text="{Binding HeadTime}" />
                     </StackPanel>
                     <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
                         <Label Width="80" Content="尾部时间：" />
                         <TextBox
                             Width="250"
-                            Controls:TextBoxHelper.Watermark="退出管道时间（可选）"
+                            Controls:TextBoxHelper.Watermark="分分:秒秒"
                             Text="{Binding TailTime}" />
                     </StackPanel>
                 </StackPanel>

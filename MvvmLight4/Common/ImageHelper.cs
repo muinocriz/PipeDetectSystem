@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -57,7 +58,14 @@ namespace MvvmLight4.Common
         {
             try
             {
-                File.Copy(picPath, savePath, true);
+                //File.Copy(picPath, savePath, true);
+                System.Drawing.Bitmap bitmap1 = new System.Drawing.Bitmap(picPath, true);
+                var bmp = new Bitmap(bitmap1.Width, bitmap1.Height, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+                using (var gr = Graphics.FromImage(bmp))
+                {
+                    gr.DrawImage(bitmap1, new Rectangle(0, 0, bitmap1.Width, bitmap1.Height));
+                }
+                bmp.Save(savePath);
             }
             catch (Exception e)
             {

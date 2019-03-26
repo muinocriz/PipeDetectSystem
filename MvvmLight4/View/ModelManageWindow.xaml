@@ -21,18 +21,47 @@
             <mvvm:EventToCommand Command="{Binding LoadedCmd}" />
         </i:EventTrigger>
     </i:Interaction.Triggers>
-    <Grid Margin="5" FocusManager.FocusedElement="{Binding ElementName=ModelDG}">
+    <Grid Margin="5">
         <Grid.Resources>
             <Style TargetType="{x:Type Label}">
                 <Setter Property="FontFamily" Value="/MvvmLight4;component/Font/#Source Han Sans CN" />
             </Style>
         </Grid.Resources>
         <Grid.RowDefinitions>
+            <RowDefinition Height="50" />
             <RowDefinition />
             <RowDefinition Height="50" />
         </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition Width="100" />
+            </Grid.ColumnDefinitions>
+            <TextBox
+                Grid.Column="0"
+                Height="25"
+                Margin="10"
+                VerticalContentAlignment="Center"
+                Controls:TextBoxHelper.Watermark="模型名称"
+                Text="{Binding AddModel.ModelName, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBox
+                Grid.Column="1"
+                Height="25"
+                Margin="10"
+                VerticalContentAlignment="Center"
+                Controls:TextBoxHelper.Watermark="模型位置"
+                Text="{Binding AddModel.Location, UpdateSourceTrigger=PropertyChanged}" />
+            <Button
+                Grid.Column="2"
+                Width="80"
+                Height="25"
+                Command="{Binding AddModelCmd}"
+                Content="添加新模型" />
+        </Grid>
         <DataGrid
             Name="ModelDG"
+            Grid.Row="1"
             Width="550"
             AutoGenerateColumns="False"
             CanUserAddRows="False"
@@ -65,7 +94,7 @@
             </DataGrid.Columns>
         </DataGrid>
         <Button
-            Grid.Row="1"
+            Grid.Row="2"
             Width="80"
             Height="25"
             Margin="0,0,10,0"

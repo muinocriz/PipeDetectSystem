@@ -342,6 +342,7 @@ namespace MvvmLight4.Service
 
                     row1.CreateCell(10).SetCellValue(metaModel.GC);
 
+                    row1.CreateCell(17).SetCellValue(abnormalModel.QXWZ);
                     int qxmc = abnormalModel.Type;
                     string name = typeDict[qxmc].Name;
                     row1.CreateCell(18).SetCellValue(name);

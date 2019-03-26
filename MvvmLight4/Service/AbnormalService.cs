@@ -169,7 +169,7 @@ namespace MvvmLight4.Service
                 conn.Open();
                 using (var trans = conn.BeginTransaction())
                 {
-                    var sql = @"INSERT INTO TB_ABNORMAL(VIDEOID,POSITION,TYPE) VALUES(@VideoId,@Position,@Type);";
+                    var sql = @"INSERT INTO TB_ABNORMAL(VIDEOID,POSITION,TYPE,QXWZ) VALUES(@VideoId,@Position,@Type,@QXWZ);";
                     var executeResult =  conn.Execute(sql,abnormalModels,trans);
                     trans.Commit();
                     return executeResult;

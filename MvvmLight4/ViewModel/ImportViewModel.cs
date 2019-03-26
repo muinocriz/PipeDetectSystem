@@ -4,6 +4,7 @@ using MvvmLight4.Model;
 using MvvmLight4.Service;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -56,31 +57,38 @@ namespace MvvmLight4.ViewModel
             }
 
             string hTag = Meta.HeadTime;
-            if (hTag.Split(':').Length != 2)
+            //如果hTag不为空，就要判断是否符合规则，否则直接退出
+            if (!string.IsNullOrEmpty(hTag))
             {
-                errorMsgs.Add(@"开头时间格式不正确,应为：分分:秒秒（':'为英文冒号）");
-            }
-            else if (!(IsInt(hTag.Split(':')[0]) && IsInt(hTag.Split(':')[1])))
-            {
-                errorMsgs.Add(@"输入的开头时间未能转换为整数");
+                if (hTag.Split(':').Length != 2)
+                {
+                    errorMsgs.Add(@"开头时间格式不正确,应为：分分:秒秒（':'为英文冒号）");
+                }
+                else if (!(IsInt(hTag.Split(':')[0]) && IsInt(hTag.Split(':')[1])))
+                {
+                    errorMsgs.Add(@"输入的开头时间未能转换为整数");
+                }
             }
 
             string tTag = Meta.TailTime;
-            if (tTag.Split(':').Length != 2)
+            if (!string.IsNullOrEmpty(tTag))
             {
-                errorMsgs.Add(@"尾部时间格式不正确,应为：分分:秒秒（':'为英文冒号）");
-            }
-            else if (!(IsInt(tTag.Split(':')[0]) && IsInt(tTag.Split(':')[1])))
-            {
-                errorMsgs.Add(@"输入的尾部时间未能转换为整数");
+                if (tTag.Split(':').Length != 2)
+                {
+                    errorMsgs.Add(@"尾部时间格式不正确,应为：分分:秒秒（':'为英文冒号）");
+                }
+                else if (!(IsInt(tTag.Split(':')[0]) && IsInt(tTag.Split(':')[1])))
+                {
+                    errorMsgs.Add(@"输入的尾部时间未能转换为整数");
+                }
             }
 
             string msg = string.Empty;
-            if (errorMsgs!=null && errorMsgs.Count()>0)
+            if (errorMsgs != null && errorMsgs.Count() > 0)
             {
-                for(int i=0;i< errorMsgs.Count();i++)
+                for (int i = 0; i < errorMsgs.Count(); i++)
                 {
-                    msg = msg + "\n" + (i+1) + " " + errorMsgs[i];
+                    msg = msg + "\n" + (i + 1) + " " + errorMsgs[i];
                 }
                 MessageBox.Show(msg);
                 return;
@@ -93,6 +101,9 @@ namespace MvvmLight4.ViewModel
             }
         }
 
+        /// <summary>
+        /// 打开文件选择对话框
+        /// </summary>
         public RelayCommand OpenFileDialogCmd { get; private set; }
 
         private void ExecuteOpenFileDialogCmd()
@@ -101,16 +112,34 @@ namespace MvvmLight4.ViewModel
             Meta.VideoPath = FileDialogService.GetService().OpenFileDialog(filter);
         }
 
+        /// <summary>
+        /// 打开视频首位标注对话框
+        /// </summary>
+        public RelayCommand OpenVideoCmd { get; private set; }
+
+        private void ExecuteOpenVideoCmd()
+        {
+            string videoPath = Meta.VideoPath;
+            if(string.IsNullOrEmpty(videoPath) || !File.Exists(videoPath))
+            {
+                MessageBox.Show("视频文件路径出错");
+                return;
+            }
+
+
+        }
+
         #region helper function
         private void AssignCommands()
         {
             OpenFileDialogCmd = new RelayCommand(() => ExecuteOpenFileDialogCmd());
             SubmitCmd = new RelayCommand(() => ExecuteSubmitCmd(), CanExecuteSubmitCmd);
+            OpenVideoCmd = new RelayCommand(() => ExecuteOpenVideoCmd());
         }
 
         public static bool IsInt(string value)
         {
-            Console.WriteLine("value:"+value);
+            Console.WriteLine("value:" + value);
             try
             {
                 Convert.ToInt32(value);

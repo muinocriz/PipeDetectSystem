@@ -21,10 +21,24 @@ namespace MvvmLight4.ViewModel
         public ModelManageViewModel()
         {
             AssignCommands();
+            AddModel = new ModelModel();
         }
 
 
         #region 属性
+        private ModelModel addModel;
+        public ModelModel AddModel
+        {
+            get
+            {
+                return addModel;
+            }
+            set
+            {
+                addModel = value;
+                RaisePropertyChanged(() => AddModel);
+            }
+        }
         private ObservableCollection<ModelViewModel> models;
         /// <summary>
         /// 所有模型
@@ -43,6 +57,8 @@ namespace MvvmLight4.ViewModel
         }
         #endregion
 
+        public RelayCommand AddModelCmd { get; private set; }
+
         public RelayCommand LoadedCmd { get; private set; }
 
         private void ExecuteLoadCmd()
@@ -52,6 +68,22 @@ namespace MvvmLight4.ViewModel
 
         public RelayCommand<DataGridCellEditEndingEventArgs> UpdateModelCmd { get; private set; }
 
+
+        private void ExecuteAddModelCmd()
+        {
+            AddModel.CreateTime=addModel.UpdateTime= DateTime.Now.ToString();
+            int result = ModelService.GetService().TransferModel(AddModel);
+            if (result > 0)
+            {
+                MessageBox.Show(result+"个模型已迁移");
+            }
+            Models = ModelService.GetService().LoadData();
+        }
+
+        private bool CanExecuteAddModelCmd()
+        {
+            return !string.IsNullOrEmpty(AddModel.ModelName) && !string.IsNullOrEmpty(AddModel.Location);
+        }
 
         private void ExecuteUpdateModelCmd(DataGridCellEditEndingEventArgs p)
         {
@@ -123,6 +155,7 @@ namespace MvvmLight4.ViewModel
         private void AssignCommands()
         {
             LoadedCmd = new RelayCommand(() => ExecuteLoadCmd());
+            AddModelCmd = new RelayCommand(() => ExecuteAddModelCmd(), CanExecuteAddModelCmd);
             UpdateModelCmd = new RelayCommand<DataGridCellEditEndingEventArgs>((p) => ExecuteUpdateModelCmd(p));
             DeleteModelCmd = new RelayCommand<ModelViewModel>((p) => ExecuteDeleteModelCmd(p), CanExecuteDeleteModelCmd);
         }

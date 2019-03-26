@@ -127,8 +127,15 @@
                         <Label Width="80" Content="开头时间：" />
                         <TextBox
                             Width="250"
+                            Margin="0,0,10,0"
                             Controls:TextBoxHelper.Watermark="分分:秒秒"
                             Text="{Binding HeadTime}" />
+                        <Button
+                            Width="80"
+                            Command="{Binding Import.OpenVideoCmd}"
+                            Content="播放"
+                            DataContext="{Binding Source={StaticResource Locator}}"
+                            Visibility="Hidden" />
                     </StackPanel>
                     <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
                         <Label Width="80" Content="尾部时间：" />

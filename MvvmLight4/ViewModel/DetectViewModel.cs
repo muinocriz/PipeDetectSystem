@@ -373,18 +373,19 @@ namespace MvvmLight4.ViewModel
                         break;
                     case 4:
                         //异常类型
-                        if (messages.Length == 4)
+                        if (messages.Length == 5)
                         {
                             string _position = String.Empty;
                             int.TryParse(messages[1], out int _videoId);
                             _position = messages[2];
                             int.TryParse(messages[3], out int _type);
+                            double.TryParse(messages[4], out double m);
                             //存起来，最后一期打包存
-                            AbnormalModel abnormalModel = new AbnormalModel(_videoId, _position, _type);
+                            AbnormalModel abnormalModel = new AbnormalModel(_videoId, _position, _type,m);
                             abnormalModels.Add(abnormalModel);
 
                             //日志
-                            log = "帧号：\t" + _position + "\t异常类型\t" + _type;
+                            log = "帧号：\t" + _position + "\t异常类型\t" + _type+ "\t缺陷位置\t" + m;
 
                             worker.ReportProgress(progress, log);
                         }
@@ -448,7 +449,7 @@ namespace MvvmLight4.ViewModel
         {
             pipeReader.Close();
             DetectProgVb = Visibility.Hidden;
-            LogText += "\r\n检测完成";
+            LogText += "\r\n检测完成，等待存储";
             if (e.Cancelled || e.Error != null)
             {
                 MessageBox.Show(errorMsg);
@@ -458,6 +459,7 @@ namespace MvvmLight4.ViewModel
                 //批量存入
                 if (abnormalModels != null && abnormalModels.Count > 0)
                     AbnormalService.GetService().AddAbnormal(abnormalModels);
+                LogText += "\r\n存储完成";
                 //清空
                 abnormalModels.Clear();
                 canBackTrackOrExport = true;

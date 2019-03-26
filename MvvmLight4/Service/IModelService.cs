@@ -15,5 +15,6 @@ namespace MvvmLight4.Service
         int UpdateModel(ModelViewModel modelViewModel);
         int DeleteModel(ModelViewModel modelViewModel);
         int AddModel(ModelModel modelModel);
+        int TransferModel(ModelModel addModel);
     }
 }

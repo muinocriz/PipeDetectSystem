@@ -59,7 +59,29 @@ namespace MvvmLight4.Service
                 var sql = @"DELETE FROM TB_MODEL WHERE ID=@Id";
                 return conn.Execute(sql, new
                 {
-                    Id = modelViewModel.Id
+                    modelViewModel.Id
+                });
+            }
+        }
+
+        /// <summary>
+        /// 模型管理界面
+        /// 添加一个已经存在的模型
+        /// </summary>
+        /// <param name="addModel"></param>
+        /// <returns></returns>
+        public  int TransferModel(ModelModel addModel)
+        {
+            using (IDbConnection conn = SqlHelper.GetConnection())
+            {
+                conn.Open();
+                var sql = @"INSERT INTO TB_MODEL(MODELNAME,CREATETIME,LOCATION,UPDATETIME) VALUES(@ModelName,@CreateTime,@Location,@UpdateTime)";
+                return conn.Execute(sql, new
+                {
+                    addModel.ModelName,
+                    addModel.CreateTime,
+                    addModel.Location,
+                    addModel.UpdateTime
                 });
             }
         }

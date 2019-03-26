@@ -16,6 +16,15 @@ namespace MvvmLight4.Model
             Position = _position;
             Type = _type;
         }
+
+        public AbnormalModel(int _videoId, string _position, int _type, double _qxwz)
+        {
+            VideoId = _videoId;
+            Position = _position;
+            Type = _type;
+            QXWZ = _qxwz;
+        }
+
         private int videoId;
         /// <summary>
         /// 异常所属于的视频的Id

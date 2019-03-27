@@ -13,7 +13,6 @@
     Height="450"
     DataContext="{Binding Source={StaticResource Locator}, Path=ModelManage}"
     FontFamily="/MvvmLight4;component/Font/#Source Han Sans CN"
-    ResizeMode="NoResize"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
     <i:Interaction.Triggers>
@@ -32,10 +31,11 @@
             <RowDefinition />
             <RowDefinition Height="50" />
         </Grid.RowDefinitions>
+        <!--  迁移已有模型  -->
         <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition />
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="5*" />
                 <ColumnDefinition Width="100" />
             </Grid.ColumnDefinitions>
             <TextBox
@@ -57,8 +57,9 @@
                 Width="80"
                 Height="25"
                 Command="{Binding AddModelCmd}"
-                Content="添加新模型" />
+                Content="迁移模型" />
         </Grid>
+        <!--  模型管理  -->
         <DataGrid
             Name="ModelDG"
             Grid.Row="1"
@@ -93,6 +94,7 @@
                     IsReadOnly="True" />
             </DataGrid.Columns>
         </DataGrid>
+        <!--  删除模型  -->
         <Button
             Grid.Row="2"
             Width="80"

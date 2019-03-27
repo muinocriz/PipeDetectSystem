@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,7 +24,6 @@ namespace MvvmLight4.ViewModel
             AssignCommands();
             AddModel = new ModelModel();
         }
-
 
         #region 属性
         private ModelModel addModel;
@@ -57,6 +57,7 @@ namespace MvvmLight4.ViewModel
         }
         #endregion
 
+        #region 命令
         public RelayCommand AddModelCmd { get; private set; }
 
         public RelayCommand LoadedCmd { get; private set; }
@@ -71,11 +72,15 @@ namespace MvvmLight4.ViewModel
 
         private void ExecuteAddModelCmd()
         {
-            AddModel.CreateTime=addModel.UpdateTime= DateTime.Now.ToString();
+            if (!Directory.Exists(AddModel.Location))
+            {
+                MessageBox.Show("文件目录不存在");
+            }
+            AddModel.CreateTime = addModel.UpdateTime = DateTime.Now.ToString();
             int result = ModelService.GetService().TransferModel(AddModel);
             if (result > 0)
             {
-                MessageBox.Show(result+"个模型已迁移");
+                MessageBox.Show(result + "个模型已迁移");
             }
             Models = ModelService.GetService().LoadData();
         }
@@ -150,6 +155,7 @@ namespace MvvmLight4.ViewModel
                 MessageBox.Show("删除失败，该数据可能已被更改");
             }
         }
+        #endregion
 
         #region 辅助方法
         private void AssignCommands()
@@ -162,6 +168,7 @@ namespace MvvmLight4.ViewModel
         #endregion
     }
 
+    #region 辅助类
     public class ModelViewModel : ViewModelBase
     {
         private ModelModel modelModel;
@@ -191,4 +198,5 @@ namespace MvvmLight4.ViewModel
             }
         }
     }
+    #endregion
 }

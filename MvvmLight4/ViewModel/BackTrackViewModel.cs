@@ -31,7 +31,10 @@ namespace MvvmLight4.ViewModel
                 VideoIds = msg;
             });
 
-            VideoIds.Add(46);
+            //调试数据，使用请删除或注释
+            //VideoIds.Add(46);
+            //VideoIds.Add(47);
+            //调试数据，使用请删除或注释
 
             InitCombobox();
 
@@ -134,6 +137,7 @@ namespace MvvmLight4.ViewModel
         #endregion
         #endregion
 
+        #region 命令
         /// <summary>
         /// 界面加载时函数
         /// </summary>
@@ -154,7 +158,6 @@ namespace MvvmLight4.ViewModel
             }
         }
 
-        #region 选择了DataGrid的某一项
         /// <summary>
         /// 选择了DataGrid的某一项
         /// </summary>
@@ -229,8 +232,7 @@ namespace MvvmLight4.ViewModel
                 MessageBox.Show("发生异常：" + e.ToString());
             }
         }
-        #endregion
-        #region ComboxItem被更改
+
         /// <summary>
         /// ComboxItem被更改
         /// </summary>

@@ -13,11 +13,13 @@
     Title="人工回溯"
     Width="800"
     Height="530"
+    MinWidth="800"
+    MinHeight="530"
     DataContext="{Binding Source={StaticResource Locator}, Path=BackTrack}"
     FontFamily="/MvvmLight4;component/Font/#Source Han Sans CN"
     KeyDown="MainWin_KeyDown"
     MouseDoubleClick="MainWin_MouseDoubleClick"
-    ResizeMode="NoResize"
+    ResizeMode="CanResizeWithGrip"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
     <i:Interaction.Triggers>
@@ -29,116 +31,121 @@
         <Grid.Resources>
             <common:IntToAbnormalConverter x:Key="itac" />
             <common:BGConverter x:Key="bgc" />
+            <common:TimeConverter x:Key="tc" />
             <Style TargetType="{x:Type Label}">
                 <Setter Property="FontFamily" Value="/MvvmLight4;component/Font/#Source Han Sans CN" />
             </Style>
         </Grid.Resources>
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="15*" />
             <ColumnDefinition />
             <ColumnDefinition Width="auto" />
         </Grid.ColumnDefinitions>
-        <!--  视频播放  -->
-        <Grid Grid.Column="0" Margin="20,40,20,10">
-            <StackPanel>
-                <!--  播放区域  -->
-                <Grid
-                    Name="grid"
-                    Height="300"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Background="Azure">
-                    <Image
-                        Name="Img"
-                        Source="{Binding ImgSource}"
-                        Visibility="Visible" />
-                </Grid>
-                <!--  控制区域  -->
-                <StackPanel Name="ControlSP">
-                    <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
-                        <Button
-                            Name="FullScreen"
-                            Width="40"
-                            Height="40"
-                            Click="FullScreen_Click"
-                            ToolTip="全屏">
-                            <Image Source="/Image/放大.png" />
-                        </Button>
-                    </StackPanel>
-                </StackPanel>
-                <!--  数据显示区域  -->
-                <StackPanel
-                    Name="DetailSP"
-                    Height="90"
-                    Margin="0,20,0,0">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="2*" />
-                            <ColumnDefinition Width="5*" />
-                            <ColumnDefinition Width="2*" />
-                            <ColumnDefinition Width="5*" />
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-                        <Label
-                            Grid.Row="0"
-                            Grid.Column="0"
-                            Content="地点：" />
-                        <Label
-                            Grid.Row="0"
-                            Grid.Column="1"
-                            Content="{Binding SelectedAVM.Meta.Addr}" />
-                        <Label
-                            Grid.Row="0"
-                            Grid.Column="2"
-                            Content="管道编号：" />
-                        <Label
-                            Grid.Row="0"
-                            Grid.Column="3"
-                            Content="{Binding SelectedAVM.Meta.PipeCode}" />
-                        <Label
-                            Grid.Row="1"
-                            Grid.Column="0"
-                            Content="管道类型：" />
-                        <Label
-                            Grid.Row="1"
-                            Grid.Column="1"
-                            Content="{Binding SelectedAVM.Meta.PipeType}" />
-                        <Label
-                            Grid.Row="1"
-                            Grid.Column="2"
-                            Content="任务日期：" />
-                        <Label
-                            Grid.Row="1"
-                            Grid.Column="3"
-                            Content="{Binding SelectedAVM.Meta.StartTime}" />
-                        <Label
-                            Grid.Row="2"
-                            Grid.Column="0"
-                            Content="异常类型：" />
-                        <ComboBox
-                            Name="TypeCB"
-                            Grid.Row="2"
-                            Grid.Column="1"
-                            DisplayMemberPath="Text"
-                            ItemsSource="{Binding CombboxList}"
-                            SelectedItem="{Binding CombboxItem}"
-                            SelectedValuePath="Key"
-                            ToolTip="请在视频播放完成后更改">
-                            <i:Interaction.Triggers>
-                                <i:EventTrigger EventName="DropDownClosed">
-                                    <mvvm:EventToCommand Command="{Binding TypeChangedCmd}" CommandParameter="{Binding ElementName=TypeCB, Path=SelectedItem}" />
-                                </i:EventTrigger>
-                            </i:Interaction.Triggers>
-                        </ComboBox>
-                    </Grid>
-                </StackPanel>
+        <!--  视频  -->
+        <Grid
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Margin="10,30,10,10">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
+            <!--  播放区域  -->
+            <Image
+                Name="Img"
+                Source="{Binding ImgSource}"
+                Visibility="Visible" />
+            <!--  控制区域  -->
+            <StackPanel
+                Name="ScreenCtlSP"
+                Grid.Row="1"
+                HorizontalAlignment="Center"
+                Orientation="Horizontal">
+                <Button
+                    Name="FullScreen"
+                    Width="40"
+                    Height="40"
+                    Click="FullScreen_Click"
+                    ToolTip="全屏">
+                    <Image Source="/Image/放大.png" />
+                </Button>
             </StackPanel>
+            <!--  数据显示区域  -->
+            <Grid
+                Name="DetailSP"
+                Grid.Row="2"
+                Height="90"
+                Margin="0,20,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*" />
+                    <ColumnDefinition Width="5*" />
+                    <ColumnDefinition Width="2*" />
+                    <ColumnDefinition Width="5*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Label
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Content="地点：" />
+                <Label
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Content="{Binding SelectedAVM.Meta.Addr}" />
+                <Label
+                    Grid.Row="0"
+                    Grid.Column="2"
+                    Content="管道编号：" />
+                <Label
+                    Grid.Row="0"
+                    Grid.Column="3"
+                    Content="{Binding SelectedAVM.Meta.PipeCode}" />
+                <Label
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Content="管道类型：" />
+                <Label
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Content="{Binding SelectedAVM.Meta.PipeType}" />
+                <Label
+                    Grid.Row="1"
+                    Grid.Column="2"
+                    Content="任务日期：" />
+                <Label
+                    Grid.Row="1"
+                    Grid.Column="3"
+                    Content="{Binding SelectedAVM.Meta.StartTime}" />
+                <Label
+                    Grid.Row="2"
+                    Grid.Column="0"
+                    Content="异常类型：" />
+                <ComboBox
+                    Name="TypeCB"
+                    Grid.Row="2"
+                    Grid.Column="1"
+                    DisplayMemberPath="Text"
+                    ItemsSource="{Binding CombboxList}"
+                    SelectedItem="{Binding CombboxItem}"
+                    SelectedValuePath="Key"
+                    ToolTip="请在视频播放完成后更改">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="DropDownClosed">
+                            <mvvm:EventToCommand Command="{Binding TypeChangedCmd}" CommandParameter="{Binding ElementName=TypeCB, Path=SelectedItem}" />
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </ComboBox>
+            </Grid>
         </Grid>
         <!--  播放列表  -->
-        <Grid Name="DataGrid" Grid.Column="1">
+        <Grid
+            Name="DataGrid"
+            Grid.Column="2"
+            Margin="0,0,-0.4,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="30" />
                 <RowDefinition />
@@ -153,15 +160,17 @@
                 Content="初步筛选列表"
                 FontSize="14"
                 FontWeight="Bold" />
-            <!--  列表  -->
+            <!--  异常列表  -->
             <DataGrid
                 Name="ADG"
                 Grid.Row="1"
+                Width="240"
                 MinHeight="400"
                 Margin="5"
                 AutoGenerateColumns="False"
                 CanUserAddRows="False"
                 CanUserDeleteRows="False"
+                CanUserResizeColumns="False"
                 GridLinesVisibility="Horizontal"
                 HeadersVisibility="Column"
                 IsReadOnly="True"
@@ -178,11 +187,11 @@
                 </DataGrid.RowStyle>
                 <DataGrid.Columns>
                     <DataGridTextColumn
-                        Width="170"
-                        Binding="{Binding Abnormal.Position}"
+                        Width="5*"
+                        Binding="{Binding Abnormal.Position, Converter={StaticResource tc}}"
                         Header="位置" />
                     <DataGridTextColumn
-                        Width="70"
+                        Width="2*"
                         Binding="{Binding Abnormal.Type, Converter={StaticResource itac}, ConverterParameter=1, UpdateSourceTrigger=PropertyChanged}"
                         Header="是否异常" />
                 </DataGrid.Columns>

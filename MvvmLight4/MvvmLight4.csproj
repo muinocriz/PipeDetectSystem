@@ -147,6 +147,7 @@
     <Compile Include="Common\IntToDoubleConverter.cs" />
     <Compile Include="Common\MessageHelper.cs" />
     <Compile Include="Common\SqlHelper.cs" />
+    <Compile Include="Common\TimeConverter.cs" />
     <Compile Include="Design\DesignDataService.cs" />
     <Compile Include="Model\AbnormalModel.cs" />
     <Compile Include="Model\AbnormalTypeModel.cs" />

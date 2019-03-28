@@ -8,7 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="VideoPlayWindow"
     Width="700"
-    Height="510"
+    Height="550"
     Loaded="MetroWindow_Loaded"
     ResizeMode="NoResize"
     mc:Ignorable="d">
@@ -18,7 +18,7 @@
             <RowDefinition />
             <RowDefinition Height="30" />
             <RowDefinition Height="30" />
-            <RowDefinition Height="30" />
+            <RowDefinition Height="40" />
         </Grid.RowDefinitions>
         <MediaElement
             Name="myMediaElement"
@@ -26,7 +26,6 @@
             LoadedBehavior="Manual"
             MediaEnded="Element_MediaEnded"
             MediaOpened="Element_MediaOpened"
-            Source="F:\迅雷下载\[ViPHD]超人总动员2（中英特效字幕） The.Incredibles.2.2018.WEB-DL.1080P.H264.AAC-JBY@ViPHD\[ViPHD]超人总动员2（中英特效字幕） The.Incredibles.2.2018.WEB-DL.1080P.H264.AAC-JBY@ViPHD.mkv"
             UnloadedBehavior="Stop" />
         <Slider
             Name="timelineSlider"
@@ -57,6 +56,7 @@
         </StackPanel>
         <StackPanel
             Grid.Row="4"
+            Margin="0,10,0,5"
             HorizontalAlignment="Center"
             Orientation="Horizontal">
             <Button

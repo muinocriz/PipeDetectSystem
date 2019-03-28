@@ -1,7 +1,9 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
+using GalaSoft.MvvmLight.Messaging;
 using MvvmLight4.Model;
 using MvvmLight4.Service;
+using MvvmLight4.View;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,6 +22,19 @@ namespace MvvmLight4.ViewModel
             AssignCommands();
 
             Meta = new MetaModel();
+
+            Messenger.Default.Register<string>(this, "HeadTime", GetHeadTime);
+            Messenger.Default.Register<string>(this, "TailTime", GetTailTime);
+        }
+
+        private void GetTailTime(string msg)
+        {
+            Meta.TailTime = msg;
+        }
+
+        private void GetHeadTime(string msg)
+        {
+            Meta.HeadTime = msg;
         }
 
         private MetaModel meta;
@@ -133,8 +148,15 @@ namespace MvvmLight4.ViewModel
                 MessageBox.Show("视频文件路径出错");
                 return;
             }
+            VideoPlayWindow window = new VideoPlayWindow();
+            Messenger.Default.Send<string>(Meta.VideoPath, "VideoPlay");
+            window.ShowDialog();
 
+        }
 
+        private bool CanExecuteOpenVideoCmd()
+        {
+            return !string.IsNullOrEmpty(Meta.VideoPath);
         }
 
         #region helper function
@@ -142,8 +164,9 @@ namespace MvvmLight4.ViewModel
         {
             OpenFileDialogCmd = new RelayCommand(() => ExecuteOpenFileDialogCmd());
             SubmitCmd = new RelayCommand(() => ExecuteSubmitCmd(), CanExecuteSubmitCmd);
-            OpenVideoCmd = new RelayCommand(() => ExecuteOpenVideoCmd());
+            OpenVideoCmd = new RelayCommand(() => ExecuteOpenVideoCmd(), CanExecuteOpenVideoCmd);
         }
+
 
         public static bool IsInt(string value)
         {

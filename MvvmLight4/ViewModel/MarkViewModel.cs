@@ -489,16 +489,18 @@ namespace MvvmLight4.ViewModel
 
         public void InitWorker()
         {
-            worker = new BackgroundWorker();
-            worker.WorkerReportsProgress = true;
-            worker.WorkerSupportsCancellation = true;
-            worker.DoWork += new DoWorkEventHandler(worker_DoWork);
-            worker.ProgressChanged += new ProgressChangedEventHandler(worker_ProgressChanged);
-            worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(worker_RunWorkerCompleted);
+            worker = new BackgroundWorker
+            {
+                WorkerReportsProgress = true,
+                WorkerSupportsCancellation = true
+            };
+            worker.DoWork += new DoWorkEventHandler(Worker_DoWork);
+            worker.ProgressChanged += new ProgressChangedEventHandler(Worker_ProgressChanged);
+            worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(Worker_RunWorkerCompleted);
         }
 
         #region Worker相关函数
-        private void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             if (e.Cancelled)
                 Debug.WriteLine("任务已取消");
@@ -506,7 +508,7 @@ namespace MvvmLight4.ViewModel
                 Debug.WriteLine("本视频标注完成");
         }
 
-        private void worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             DispatcherHelper.CheckBeginInvokeOnUI(() =>
             {
@@ -514,7 +516,7 @@ namespace MvvmLight4.ViewModel
             });
         }
 
-        private void worker_DoWork(object sender, DoWorkEventArgs e)
+        private void Worker_DoWork(object sender, DoWorkEventArgs e)
         {
             PlayerModel p = (PlayerModel)e.Argument;
             int End = p.EndNum;

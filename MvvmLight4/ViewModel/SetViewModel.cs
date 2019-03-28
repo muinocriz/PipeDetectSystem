@@ -19,7 +19,7 @@ namespace MvvmLight4.ViewModel
         public SetViewModel()
         {
             AssignCommands();
-            AbnormalTypes = AbnormalService.GetService().GetAbnormalTypeModels();
+            InitAbnormalType();
         }
 
         private ObservableCollection<AbnormalTypeModel> abnormalTypes;
@@ -44,19 +44,51 @@ namespace MvvmLight4.ViewModel
             try
             {
                 File.WriteAllText("test.txt", json);
+                MessageBox.Show("已保存");
             }
             catch (Exception e)
             {
-                MessageBox.Show("存储异常！\n" + e.ToString());
+                MessageBox.Show("在存储设置时发生错误：" + e.ToString());
             }
-
-            MessageBox.Show("已保存");
         }
 
         #region helper function
         private void AssignCommands()
         {
-            SelectAbnormal = new RelayCommand(() =>ExecuteSelect());
+            SelectAbnormal = new RelayCommand(() => ExecuteSelect());
+        }
+
+        private void InitAbnormalType()
+        {
+            AbnormalTypes = AbnormalService.GetService().GetAbnormalTypeModels();
+            if (File.Exists("test.txt"))
+            {
+                try
+                {
+                    string data = File.ReadAllText("test.txt");
+                    foreach (var item in JsonConvert.DeserializeObject<ObservableCollection<AbnormalTypeModel>>(data))
+                    {
+                        for (int i = 0; i < AbnormalTypes.Count; i++)
+                        {
+                            if (AbnormalTypes[i].Id == item.Id)
+                            {
+                                AbnormalTypes[i].IsSelected = true;
+                            }
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                    foreach (var item in AbnormalTypes)
+                    {
+                        item.IsSelected = false;
+                    }
+                }
+            }
+            if (AbnormalTypes == null || AbnormalTypes.Count == 0)
+            {
+                AbnormalTypes = AbnormalService.GetService().GetAbnormalTypeModels();
+            }
         }
         #endregion
     }

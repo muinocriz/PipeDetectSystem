@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GalaSoft.MvvmLight.Messaging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,13 @@ namespace MvvmLight4.View
         public VideoPlayWindow()
         {
             InitializeComponent();
+            Messenger.Default.Register<string>(this, "VideoPlay", VideoPlay);
+            this.Unloaded += (sender, e) => Messenger.Default.Unregister(this);
+        }
+
+        private void VideoPlay(string msg)
+        {
+            myMediaElement.Source = new Uri(msg);
         }
 
         DispatcherTimer timer = null;
@@ -30,7 +38,7 @@ namespace MvvmLight4.View
         private void Play_Click(object sender, RoutedEventArgs e)
         {
             myMediaElement.Play();
-            //timer.Start();
+            timer.Start();
         }
 
         private void Pause_Click(object sender, RoutedEventArgs e)
@@ -46,12 +54,15 @@ namespace MvvmLight4.View
         private void SetHead_Click(object sender, RoutedEventArgs e)
         {
             int SliderValue = (int)timelineSlider.Value;
-            Console.WriteLine("SliderValue: " + SliderValue);
+            Console.WriteLine("HeadValue: " + SliderValue);
+            Messenger.Default.Send(TransformSecToMMSS(SliderValue), "HeadTime");
         }
 
         private void SetTail_Click(object sender, RoutedEventArgs e)
         {
-
+            int SliderValue = (int)timelineSlider.Value;
+            Console.WriteLine("TailValue: " + SliderValue);
+            Messenger.Default.Send(TransformSecToMMSS(SliderValue), "TailTime");
         }
 
         private void Element_MediaOpened(object sender, EventArgs e)
@@ -94,7 +105,7 @@ namespace MvvmLight4.View
 
         private void TimelineSlider_DragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
         {
-            //timer.Stop();
+            timer.Stop();
         }
 
         private void TimelineSlider_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
@@ -102,7 +113,15 @@ namespace MvvmLight4.View
             int SliderValue = (int)timelineSlider.Value;
             myMediaElement.Position = TimeSpan.FromSeconds(SliderValue);
 
-           // timer.Start();
+           timer.Start();
+        }
+
+        private string TransformSecToMMSS(int totalSec)
+        {
+            int minute = totalSec / 60;
+            int second = totalSec-60*minute;
+            string result = minute + ":" + second;
+            return result;
         }
     }
 }

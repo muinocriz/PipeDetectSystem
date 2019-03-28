@@ -96,7 +96,7 @@ namespace MvvmLight4.ViewModel
             string oldName = mvm.ModelModel.Location + "\\" + mvm.ModelModel.ModelName;
             mvm.ModelModel.ModelName = (p.EditingElement as TextBox).Text;
             string newName = (p.EditingElement as TextBox).Text;
-            string args = oldName + " " + newName;
+            string args = "\"" + oldName + " " + newName + "\"";
             //调用PYTHON修改文件夹
             var t = new Task(() =>
             {

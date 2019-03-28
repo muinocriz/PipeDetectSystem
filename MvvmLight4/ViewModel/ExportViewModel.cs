@@ -284,7 +284,7 @@ namespace MvvmLight4.ViewModel
 
         private void ExecuteFolderBrowserCmd()
         {
-            TargetSource = FileDialogService.GetService().OpenSaveFileDialog();
+            TargetSource = FileDialogService.GetService().OpenSaveFileDialog(Way);
         }
 
         #region helper function

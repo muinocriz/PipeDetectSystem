@@ -42,9 +42,7 @@ namespace MvvmLight4.Common
                     using (System.Drawing.Bitmap bmpCrop = bmpImage.Clone(cropArea, bmpImage.PixelFormat))
                     {
                         bmpCrop.Save(savePath);
-                        bmpCrop.Dispose();
                     }
-                    bmpImage.Dispose();
                 }
             }
         }

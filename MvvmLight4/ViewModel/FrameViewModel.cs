@@ -214,7 +214,7 @@ namespace MvvmLight4.ViewModel
             {
                 case 0:
                     //大图
-                    command = "-i" + " " + videoPath + " " + "-q:v 2 " + target + "\\%6d.jpg";
+                    command = "-i" + " " + videoPath + " " + "-q:v 10 " + target + "\\%6d.jpg";
                     break;
                 case 1:
                     //小图
@@ -225,7 +225,7 @@ namespace MvvmLight4.ViewModel
             }
             //command = "-i" + " " + videoPath + " " + target + "\\%6d.jpg";
             Debug.WriteLine(DateTime.Now);
-            p.StartInfo.FileName = "ffmpeg.exe";
+            p.StartInfo.FileName = "ffmpeg";
             p.StartInfo.Arguments = command;
             p.StartInfo.UseShellExecute = true;
             p.StartInfo.CreateNoWindow = false;

@@ -50,12 +50,21 @@ namespace MvvmLight4.Service
         /// 打开另存为对话框
         /// </summary>
         /// <returns></returns>
-        public string OpenSaveFileDialog()
+        public string OpenSaveFileDialog(int way)
         {
             Microsoft.Win32.SaveFileDialog dialog = new Microsoft.Win32.SaveFileDialog();
             dialog.FileName = "export";
-            dialog.DefaultExt = ".xlsx";
-            dialog.Filter = "Excel 工作簿(*.xlsx)|*.xlsx|Word 文档(*.docx)|*.docx";
+            if(way==1)
+            {
+                dialog.DefaultExt = ".docx";
+                dialog.Filter = "Word 文档(*.docx)|*.docx";
+            }
+            else
+            {
+                dialog.DefaultExt = ".xlsx";
+                dialog.Filter = "Excel 工作簿(*.xlsx)|*.xlsx";
+            }
+            
             var result = dialog.ShowDialog();
             if (result == true)
                 return dialog.FileName;

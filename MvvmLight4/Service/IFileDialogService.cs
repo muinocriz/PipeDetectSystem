@@ -11,7 +11,7 @@ namespace MvvmLight4.Service
         string OpenFileDialog(string srcFilter = "");
         IList<string> OpenFileDialogMultiselect(string srcFilter = "");
         string OpenFolderBrowserDialog();
-        string OpenSaveFileDialog();
+        string OpenSaveFileDialog(int way);
 
     }
 }

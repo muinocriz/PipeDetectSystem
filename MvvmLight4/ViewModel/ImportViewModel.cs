@@ -69,6 +69,10 @@ namespace MvvmLight4.ViewModel
                     errorMsgs.Add(@"输入的开头时间未能转换为整数");
                 }
             }
+            else
+            {
+                Meta.HeadTime = "None";
+            }
 
             string tTag = Meta.TailTime;
             if (!string.IsNullOrEmpty(tTag))
@@ -81,6 +85,10 @@ namespace MvvmLight4.ViewModel
                 {
                     errorMsgs.Add(@"输入的尾部时间未能转换为整数");
                 }
+            }
+            else
+            {
+                Meta.TailTime = "None";
             }
 
             string msg = string.Empty;

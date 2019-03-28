@@ -244,8 +244,13 @@ namespace MvvmLight4.ViewModel
             List<Video> videos = new List<Video>();
             foreach (var item in VideoList)
             {
-                //dict[(int)item.Id] = item.Meta.FramePath;
-                videos.Add(new Video() { Id = (int)item.Id, Path = item.Meta.FramePath, Head = item.Meta.HeadTime, Tail = item.Meta.TailTime });
+                videos.Add(new Video()
+                {
+                    Id = (int)item.Id,
+                    Path = item.Meta.FramePath,
+                    Head = item.Meta.HeadTime,
+                    Tail = item.Meta.TailTime
+                });
             }
 
             //使用cmd运行Python
@@ -268,6 +273,7 @@ namespace MvvmLight4.ViewModel
                 {
                     sw.WriteLine("None");
                 }
+
                 string[] positions = SelectedInstrument.Path.Split('-');
                 for (int i = 0; i < positions.Length; i++)
                 {
@@ -285,7 +291,7 @@ namespace MvvmLight4.ViewModel
 
             var t = new Task(() =>
             {
-                Process p = CmdHelper.RunProcess(@"Util/detect.exe", "detect.txt");
+                Process p = CmdHelper.RunProcess(@"Util/predict_loc.exe", "detect.txt");
                 p.Start();
                 Console.WriteLine("wait for exit");
                 p.WaitForExit();

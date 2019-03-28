@@ -148,6 +148,7 @@
     <Compile Include="Common\MessageHelper.cs" />
     <Compile Include="Common\SqlHelper.cs" />
     <Compile Include="Common\TimeConverter.cs" />
+    <Compile Include="Common\WayConverter.cs" />
     <Compile Include="Design\DesignDataService.cs" />
     <Compile Include="Model\AbnormalModel.cs" />
     <Compile Include="Model\AbnormalTypeModel.cs" />
@@ -315,6 +316,9 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <Resource Include="Image\excel.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Image\word.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Content Include="Util\1.exe">

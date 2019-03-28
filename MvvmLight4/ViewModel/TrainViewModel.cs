@@ -125,7 +125,7 @@ namespace MvvmLight4.ViewModel
         {
             var t = new Task(() =>
             {
-                Process p = CmdHelper.RunProcess("Util/try.exe", directory);
+                Process p = CmdHelper.RunProcess("Util/train.exe", "-pre " + directory);
                 p.Start();
                 Console.WriteLine("pid:" + p.Id);
                 Console.WriteLine("python is start");
@@ -214,7 +214,7 @@ namespace MvvmLight4.ViewModel
 
             var t = new Task(() =>
             {
-                Process p = CmdHelper.RunProcess(@"Util/1.exe", "c");
+                Process p = CmdHelper.RunProcess(@"Util/1.exe", "-train " + json);
                 p.Start();
                 trainProcessPID = p.Id;
                 Console.WriteLine("trainProcessPID:" + trainProcessPID);

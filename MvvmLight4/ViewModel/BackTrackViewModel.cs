@@ -32,8 +32,8 @@ namespace MvvmLight4.ViewModel
             });
 
             //调试数据，使用请删除或注释
-            //VideoIds.Add(46);
-            //VideoIds.Add(47);
+            VideoIds.Add(46);
+            VideoIds.Add(47);
             //调试数据，使用请删除或注释
 
             InitCombobox();

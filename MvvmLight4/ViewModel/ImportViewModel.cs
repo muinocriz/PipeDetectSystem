@@ -6,6 +6,7 @@ using MvvmLight4.Service;
 using MvvmLight4.View;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -121,6 +122,7 @@ namespace MvvmLight4.ViewModel
             if (result == 1)
             {
                 MessageBox.Show("导入成功");
+                CleanMetaWhenImported();
             }
         }
 
@@ -182,6 +184,22 @@ namespace MvvmLight4.ViewModel
                 Console.WriteLine("false");
                 return false;
             }
+        }
+
+        /// <summary>
+        /// 重置TextBox
+        /// </summary>
+        private void CleanMetaWhenImported()
+        {
+            Meta.VideoPath = "";
+            Meta.PipeCode = "";
+            Meta.TaskCode = "";
+            Meta.GC = "";
+            Meta.Addr = "";
+            Meta.Charge = "";
+            Meta.StartTime = DateTime.Now.ToString();
+            Meta.HeadTime = "";
+            Meta.TailTime = "";
         }
         #endregion
     }

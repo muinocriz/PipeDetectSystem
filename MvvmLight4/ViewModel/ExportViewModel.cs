@@ -296,8 +296,11 @@ namespace MvvmLight4.ViewModel
 
         private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            if (Way == 0)
+            {
+                MessageBox.Show("导出 " + TargetSource + " 已完成");
+            }
             Messenger.Default.Send("exportIsFinished", "EVM2EV");
-            MessageBox.Show("导出 " + TargetSource + " 已完成");
         }
 
         private void Worker_DoWork(object sender, DoWorkEventArgs e)
@@ -310,6 +313,7 @@ namespace MvvmLight4.ViewModel
                     SaveService.GetService().SaveXlsxFileBatch(TargetSource, exportDatas, typeDict);
                     break;
                 case 1:
+                    MessageBox.Show("暂未实现");
                     break;
                 default:
                     break;

@@ -20,6 +20,9 @@
         <i:EventTrigger EventName="Loaded">
             <mvvm:EventToCommand Command="{Binding LoadedCmd}" />
         </i:EventTrigger>
+        <i:EventTrigger EventName="Closed">
+            <mvvm:EventToCommand Command="{Binding ClosedCmd}" />
+        </i:EventTrigger>
     </i:Interaction.Triggers>
     <Grid>
         <Grid.Resources>

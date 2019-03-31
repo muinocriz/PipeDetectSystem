@@ -16,6 +16,7 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
 using System.Linq;
+using System.Management;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -29,8 +30,9 @@ namespace MvvmLight4.ViewModel
     {
         public DetectViewModel()
         {
+            AssignCommands();
             DispatcherHelper.Initialize();
-            ReceiveStr = "点击按钮选择视频文件";
+
             Messenger.Default.Register<ObservableCollection<MetaViewModel>>(this, "VideosChooseMessage", ShowReceiveInfo);
             ModelItem = new ObservableCollection<ModelViewModel>
             {
@@ -39,11 +41,38 @@ namespace MvvmLight4.ViewModel
             };
         }
 
+
+        #region property
+        /// <summary>
+        /// 后台工作类
+        /// </summary>
         public BackgroundWorker worker;
+
+        /// <summary>
+        /// 管道服务端
+        /// </summary>
         public NamedPipeServerStream pipeReader;
+
+        /// <summary>
+        /// 异常信息
+        /// </summary>
         public List<AbnormalModel> abnormalModels;
-        public bool canBackTrackOrExport;
+
+        /// <summary>
+        /// 可以回溯或导出吗
+        /// 即是否训练完成
+        /// </summary>
+        public bool canBackTrackOrExport = false;
+
+        /// <summary>
+        /// 错误信息
+        /// </summary>
         public string errorMsg = "";
+
+        /// <summary>
+        /// 进程号
+        /// </summary>
+        public int processId = -1;
 
         private string receiveStr;
         /// <summary>
@@ -188,55 +217,61 @@ namespace MvvmLight4.ViewModel
                 RaisePropertyChanged(() => SelectedInstrument);
             }
         }
+        #endregion
 
-        private RelayCommand loadedCmd;
-        public RelayCommand LoadedCmd
+        #region command
+        /// <summary>
+        /// 加载界面命令
+        /// </summary>
+        public RelayCommand LoadedCmd { get; private set; }
+
+        /// <summary>
+        /// 加载函数
+        /// </summary>
+        private void ExecuteLoadedCmd()
         {
-            get
-            {
-                if (loadedCmd == null)
-                    return new RelayCommand(() =>
-                    {
-                        InitComboBox();
-                        VideoList = new ObservableCollection<MetaViewModel>();
-                        abnormalModels = new List<AbnormalModel>();
-
-                        FilterProgVb = Visibility.Hidden;
-                        DetectProgVb = Visibility.Hidden;
-                        DetectProgNum = 0;
-                        LogText = "";
-                        canBackTrackOrExport = false;
-
-                        errorMsg = "";
-                    });
-                return loadedCmd;
-            }
-            set
-            {
-                loadedCmd = value;
-            }
+            InitComboBox();
+            InitData();
         }
 
-        private RelayCommand detectCmd;
-        public RelayCommand DetectCmd
+        /// <summary>
+        /// 关闭命令
+        /// </summary>
+        public RelayCommand ClosedCmd { get; private set; }
+
+        /// <summary>
+        /// 关闭函数
+        /// </summary>
+        private void ExecuteClosedCmd()
         {
-            get
+            if (pipeReader != null && pipeReader.IsConnected)
             {
-                if (detectCmd == null)
-                    return new RelayCommand(() => ExecuteDetectCmd(), CanExecuteDetectCmd);
-                return detectCmd;
+                pipeReader.Close();
             }
-            set
+
+            if (worker != null && worker.IsBusy)
             {
-                detectCmd = value;
+                worker.CancelAsync();
+            }
+
+            if (processId >= 0)
+            {
+                ColseFun(processId);
             }
         }
+        /// <summary>
+        /// 检测命令
+        /// </summary>
+        public RelayCommand DetectCmd { get; private set; }
 
         private bool CanExecuteDetectCmd()
         {
             return ModelItem[0] != null && VideoList != null && SelectedInstrument != null;
         }
 
+        /// <summary>
+        /// 检测函数
+        /// </summary>
         private void ExecuteDetectCmd()
         {
             //检测逻辑
@@ -244,13 +279,8 @@ namespace MvvmLight4.ViewModel
             List<Video> videos = new List<Video>();
             foreach (var item in VideoList)
             {
-                videos.Add(new Video()
-                {
-                    Id = (int)item.Id,
-                    Path = item.Meta.FramePath,
-                    Head = item.Meta.HeadTime,
-                    Tail = item.Meta.TailTime
-                });
+                //dict[(int)item.Id] = item.Meta.FramePath;
+                videos.Add(new Video() { Id = (int)item.Id, Path = item.Meta.FramePath, Head = item.Meta.HeadTime, Tail = item.Meta.TailTime });
             }
 
             //使用cmd运行Python
@@ -273,7 +303,6 @@ namespace MvvmLight4.ViewModel
                 {
                     sw.WriteLine("None");
                 }
-
                 string[] positions = SelectedInstrument.Path.Split('-');
                 for (int i = 0; i < positions.Length; i++)
                 {
@@ -291,13 +320,37 @@ namespace MvvmLight4.ViewModel
 
             var t = new Task(() =>
             {
-                Process p = CmdHelper.RunProcess(@"Util/predict_loc.exe", "detect.txt");
+                Process p = CmdHelper.RunProcess(@"Util/main.exe", "-predict -empty");
+                //Process p = new Process();
+                //p.StartInfo.FileName = @"Util /main.exe";
+                //p.StartInfo.Arguments = @"-predict";
+                //p.StartInfo.UseShellExecute = false;
+                //p.StartInfo.CreateNoWindow = false;
+                //p.StartInfo.RedirectStandardOutput = true;
+                //p.StartInfo.RedirectStandardError = true;
+
+                //string eOut = null;
+                //string sOut = null;
+
+                //p.ErrorDataReceived += new DataReceivedEventHandler((sender, e) =>
+                //{ eOut += e.Data; });
+                //p.OutputDataReceived += new DataReceivedEventHandler((sender, e) =>
+                //{ sOut += e.Data; });
+
                 p.Start();
+                processId = p.Id;
+                Console.WriteLine("process has started");
+
+                //p.BeginOutputReadLine();
+                //p.BeginErrorReadLine();
+
                 Console.WriteLine("wait for exit");
                 p.WaitForExit();
                 Console.WriteLine("exited");
                 p.Close();
                 Console.WriteLine("closed");
+                //Console.WriteLine($"\nError stream: {eOut}");
+                //Console.WriteLine($"\nOutput stream: {sOut}");
             });
             t.Start();
             t.ContinueWith((task) =>
@@ -320,7 +373,6 @@ namespace MvvmLight4.ViewModel
             worker.ProgressChanged += Worker_ProgressChanged;
             worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
             worker.RunWorkerAsync();
-            //timer.Start();
         }
 
         private void Worker_DoWork(object sender, DoWorkEventArgs e)
@@ -328,10 +380,20 @@ namespace MvvmLight4.ViewModel
             abnormalModels.Clear();
 
             //管道名称
-            pipeReader = new NamedPipeServerStream("SamplePipe", PipeDirection.InOut);
-            Console.WriteLine("byte reader connecting");
-            pipeReader.WaitForConnection();
-            Console.WriteLine("byte reader connected");
+            try
+            {
+                pipeReader = new NamedPipeServerStream("SamplePipe", PipeDirection.InOut);
+                Console.WriteLine("byte reader connecting");
+                pipeReader.WaitForConnection();
+                Console.WriteLine("byte reader connected");
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("管道连接失败");
+                pipeReader.Close();
+                e.Cancel = true;
+                return;
+            }
 
             FilterProgVb = Visibility.Visible;
             DetectProgVb = Visibility.Hidden;
@@ -339,7 +401,6 @@ namespace MvvmLight4.ViewModel
             bool completed = false;
             int progress = 0;
             const int BUFFERSIZE = 256;
-            int messageType = 0;
             LogText = "";
             errorMsg = "";
             string log = "";
@@ -353,88 +414,96 @@ namespace MvvmLight4.ViewModel
                     e.Cancel = true;
                     return;
                 }
-                byte[] buffer = new byte[BUFFERSIZE];
-                int nRead = pipeReader.Read(buffer, 0, BUFFERSIZE);
-                Console.WriteLine("buffer:" + buffer);
-                Console.WriteLine("0x16 message:");
-                Console.WriteLine(String.Format("{0:X}", buffer));
-                string line = Encoding.UTF8.GetString(buffer, 0, nRead);
-                Console.WriteLine("line: " + line);
-                Console.WriteLine(String.Format("{0:X}", line));
-                string[] messages = line.Split('_');
-                int.TryParse(messages[0], out messageType);
-                switch (messageType)
+
+                try
                 {
-                    case 0:
-                        break;
-                    case 1:
-                        //收到进度
-                        if (messages.Length == 2 && int.TryParse(messages[1], out progress))
-                        {
-                            Console.WriteLine(messages[1]);
-                            worker.ReportProgress(progress);
-                        }
-                        break;
-                    case 2:
-                        break;
-                    case 4:
-                        //异常类型
-                        if (messages.Length == 5)
-                        {
-                            string _position = String.Empty;
-                            int.TryParse(messages[1], out int _videoId);
-                            _position = messages[2];
-                            int.TryParse(messages[3], out int _type);
-                            double.TryParse(messages[4], out double m);
-                            //存起来，最后一期打包存
-                            AbnormalModel abnormalModel = new AbnormalModel(_videoId, _position, _type,m);
-                            abnormalModels.Add(abnormalModel);
+                    byte[] buffer = new byte[BUFFERSIZE];
+                    int nRead = pipeReader.Read(buffer, 0, BUFFERSIZE);
+                    Console.WriteLine("buffer:" + buffer);
+                    string line = Encoding.UTF8.GetString(buffer, 0, nRead);
+                    Console.WriteLine("line: " + line);
+                    string[] messages = line.Split('_');
+                    int.TryParse(messages[0], out int messageType);
+                    switch (messageType)
+                    {
+                        case 0:
+                            break;
+                        case 1:
+                            //收到进度
+                            if (messages.Length == 2 && int.TryParse(messages[1], out progress))
+                            {
+                                Console.WriteLine(messages[1]);
+                                worker.ReportProgress(progress);
+                            }
+                            break;
+                        case 2:
+                            break;
+                        case 4:
+                            //异常类型
+                            if (messages.Length == 5)
+                            {
+                                int.TryParse(messages[1], out int _videoId);
+                                string _position = messages[2];
+                                int.TryParse(messages[3], out int _type);
+                                double.TryParse(messages[4], out double m);
 
-                            //日志
-                            log = "帧号：\t" + _position + "\t异常类型\t" + _type+ "\t缺陷位置\t" + m;
+                                AbnormalModel abnormalModel = new AbnormalModel(_videoId, _position, _type, m);
+                                abnormalModels.Add(abnormalModel);
 
+                                //日志
+                                log = "帧号：\t" + _position + "\t异常类型\t" + _type + "\t缺陷位置\t" + m;
+
+                                worker.ReportProgress(progress, log);
+                            }
+                            //初筛结束消息
+                            else if (messages.Length == 2 && !string.IsNullOrEmpty(messages[1]) && "filter done".Equals(messages[1]))
+                            {
+                                Console.WriteLine("filter done true");
+                                //初筛结束
+                                FilterProgVb = Visibility.Hidden;
+                                DetectProgVb = Visibility.Visible;
+                            }
+                            //检测结束消息
+                            else if (messages.Length == 2 && "Done".Equals(messages[1]))
+                            {
+                                progress = 100;
+                                worker.ReportProgress(progress);
+                                Thread.Sleep(1500);
+                                completed = true;
+                            }
+                            break;
+                        case 8:
+                            string msg = string.Empty;
+                            for (int i = 1; i < messages.Length; i++)
+                            {
+                                msg += messages[i] + " ";
+                            }
+
+                            log = msg;
                             worker.ReportProgress(progress, log);
-                        }
-                        //初筛结束消息
-                        else if (messages.Length == 2 && !string.IsNullOrEmpty(messages[1]) && "filter done".Equals(messages[1]))
-                        {
-                            Console.WriteLine("filter done true");
-                            //初筛结束
-                            FilterProgVb = Visibility.Hidden;
-                            DetectProgVb = Visibility.Visible;
-                        }
-                        //检测结束消息
-                        else if (messages.Length == 2 && "Done".Equals(messages[1]))
-                        {
-                            progress = 100;
-                            worker.ReportProgress(progress);
-                            Thread.Sleep(1500);
-                            completed = true;
-                        }
-                        break;
-                    case 8:
-                        string msg = string.Empty;
-                        for (int i = 1; i < messages.Length; i++)
-                        {
-                            msg += messages[i] + " ";
-                        }
-
-                        log = msg;
-                        worker.ReportProgress(progress, log);
-                        break;
-                    case 16:
-                        break;
-                    case 32:
-                        errorMsg = "本次任务由于后台而中断";
-                        if (messages.Length > 1)
-                            errorMsg += "\r\n消息：" + messages[1];
-                        e.Cancel = true;
-                        return;
-                    case 64:
-                        break;
-                    default:
-                        break;
+                            break;
+                        case 16:
+                            break;
+                        case 32:
+                            errorMsg = "本次任务由于后台而中断";
+                            if (messages.Length > 1)
+                                errorMsg += "\r\n消息：" + messages[1];
+                            e.Cancel = true;
+                            return;
+                        case 64:
+                            break;
+                        default:
+                            break;
+                    }
                 }
+                catch (Exception)
+                {
+                    MessageBox.Show("处理管道数据发生错误");
+                    pipeReader.Close();
+                    e.Cancel = true;
+                    return;
+                }
+
             }
         }
         private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -455,7 +524,7 @@ namespace MvvmLight4.ViewModel
         {
             pipeReader.Close();
             DetectProgVb = Visibility.Hidden;
-            LogText += "\r\n检测完成，等待存储";
+            LogText += "\r\n检测完成";
             if (e.Cancelled || e.Error != null)
             {
                 MessageBox.Show(errorMsg);
@@ -464,28 +533,22 @@ namespace MvvmLight4.ViewModel
             {
                 //批量存入
                 if (abnormalModels != null && abnormalModels.Count > 0)
+                {
                     AbnormalService.GetService().AddAbnormal(abnormalModels);
-                LogText += "\r\n存储完成";
+                }
+
                 //清空
                 abnormalModels.Clear();
                 canBackTrackOrExport = true;
             }
         }
 
-        private RelayCommand openVSC;
         /// <summary>
         /// 打开选择视频文件对话框
         /// Open Video Select Cmd
         /// </summary>
-        public RelayCommand OpenVSC
-        {
-            get
-            {
-                if (openVSC == null)
-                    return new RelayCommand(() => ExecuteOpenVSCmd());
-                return openVSC;
-            }
-        }
+        public RelayCommand OpenVSC { get; private set; }
+
         /// <summary>
         /// 打开窗口
         /// </summary>
@@ -497,20 +560,11 @@ namespace MvvmLight4.ViewModel
             sender.Show();
         }
 
-        private RelayCommand openBTC;
         /// <summary>
         /// 打开人工回溯界面
         /// Open Back Track Cmd
         /// </summary>
-        public RelayCommand OpenBTC
-        {
-            get
-            {
-                if (openBTC == null)
-                    return new RelayCommand(() => ExecuteOpenBTCmd(), CanExecuteOpenBTCmd);
-                return openBTC;
-            }
-        }
+        public RelayCommand OpenBTC { get; private set; }
 
         private bool CanExecuteOpenBTCmd()
         {
@@ -530,20 +584,11 @@ namespace MvvmLight4.ViewModel
             sender.Show();
         }
 
-        private RelayCommand openEC;
         /// <summary>
         /// 打开导出界面
         /// Open Back Track Cmd
         /// </summary>
-        public RelayCommand OpenEC
-        {
-            get
-            {
-                if (openEC == null)
-                    return new RelayCommand(() => ExecuteOpenECmd(), CanExecuteOpenECmd);
-                return openEC;
-            }
-        }
+        public RelayCommand OpenEC { get; private set; }
 
         private bool CanExecuteOpenECmd()
         {
@@ -560,7 +605,22 @@ namespace MvvmLight4.ViewModel
             Messenger.Default.Send<bool>(true, "CloseDectWindow"); //注意：token参数一致
         }
 
+        #endregion
+
         #region 辅助函数
+        /// <summary>
+        /// 注册命令
+        /// </summary>
+        private void AssignCommands()
+        {
+            LoadedCmd = new RelayCommand(() => ExecuteLoadedCmd());
+            DetectCmd = new RelayCommand(() => ExecuteDetectCmd(), CanExecuteDetectCmd);
+            OpenVSC = new RelayCommand(() => ExecuteOpenVSCmd());
+            OpenBTC = new RelayCommand(() => ExecuteOpenBTCmd(), CanExecuteOpenBTCmd);
+            OpenEC = new RelayCommand(() => ExecuteOpenECmd(), CanExecuteOpenECmd);
+            ClosedCmd = new RelayCommand(() => ExecuteClosedCmd());
+        }
+
         /// <summary>
         /// 初始化下拉列表
         /// </summary>
@@ -572,13 +632,32 @@ namespace MvvmLight4.ViewModel
             //初始化仪器列表
             Instruments = new ObservableCollection<Instrument>
             {
-                new Instrument() { Name = "中仪1", Path = @"910-1062-1035-1030" },
-                new Instrument() { Name = "其它仪器", Path = @"910-1062-1035-1030" }
+                new Instrument() { Name = "中仪1", Path = @"910-1062-1035-1030-32-125" },
+                new Instrument() { Name = "其它仪器", Path = @"910-1062-1035-1030-32-125" }
             };
 
             //设置仪器列表默认选中项目
             SelectedInstrument = Instruments[0];
         }
+
+        private void InitData()
+        {
+            VideoList = new ObservableCollection<MetaViewModel>();
+            abnormalModels = new List<AbnormalModel>();
+
+            FilterProgVb = Visibility.Hidden;
+            DetectProgVb = Visibility.Hidden;
+            DetectProgNum = 0;
+            LogText = "";
+            canBackTrackOrExport = false;
+            ReceiveStr = "点击按钮选择视频文件";
+            errorMsg = "";
+        }
+
+        /// <summary>
+        /// 展示选择检测列表数量
+        /// </summary>
+        /// <param name="obj"></param>
         private void ShowReceiveInfo(ObservableCollection<MetaViewModel> obj)
         {
             if (obj.Count == 0)
@@ -592,6 +671,27 @@ namespace MvvmLight4.ViewModel
                 {
                     VideoList.Add(item);
                 }
+            }
+        }
+
+        /// <summary>
+        /// 通过停止python方式停止task
+        /// </summary>
+        /// <param name="trainProcessPID">线程号</param>
+        private void ColseFun(int id)
+        {
+            Process process = Process.GetProcessById(id);
+            ManagementObjectSearcher searcher
+                = new ManagementObjectSearcher("select * from Win32_Process where ParentProcessID=" + id);
+            ManagementObjectCollection moc = searcher.Get();
+            foreach (var mo in moc)
+            {
+                Process proc = Process.GetProcessById(Convert.ToInt32(mo["ProcessID"]));
+                Console.WriteLine("proc id: " + proc.Id);
+                Console.WriteLine("proc is null: " + proc == null);
+                Console.WriteLine("proc.HasExited: " + proc.HasExited);
+                if (!proc.HasExited)
+                    proc.Kill();
             }
         }
         #endregion

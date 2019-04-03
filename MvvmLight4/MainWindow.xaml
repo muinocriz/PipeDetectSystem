@@ -4,8 +4,10 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
     xmlns:ignore="http://www.galasoft.ch/ignore"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:mvvm="http://www.galasoft.ch/mvvmlight"
     Title="管道检测系统"
     Width="400"
     Height="200"
@@ -15,6 +17,11 @@
     ResizeMode="NoResize"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d ignore">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <mvvm:EventToCommand Command="{Binding LoadedCmd}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
     <Grid Button.Click="Button_Click">
         <Grid.Resources>
             <Style TargetType="{x:Type Label}">

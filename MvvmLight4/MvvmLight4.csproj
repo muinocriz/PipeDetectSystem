@@ -167,8 +167,10 @@
     <Compile Include="Service\IAbnormalService.cs" />
     <Compile Include="Service\IExportService.cs" />
     <Compile Include="Service\IFileDialogService.cs" />
+    <Compile Include="Service\IInitService.cs" />
     <Compile Include="Service\IMetaService.cs" />
     <Compile Include="Service\IModelService.cs" />
+    <Compile Include="Service\InitService.cs" />
     <Compile Include="Service\ISaveService.cs" />
     <Compile Include="Service\MetaService.cs" />
     <Compile Include="Service\ModelService.cs" />
@@ -322,6 +324,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Content Include="Util\1.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Util\main.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Util\testpipe.py">

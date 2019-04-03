@@ -8,155 +8,213 @@
     xmlns:local="clr-namespace:MvvmLight4.View"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="导入"
-    Width="450"
-    Height="530"
+    Width="550"
+    Height="650"
+    MinWidth="550"
+    MinHeight="550"
     DataContext="{Binding Source={StaticResource Locator}, Path=Import}"
     FontFamily="/MvvmLight4;component/Font/#Source Han Sans CN"
-    ResizeMode="NoResize"
+    ResizeMode="CanResizeWithGrip"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
-    <Grid DataContext="{Binding Meta}">
+    <Grid Margin="10">
         <Grid.Resources>
             <common:IntToBoolConverter x:Key="itbc" />
             <Style TargetType="{x:Type Label}">
-                <Setter Property="FontWeight" Value="Normal" />
                 <Setter Property="FontFamily" Value="/MvvmLight4;component/Font/#Source Han Sans CN" />
+                <Setter Property="FontWeight" Value="Normal" />
+            </Style>
+            <Style BasedOn="{StaticResource MetroTextBox}" TargetType="{x:Type TextBox}">
+                <Setter Property="Margin" Value="0,2,0,2" />
             </Style>
         </Grid.Resources>
-        <StackPanel Margin="5">
-            <!--  file choose  -->
-            <StackPanel Margin="0,0,0,10">
-                <StackPanel HorizontalAlignment="Left">
-                    <Label
-                        Width="100"
-                        Content="导入视频"
-                        FontSize="16" />
-                </StackPanel>
-                <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
-                    <Label Width="80" Content="视频位置：" />
-                    <TextBox
-                        Name="txtViewPath"
-                        Width="250"
-                        Margin="0,0,10,0"
-                        VerticalContentAlignment="Center"
-                        Text="{Binding VideoPath}" />
-                    <Button
-                        Width="80"
-                        Command="{Binding Import.OpenFileDialogCmd}"
-                        Content="浏览"
-                        DataContext="{Binding Source={StaticResource Locator}}" />
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition Height="40" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="80" />
+            <ColumnDefinition Width="10" />
+            <ColumnDefinition />
+            <ColumnDefinition Width="15" />
+            <ColumnDefinition Width="100" />
+        </Grid.ColumnDefinitions>
+        <Label
+            Grid.Row="0"
+            Grid.Column="0"
+            VerticalContentAlignment="Center"
+            Content="导入视频"
+            FontSize="16" />
 
-                </StackPanel>
-            </StackPanel>
-            <!--  Meta info  -->
-            <StackPanel>
-                <StackPanel.Resources>
-                    <Style BasedOn="{StaticResource MetroTextBox}" TargetType="{x:Type TextBox}">
-                        <Setter Property="VerticalContentAlignment" Value="Center" />
-                    </Style>
-                </StackPanel.Resources>
-                <StackPanel HorizontalAlignment="Left">
-                    <Label
-                        Width="100"
-                        Content="元信息"
-                        FontSize="16" />
-                </StackPanel>
-                <StackPanel>
-                    <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
-                        <Label
-                            Name="txtPipeType"
-                            Width="80"
-                            Content="管道编号：" />
-                        <TextBox
-                            Width="250"
-                            Controls:TextBoxHelper.Watermark="起始井号-终止井号"
-                            Text="{Binding PipeCode}" />
-                    </StackPanel>
-                    <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
-                        <Label Width="80" Content="项目名称：" />
-                        <TextBox
-                            Name="txtTaskCodel"
-                            Width="250"
-                            Text="{Binding TaskCode}" />
-                    </StackPanel>
-                    <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
-                        <Label Width="80" Content="管线类型：" />
-                        <RadioButton
-                            Content="污水管道"
-                            GroupName="PipeType"
-                            IsChecked="{Binding PipeType, Converter={StaticResource itbc}, ConverterParameter=0}" />
-                        <RadioButton
-                            Margin="53,0,0,0"
-                            Content="雨水管道"
-                            GroupName="PipeType"
-                            IsChecked="{Binding PipeType, Converter={StaticResource itbc}, ConverterParameter=1}" />
-                    </StackPanel>
-                    <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
-                        <Label Width="80" Content="管材：" />
-                        <TextBox
-                            Name="txtGC"
-                            Width="250"
-                            Text="{Binding GC, UpdateSourceTrigger=PropertyChanged}" />
-                    </StackPanel>
-                    <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
-                        <Label Width="80" Content="道路名称：" />
-                        <TextBox
-                            Name="txtAddress"
-                            Width="250"
-                            Text="{Binding Addr, UpdateSourceTrigger=PropertyChanged}" />
-                    </StackPanel>
-                    <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
-                        <Label Width="80" Content="负责人：" />
-                        <TextBox
-                            Name="txtCharge"
-                            Width="250"
-                            Text="{Binding Charge, UpdateSourceTrigger=PropertyChanged}" />
-                    </StackPanel>
-                    <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
-                        <Label Width="80" Content="项目时间：" />
-                        <Controls:DateTimePicker
-                            Name="txtBeginTime"
-                            Width="250"
-                            Margin="0,0,4,0"
-                            Controls:TextBoxHelper.Watermark="项目时间"
-                            Culture="zh-CN"
-                            SelectedDateTime="{Binding StartTime}"
-                            SelectedTimeFormat="Short" />
-                    </StackPanel>
-                    <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
-                        <Label Width="80" Content="开头时间：" />
-                        <TextBox
-                            Width="250"
-                            Margin="0,0,10,0"
-                            Controls:TextBoxHelper.Watermark="分分:秒秒"
-                            Text="{Binding HeadTime}" />
-                        <Button
-                            Width="80"
-                            Command="{Binding Import.OpenVideoCmd}"
-                            Content="播放"
-                            DataContext="{Binding Source={StaticResource Locator}}" />
-                    </StackPanel>
-                    <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
-                        <Label Width="80" Content="尾部时间：" />
-                        <TextBox
-                            Width="250"
-                            Controls:TextBoxHelper.Watermark="分分:秒秒"
-                            Text="{Binding TailTime}" />
-                    </StackPanel>
-                </StackPanel>
-            </StackPanel>
-            <StackPanel
-                Margin="0,50,0,0"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Bottom"
-                DataContext="{Binding Source={StaticResource Locator}}">
-                <Button
-                    Width="80"
-                    Margin="0,0,14,0"
-                    Command="{Binding Import.SubmitCmd}"
-                    Content="导入"
-                    Style="{StaticResource AccentedSquareButtonStyle}" />
-            </StackPanel>
-        </StackPanel>
+        <Label
+            Grid.Row="1"
+            Grid.Column="0"
+            VerticalAlignment="Center"
+            Content="视频位置：" />
+        <TextBox
+            Name="txtViewPath"
+            Grid.Row="1"
+            Grid.Column="2"
+            VerticalContentAlignment="Center"
+            Text="{Binding Meta.VideoPath}" />
+        <Button
+            Grid.Row="1"
+            Grid.Column="4"
+            Height="30"
+            Command="{Binding OpenFileDialogCmd}"
+            Content="浏览" />
+
+        <Label
+            Grid.Row="2"
+            Grid.Column="0"
+            VerticalContentAlignment="Center"
+            Content="元信息"
+            FontSize="16" />
+
+        <Label
+            Grid.Row="3"
+            Grid.Column="0"
+            VerticalAlignment="Center"
+            Content="管道编号：" />
+        <TextBox
+            Grid.Row="3"
+            Grid.Column="2"
+            VerticalContentAlignment="Center"
+            Controls:TextBoxHelper.Watermark="起始井号-终止井号"
+            Text="{Binding Meta.PipeCode}" />
+
+        <Label
+            Grid.Row="4"
+            Grid.Column="0"
+            VerticalAlignment="Center"
+            Content="项目名称：" />
+        <TextBox
+            Grid.Row="4"
+            Grid.Column="2"
+            VerticalContentAlignment="Center"
+            Text="{Binding Meta.TaskCode}" />
+
+        <Label
+            Grid.Row="5"
+            Grid.Column="0"
+            VerticalAlignment="Center"
+            Content="管线类型：" />
+        <Grid Grid.Row="5" Grid.Column="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <RadioButton
+                Grid.Column="0"
+                VerticalAlignment="Center"
+                Content="污水管道"
+                GroupName="PipeType"
+                IsChecked="{Binding Meta.PipeType, Converter={StaticResource itbc}, ConverterParameter=0}" />
+            <RadioButton
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                Content="雨水管道"
+                GroupName="PipeType"
+                IsChecked="{Binding Meta.PipeType, Converter={StaticResource itbc}, ConverterParameter=1}" />
+        </Grid>
+
+        <Label
+            Grid.Row="6"
+            Grid.Column="0"
+            VerticalAlignment="Center"
+            Content="管材：" />
+        <TextBox
+            Grid.Row="6"
+            Grid.Column="2"
+            VerticalContentAlignment="Center"
+            Text="{Binding Meta.GC}" />
+
+        <Label
+            Grid.Row="7"
+            Grid.Column="0"
+            VerticalAlignment="Center"
+            Content="道路名称：" />
+        <TextBox
+            Grid.Row="7"
+            Grid.Column="2"
+            VerticalContentAlignment="Center"
+            Text="{Binding Meta.Addr}" />
+
+        <Label
+            Grid.Row="8"
+            Grid.Column="0"
+            VerticalAlignment="Center"
+            Content="负责人：" />
+        <TextBox
+            Grid.Row="8"
+            Grid.Column="2"
+            VerticalContentAlignment="Center"
+            Text="{Binding Meta.Charge}" />
+
+        <Label
+            Grid.Row="9"
+            Grid.Column="0"
+            VerticalAlignment="Center"
+            Content="项目时间：" />
+        <Controls:DateTimePicker
+            Grid.Row="9"
+            Grid.Column="2"
+            Margin="0,2,0,2"
+            Controls:TextBoxHelper.Watermark="项目时间"
+            Culture="zh-CN"
+            SelectedDateTime="{Binding Meta.StartTime}"
+            SelectedTimeFormat="Short" />
+
+        <Label
+            Grid.Row="10"
+            Grid.Column="0"
+            VerticalAlignment="Center"
+            VerticalContentAlignment="Center"
+            Content="开头时间：" />
+        <TextBox
+            Grid.Row="10"
+            Grid.Column="2"
+            VerticalContentAlignment="Center"
+            Controls:TextBoxHelper.Watermark="分分:秒秒"
+            Text="{Binding Meta.HeadTime}" />
+        <Button
+            Grid.Row="10"
+            Grid.Column="4"
+            Height="30"
+            Command="{Binding OpenVideoCmd}"
+            Content="播放" />
+
+        <Label
+            Grid.Row="11"
+            Grid.Column="0"
+            VerticalAlignment="Center"
+            VerticalContentAlignment="Center"
+            Content="尾部时间：" />
+        <TextBox
+            Grid.Row="11"
+            Grid.Column="2"
+            VerticalContentAlignment="Center"
+            Controls:TextBoxHelper.Watermark="分分:秒秒"
+            Text="{Binding Meta.TailTime}" />
+
+        <Button
+            Grid.Row="13"
+            Grid.Column="4"
+            Height="30"
+            Command="{Binding SubmitCmd}"
+            Content="导入"
+            Style="{StaticResource AccentedSquareButtonStyle}" />
     </Grid>
 </Controls:MetroWindow>

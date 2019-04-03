@@ -1,5 +1,10 @@
-﻿using GalaSoft.MvvmLight;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
+using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.CommandWpf;
 using MvvmLight4.Model;
+using MvvmLight4.Service;
 
 namespace MvvmLight4.ViewModel
 {
@@ -11,47 +16,32 @@ namespace MvvmLight4.ViewModel
     /// </summary>
     public class MainViewModel : ViewModelBase
     {
-        private readonly IDataService _dataService;
-
-        /// <summary>
-        /// The <see cref="WelcomeTitle" /> property's name.
-        /// </summary>
-        public const string WelcomeTitlePropertyName = "WelcomeTitle";
-
-        private string _welcomeTitle = string.Empty;
-
-        /// <summary>
-        /// Gets the WelcomeTitle property.
-        /// Changes to that property's value raise the PropertyChanged event. 
-        /// </summary>
-        public string WelcomeTitle
+        public MainViewModel()
         {
-            get
-            {
-                return _welcomeTitle;
-            }
-            set
-            {
-                Set(ref _welcomeTitle, value);
-            }
+            AssignCommands();
         }
 
-        /// <summary>
-        /// Initializes a new instance of the MainViewModel class.
-        /// </summary>
-        public MainViewModel(IDataService dataService)
+        public RelayCommand LoadedCmd { get; private set; }
+        private void AssignCommands()
         {
-            _dataService = dataService;
-            _dataService.GetData(
-                (item, error) =>
-                {
-                    if (error != null)
-                    {
-                        return;
-                    }
+            LoadedCmd = new RelayCommand(() => ExecuteLoadedCmd());
+        }
 
-                    WelcomeTitle = item.Title;
-                });
+        private void ExecuteLoadedCmd()
+        {
+            string dbName = "data.sqlite";
+            if (!File.Exists(dbName))
+            {
+                int result = InitService.GetService().InitDatabase(dbName);
+                if (result < 0)
+                {
+                    Debug.WriteLine("创建出错");
+                }
+                else
+                {
+                    Debug.WriteLine("创建成功：{0}", result);
+                }
+            }
         }
     }
 }

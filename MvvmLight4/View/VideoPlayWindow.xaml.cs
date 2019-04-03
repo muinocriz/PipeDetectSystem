@@ -37,12 +37,16 @@ namespace MvvmLight4.View
 
         private void Play_Click(object sender, RoutedEventArgs e)
         {
+            Play.Visibility = Visibility.Collapsed;
+            Pause.Visibility = Visibility.Visible;
             myMediaElement.Play();
             timer.Start();
         }
 
         private void Pause_Click(object sender, RoutedEventArgs e)
         {
+            Pause.Visibility = Visibility.Collapsed;
+            Play.Visibility = Visibility.Visible;
             myMediaElement.Pause();
         }
 

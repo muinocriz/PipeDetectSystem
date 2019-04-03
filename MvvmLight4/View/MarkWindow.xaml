@@ -230,7 +230,7 @@
                     CanUserReorderColumns="False"
                     CanUserSortColumns="False"
                     FontFamily="/MvvmLight4;component/Font/#Source Han Sans CN"
-                    HeadersVisibility="Column"
+                    HeadersVisibility="None"
                     HorizontalScrollBarVisibility="Hidden"
                     ItemsSource="{Binding AbnormalTypes}"
                     SelectedItem="{Binding AbnormalType}"

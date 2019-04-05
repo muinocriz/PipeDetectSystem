@@ -145,6 +145,7 @@
     <Compile Include="Common\IntToAbnormalConverter.cs" />
     <Compile Include="Common\IntToBoolConverter.cs" />
     <Compile Include="Common\IntToDoubleConverter.cs" />
+    <Compile Include="Common\IntToPipeType.cs" />
     <Compile Include="Common\MessageHelper.cs" />
     <Compile Include="Common\SqlHelper.cs" />
     <Compile Include="Common\TimeConverter.cs" />
@@ -189,6 +190,7 @@
     <Compile Include="ViewModel\ModelManageViewModel.cs" />
     <Compile Include="ViewModel\SetViewModel.cs" />
     <Compile Include="ViewModel\TrainViewModel.cs" />
+    <Compile Include="ViewModel\VideoManageViewModel.cs" />
     <Compile Include="ViewModel\VideoViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Compile Include="View\BackTrackWindow.xaml.cs">
@@ -226,6 +228,9 @@
     </Compile>
     <Compile Include="View\TrainWindow.xaml.cs">
       <DependentUpon>TrainWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\VideoManageWindow.xaml.cs">
+      <DependentUpon>VideoManageWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\VideoPlayWindow.xaml.cs">
       <DependentUpon>VideoPlayWindow.xaml</DependentUpon>
@@ -294,6 +299,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\VideoManageWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\VideoPlayWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -321,6 +330,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Image\word.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Image\search.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Image\refresh.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Content Include="Util\1.exe">

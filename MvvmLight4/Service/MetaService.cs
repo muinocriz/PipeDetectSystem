@@ -38,6 +38,59 @@ namespace MvvmLight4.Service
         }
 
         /// <summary>
+        /// 视频管理界面
+        /// 查询导入的所有视频
+        /// </summary>
+        /// <param name="cOUNT"></param>
+        /// <returns></returns>
+        public ObservableCollection<MetaViewModel> SelectAll(int count)
+        {
+            ObservableCollection<MetaViewModel> mvms = new ObservableCollection<MetaViewModel>();
+            using (IDbConnection conn = SqlHelper.GetConnection())
+            {
+                conn.Open();
+                var sql = @"SELECT * FROM TB_METADATA ORDER BY ID DESC LIMIT @count;";
+                IEnumerable<dynamic> dynamics = conn.Query(sql, new { count });
+                foreach (var item in dynamics)
+                {
+                    MetaViewModel mvm = new MetaViewModel
+                    {
+                        Id = Convert.ToInt32(item.ID)
+                    };
+                    MetaModel mm = new MetaModel
+                    {
+                        TaskCode = item.TASKCODE,
+                        Addr = item.ADDR,
+                        PipeCode=item.PIPECODE,
+                        VideoPath = item.VIDEOPATH,
+                        StartTime = item.STARTTIME,
+                        PipeType=Convert.ToInt32(item.PIPETYPE)
+                    };
+                    mvm.Meta = mm;
+                    mvms.Add(mvm);
+                }
+
+                return mvms;
+            }
+        }
+
+        /// <summary>
+        /// 视频管理界面
+        /// 根据id删除指定记录
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        internal int DeleteById(int id)
+        {
+            using (IDbConnection conn = SqlHelper.GetConnection())
+            {
+                conn.Open();
+                var sql = @"DELETE FROM TB_METADATA WHERE ID = @id";
+                return conn.Execute(sql, new { id });
+            }
+        }
+
+        /// <summary>
         /// 分帧文件选择界面
         /// 加载已导入未分帧的视频信息
         /// </summary>

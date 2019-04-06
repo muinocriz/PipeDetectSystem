@@ -64,7 +64,9 @@ namespace MvvmLight4.Service
                         PipeCode=item.PIPECODE,
                         VideoPath = item.VIDEOPATH,
                         StartTime = item.STARTTIME,
-                        PipeType=Convert.ToInt32(item.PIPETYPE)
+                        PipeType=Convert.ToInt32(item.PIPETYPE),
+                        GC=item.GC,
+                        FramePath=item.FRAMEPATH
                     };
                     mvm.Meta = mm;
                     mvms.Add(mvm);

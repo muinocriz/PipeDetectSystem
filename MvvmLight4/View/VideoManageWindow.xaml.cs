@@ -26,5 +26,20 @@ namespace MvvmLight4.View
         {
             InitializeComponent();
         }
+
+        MetaViewModel copyData;
+
+        private void UpdateBtn_Click(object sender, RoutedEventArgs e)
+        {
+            copyData = VideoManageDG.SelectedItem as MetaViewModel;
+            //MessageBox.Show(Convert.ToString(data.Id));
+            VideoFlyout.IsOpen = true;
+        }
+
+        private void CancelBtn_Click(object sender, RoutedEventArgs e)
+        {
+            //VideoManageDG.SelectedItem = copyData;
+            VideoFlyout.IsOpen = false;
+        }
     }
 }

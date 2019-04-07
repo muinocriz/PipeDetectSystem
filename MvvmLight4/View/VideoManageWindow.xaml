@@ -7,10 +7,11 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:MvvmLight4.View"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Title="VideoManageWindow"
+    Title="导入视频管理"
     Width="800"
     Height="500"
     DataContext="{Binding Source={StaticResource Locator}, Path=VideoManage}"
+    FontFamily="/MvvmLight4;component/Font/#Source Han Sans CN"
     ResizeMode="CanResizeWithGrip"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
@@ -222,14 +223,16 @@
                         Click="CheckBtn_Click"
                         Command="{Binding UpdateCmd}"
                         CommandParameter="{Binding ElementName=VideoManageDG, Path=SelectedItem}"
-                        Content="确定" />
+                        Content="确定"
+                        Style="{StaticResource AccentedSquareButtonStyle}" />
                     <Button
                         Name="CancelBtn"
                         Width="80"
                         Height="25"
                         Margin="20,0,5,0"
                         Click="CancelBtn_Click"
-                        Content="取消" />
+                        Content="取消"
+                        Style="{StaticResource SquareButtonStyle}" />
                 </StackPanel>
             </Grid>
         </Controls:Flyout>

@@ -70,6 +70,21 @@
                 </StackPanel>
             </Button.Content>
         </Button>
+        <Button
+            Grid.Row="2"
+            Grid.Column="0"
+            Margin="5"
+            Tag="VideoManageWindow">
+            <Button.Content>
+                <StackPanel Orientation="Horizontal">
+                    <Image
+                        Width="24"
+                        Height="24"
+                        Source=".\Image\video.png" />
+                    <Label Content="视频" />
+                </StackPanel>
+            </Button.Content>
+        </Button>
 
 
         <Button

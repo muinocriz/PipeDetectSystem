@@ -159,43 +159,55 @@
                     HorizontalScrollBarVisibility="Auto"
                     VerticalScrollBarVisibility="Auto">
                     <ScrollViewer.Content>
-                        <StackPanel Margin="10,0,5,0">
+                        <StackPanel Margin="10,0,5,0" DataContext="{Binding ElementName=VideoManageDG, Path=SelectedItem.Meta}">
                             <TextBox
+                                Name="TaskCodeTxt"
+                                Width="285"
                                 Margin="0,0,0,10"
                                 VerticalContentAlignment="Center"
                                 Controls:TextBoxHelper.ClearTextButton="True"
                                 Controls:TextBoxHelper.Watermark="项目名称"
-                                Text="{Binding ElementName=VideoManageDG, Path=SelectedItem.Meta.TaskCode}" />
+                                Text="{Binding TaskCode}" />
                             <TextBox
+                                Name="AddrTxt"
+                                Width="285"
                                 Margin="0,0,0,10"
                                 VerticalContentAlignment="Center"
                                 Controls:TextBoxHelper.ClearTextButton="True"
                                 Controls:TextBoxHelper.Watermark="道路名称"
-                                Text="{Binding ElementName=VideoManageDG, Path=SelectedItem.Meta.Addr}" />
+                                Text="{Binding Addr}" />
                             <TextBox
+                                Name="PipeCodeTxt"
+                                Width="285"
                                 Margin="0,0,0,10"
                                 VerticalContentAlignment="Center"
                                 Controls:TextBoxHelper.ClearTextButton="True"
                                 Controls:TextBoxHelper.Watermark="管道编号"
-                                Text="{Binding ElementName=VideoManageDG, Path=SelectedItem.Meta.PipeCode}" />
+                                Text="{Binding PipeCode}" />
                             <TextBox
+                                Name="VideoPathTxt"
+                                Width="285"
                                 Margin="0,0,0,10"
                                 VerticalContentAlignment="Center"
                                 Controls:TextBoxHelper.ClearTextButton="True"
                                 Controls:TextBoxHelper.Watermark="视频路径"
-                                Text="{Binding ElementName=VideoManageDG, Path=SelectedItem.Meta.VideoPath}" />
+                                Text="{Binding VideoPath}" />
                             <TextBox
+                                Name="GCTxt"
+                                Width="285"
                                 Margin="0,0,0,10"
                                 VerticalContentAlignment="Center"
                                 Controls:TextBoxHelper.ClearTextButton="True"
                                 Controls:TextBoxHelper.Watermark="管材"
-                                Text="{Binding ElementName=VideoManageDG, Path=SelectedItem.Meta.GC}" />
+                                Text="{Binding GC}" />
                             <TextBox
+                                Name="FramePathTxt"
+                                Width="285"
                                 Margin="0,0,0,10"
                                 VerticalContentAlignment="Center"
                                 Controls:TextBoxHelper.ClearTextButton="True"
                                 Controls:TextBoxHelper.Watermark="分帧位置"
-                                Text="{Binding ElementName=VideoManageDG, Path=SelectedItem.Meta.FramePath}" />
+                                Text="{Binding FramePath}" />
                         </StackPanel>
                     </ScrollViewer.Content>
                 </ScrollViewer>
@@ -207,6 +219,9 @@
                         Name="CheckBtn"
                         Width="80"
                         Height="25"
+                        Click="CheckBtn_Click"
+                        Command="{Binding UpdateCmd}"
+                        CommandParameter="{Binding ElementName=VideoManageDG, Path=SelectedItem}"
                         Content="确定" />
                     <Button
                         Name="CancelBtn"

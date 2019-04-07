@@ -41,7 +41,7 @@ namespace MvvmLight4.Service
         /// 视频管理界面
         /// 查询导入的所有视频
         /// </summary>
-        /// <param name="cOUNT"></param>
+        /// <param name="count"></param>
         /// <returns></returns>
         public ObservableCollection<MetaViewModel> SelectAll(int count)
         {
@@ -61,18 +61,45 @@ namespace MvvmLight4.Service
                     {
                         TaskCode = item.TASKCODE,
                         Addr = item.ADDR,
-                        PipeCode=item.PIPECODE,
+                        PipeCode = item.PIPECODE,
                         VideoPath = item.VIDEOPATH,
                         StartTime = item.STARTTIME,
-                        PipeType=Convert.ToInt32(item.PIPETYPE),
-                        GC=item.GC,
-                        FramePath=item.FRAMEPATH
+                        PipeType = Convert.ToInt32(item.PIPETYPE),
+                        GC = item.GC,
+                        FramePath = item.FRAMEPATH
                     };
                     mvm.Meta = mm;
                     mvms.Add(mvm);
                 }
 
                 return mvms;
+            }
+        }
+
+        /// <summary>
+        /// 视频管理界面
+        /// 根据id更新数据库
+        /// </summary>
+        /// <param name="meta"></param>
+        /// <returns></returns>
+        public int UpdateMeta(MetaViewModel meta)
+        {
+            using (IDbConnection conn = SqlHelper.GetConnection())
+            {
+                conn.Open();
+                var sql = @"UPDATE TB_METADATA 
+                    SET TASKCODE=@TaskCode,ADDR=@Addr,PIPECODE=@PipeCode,VIDEOPATH=@VideoPath,GC=@GC,FRAMEPATH=@FramePath 
+                    WHERE ID = @Id";
+                return conn.Execute(sql, new
+                {
+                    meta.Meta.TaskCode,
+                    meta.Meta.Addr,
+                    meta.Meta.PipeCode,
+                    meta.Meta.VideoPath,
+                    meta.Meta.GC,
+                    meta.Meta.FramePath,
+                    Id = Convert.ToInt32(meta.Id)
+                });
             }
         }
 

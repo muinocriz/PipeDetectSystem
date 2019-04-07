@@ -21,5 +21,6 @@ namespace MvvmLight4.Service
         ObservableCollection<MetaModel> SelectNotFrame();
         ObservableCollection<ExportMeta> SelectAllDetected();
         ObservableCollection<MetaViewModel> SelectAll(int count);
+        int UpdateMeta(MetaViewModel meta);
     }
 }

@@ -77,6 +77,7 @@ namespace MvvmLight4.ViewModel
         public RelayCommand SearchCmd { get; private set; }
         public RelayCommand RefreshCmd { get; private set; }
         public RelayCommand<int> DeleteCmd { get; private set; }
+        public RelayCommand<object> UpdateCmd { get; private set; }
         #endregion
 
         #region helper function
@@ -85,6 +86,13 @@ namespace MvvmLight4.ViewModel
             RefreshCmd = new RelayCommand(() => ExecuteRefreshCmd());
             SearchCmd = new RelayCommand(() => ExecuteSearchCmd(), CanExecuteSearchCmd);
             DeleteCmd = new RelayCommand<int>((i) => ExecuteDeleteCmd(i));
+            UpdateCmd = new RelayCommand<object>((obj) => ExecuteUpdateCmd(obj));
+        }
+
+        private void ExecuteUpdateCmd(object obj)
+        {
+            MetaViewModel meta = obj as MetaViewModel;
+            int result = MetaService.GetService().UpdateMeta(meta);
         }
 
         private void ExecuteDeleteCmd(int id)

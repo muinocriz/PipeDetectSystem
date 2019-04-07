@@ -8,8 +8,8 @@
     xmlns:local="clr-namespace:MvvmLight4.View"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="导入视频管理"
-    Width="800"
-    Height="500"
+    Width="850"
+    Height="550"
     DataContext="{Binding Source={StaticResource Locator}, Path=VideoManage}"
     FontFamily="/MvvmLight4;component/Font/#Source Han Sans CN"
     ResizeMode="CanResizeWithGrip"
@@ -74,43 +74,17 @@
                 CanUserDeleteRows="False"
                 CanUserReorderColumns="False"
                 CanUserSortColumns="False"
+                FrozenColumnCount="2"
                 HeadersVisibility="Column"
-                HorizontalScrollBarVisibility="Visible"
+                HorizontalScrollBarVisibility="Auto"
                 ItemsSource="{Binding Videos}"
                 SelectionMode="Single"
                 VerticalScrollBarVisibility="Auto">
                 <DataGrid.Columns>
-                    <DataGridTextColumn
-                        Width="1*"
-                        Binding="{Binding Meta.TaskCode}"
-                        Header="项目名称"
-                        IsReadOnly="True" />
-                    <DataGridTextColumn
-                        Width="1*"
-                        Binding="{Binding Meta.Addr}"
-                        Header="道路名称"
-                        IsReadOnly="True" />
-                    <DataGridTextColumn
-                        Width="1*"
-                        Binding="{Binding Meta.PipeCode}"
-                        Header="管道编号"
-                        IsReadOnly="True" />
-                    <DataGridTextColumn
-                        Width="1*"
-                        Binding="{Binding Meta.VideoPath}"
-                        Header="视频路径"
-                        IsReadOnly="True" />
-                    <DataGridTextColumn
-                        Width="80"
-                        Binding="{Binding Meta.PipeType, Converter={StaticResource itpt}}"
-                        Header="管线类型"
-                        IsReadOnly="True" />
-                    <DataGridTextColumn
-                        Width="140"
-                        Binding="{Binding Meta.StartTime}"
-                        Header="项目时间"
-                        IsReadOnly="True" />
-                    <DataGridTemplateColumn Width="150" Header="操作">
+                    <DataGridTemplateColumn
+                        Width="150"
+                        MinWidth="150"
+                        Header="操作">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Grid>
@@ -137,6 +111,43 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
+                    <DataGridTextColumn
+                        Width="5*"
+                        MinWidth="200"
+                        Binding="{Binding Meta.TaskCode}"
+                        Header="项目名称"
+                        IsReadOnly="True" />
+                    <DataGridTextColumn
+                        Width="5*"
+                        MinWidth="150"
+                        Binding="{Binding Meta.Addr}"
+                        Header="道路名称"
+                        IsReadOnly="True" />
+                    <DataGridTextColumn
+                        Width="2*"
+                        MinWidth="150"
+                        Binding="{Binding Meta.PipeCode}"
+                        Header="管道编号"
+                        IsReadOnly="True" />
+                    <DataGridTextColumn
+                        Width="5*"
+                        MinWidth="150"
+                        Binding="{Binding Meta.VideoPath}"
+                        Header="视频路径"
+                        IsReadOnly="True" />
+                    <DataGridTextColumn
+                        Width="80"
+                        MinWidth="80"
+                        Binding="{Binding Meta.PipeType, Converter={StaticResource itpt}}"
+                        Header="管线类型"
+                        IsReadOnly="True" />
+                    <DataGridTextColumn
+                        Width="140"
+                        MinWidth="140"
+                        Binding="{Binding Meta.StartTime}"
+                        Header="项目时间"
+                        IsReadOnly="True" />
+
                 </DataGrid.Columns>
 
             </DataGrid>
@@ -145,8 +156,7 @@
             x:Name="VideoFlyout"
             Width="300"
             CloseButtonVisibility="Hidden"
-            Header="修改"
-            Position="Right">
+            Header="修改">
             <Controls:Flyout.Background>
                 <SolidColorBrush Opacity="0.9" Color="#FF7A7A7A" />
             </Controls:Flyout.Background>
@@ -160,55 +170,78 @@
                     HorizontalScrollBarVisibility="Auto"
                     VerticalScrollBarVisibility="Auto">
                     <ScrollViewer.Content>
-                        <StackPanel Margin="10,0,5,0" DataContext="{Binding ElementName=VideoManageDG, Path=SelectedItem.Meta}">
+                        <StackPanel
+                            Name="FlyoutSP"
+                            Margin="10,0,5,0"
+                            DataContext="{Binding ElementName=VideoManageDG, Path=SelectedItem.Meta}">
+                            <StackPanel.Resources>
+                                <common:IntToBoolConverter x:Key="itbc" />
+                            </StackPanel.Resources>
                             <TextBox
                                 Name="TaskCodeTxt"
                                 Width="285"
-                                Margin="0,0,0,10"
+                                Margin="0,0,0,15"
                                 VerticalContentAlignment="Center"
                                 Controls:TextBoxHelper.ClearTextButton="True"
+                                Controls:TextBoxHelper.SelectAllOnFocus="True"
                                 Controls:TextBoxHelper.Watermark="项目名称"
                                 Text="{Binding TaskCode}" />
                             <TextBox
                                 Name="AddrTxt"
                                 Width="285"
-                                Margin="0,0,0,10"
+                                Margin="0,0,0,15"
                                 VerticalContentAlignment="Center"
                                 Controls:TextBoxHelper.ClearTextButton="True"
+                                Controls:TextBoxHelper.SelectAllOnFocus="True"
                                 Controls:TextBoxHelper.Watermark="道路名称"
                                 Text="{Binding Addr}" />
                             <TextBox
                                 Name="PipeCodeTxt"
                                 Width="285"
-                                Margin="0,0,0,10"
+                                Margin="0,0,0,15"
                                 VerticalContentAlignment="Center"
                                 Controls:TextBoxHelper.ClearTextButton="True"
+                                Controls:TextBoxHelper.SelectAllOnFocus="True"
                                 Controls:TextBoxHelper.Watermark="管道编号"
-                                Text="{Binding PipeCode}" />
+                                Text="{Binding PipeCode, UpdateSourceTrigger=PropertyChanged}" />
                             <TextBox
                                 Name="VideoPathTxt"
                                 Width="285"
-                                Margin="0,0,0,10"
+                                Margin="0,0,0,15"
                                 VerticalContentAlignment="Center"
                                 Controls:TextBoxHelper.ClearTextButton="True"
+                                Controls:TextBoxHelper.SelectAllOnFocus="True"
                                 Controls:TextBoxHelper.Watermark="视频路径"
                                 Text="{Binding VideoPath}" />
                             <TextBox
                                 Name="GCTxt"
                                 Width="285"
-                                Margin="0,0,0,10"
+                                Margin="0,0,0,15"
                                 VerticalContentAlignment="Center"
                                 Controls:TextBoxHelper.ClearTextButton="True"
+                                Controls:TextBoxHelper.SelectAllOnFocus="True"
                                 Controls:TextBoxHelper.Watermark="管材"
                                 Text="{Binding GC}" />
                             <TextBox
                                 Name="FramePathTxt"
                                 Width="285"
-                                Margin="0,0,0,10"
+                                Margin="0,0,0,15"
                                 VerticalContentAlignment="Center"
                                 Controls:TextBoxHelper.ClearTextButton="True"
+                                Controls:TextBoxHelper.SelectAllOnFocus="True"
                                 Controls:TextBoxHelper.Watermark="分帧位置"
                                 Text="{Binding FramePath}" />
+                            <RadioButton
+                                Margin="0,0,0,10"
+                                VerticalContentAlignment="Center"
+                                Content="污水管道"
+                                GroupName="PipeType"
+                                IsChecked="{Binding PipeType, Converter={StaticResource itbc}, ConverterParameter=0}" />
+                            <RadioButton
+                                VerticalContentAlignment="Center"
+                                Content="雨水管道"
+                                GroupName="PipeType"
+                                IsChecked="{Binding PipeType, Converter={StaticResource itbc}, ConverterParameter=1}" />
                         </StackPanel>
                     </ScrollViewer.Content>
                 </ScrollViewer>

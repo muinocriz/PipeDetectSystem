@@ -88,14 +88,21 @@ namespace MvvmLight4.Service
             {
                 conn.Open();
                 var sql = @"UPDATE TB_METADATA 
-                    SET TASKCODE=@TaskCode,ADDR=@Addr,PIPECODE=@PipeCode,VIDEOPATH=@VideoPath,GC=@GC,FRAMEPATH=@FramePath 
-                    WHERE ID = @Id";
+                            SET TASKCODE=@TaskCode,
+                                ADDR=@Addr,
+                                PIPECODE=@PipeCode,
+                                VIDEOPATH=@VideoPath,
+                                PIPETYPE=@PipeType,
+                                GC=@GC,
+                                FRAMEPATH=@FramePath 
+                            WHERE ID = @Id";
                 return conn.Execute(sql, new
                 {
                     meta.Meta.TaskCode,
                     meta.Meta.Addr,
                     meta.Meta.PipeCode,
                     meta.Meta.VideoPath,
+                    meta.Meta.PipeType,
                     meta.Meta.GC,
                     meta.Meta.FramePath,
                     Id = Convert.ToInt32(meta.Id)

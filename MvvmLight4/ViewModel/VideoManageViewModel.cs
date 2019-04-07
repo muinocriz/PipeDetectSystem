@@ -86,7 +86,23 @@ namespace MvvmLight4.ViewModel
             RefreshCmd = new RelayCommand(() => ExecuteRefreshCmd());
             SearchCmd = new RelayCommand(() => ExecuteSearchCmd(), CanExecuteSearchCmd);
             DeleteCmd = new RelayCommand<int>((i) => ExecuteDeleteCmd(i));
-            UpdateCmd = new RelayCommand<object>((obj) => ExecuteUpdateCmd(obj));
+            UpdateCmd = new RelayCommand<object>((obj) => ExecuteUpdateCmd(obj), CanExecuteUpdateCmd);
+        }
+
+        private bool CanExecuteUpdateCmd(object obj)
+        {
+            if (obj == null)
+                return false;
+            MetaViewModel meta = obj as MetaViewModel;
+            if (string.IsNullOrEmpty(meta.Meta.TaskCode) || string.IsNullOrEmpty(meta.Meta.Addr) || string.IsNullOrEmpty(meta.Meta.VideoPath))
+            {
+                return false;
+            }
+            if (!string.IsNullOrEmpty(meta.Meta.PipeCode) && meta.Meta.PipeCode.Split('-').Length==2)
+            {
+                return true;
+            }
+            return false;
         }
 
         private void ExecuteUpdateCmd(object obj)

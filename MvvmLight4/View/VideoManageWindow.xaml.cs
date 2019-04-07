@@ -28,8 +28,10 @@ namespace MvvmLight4.View
         {
             InitializeComponent();
             ss = new string[6];
+            pipeType = -1;
         }
         string[] ss;
+        int pipeType;
         private void UpdateBtn_Click(object sender, RoutedEventArgs e)
         {
             var data = VideoManageDG.SelectedItem as MetaViewModel;
@@ -39,6 +41,7 @@ namespace MvvmLight4.View
             ss[3] = data.Meta.VideoPath;
             ss[4] = data.Meta.GC;
             ss[5] = data.Meta.FramePath;
+            pipeType = data.Meta.PipeType;
             VideoFlyout.IsOpen = true;
         }
 
@@ -51,6 +54,7 @@ namespace MvvmLight4.View
             data.Meta.VideoPath = ss[3];
             data.Meta.GC = ss[4];
             data.Meta.FramePath = ss[5];
+            data.Meta.PipeType = pipeType;
             VideoFlyout.IsOpen = false;
 
         }

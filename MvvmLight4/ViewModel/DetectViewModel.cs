@@ -522,6 +522,7 @@ namespace MvvmLight4.ViewModel
 
         private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            processId = -1;
             pipeReader.Close();
             DetectProgVb = Visibility.Hidden;
             LogText += "\r\n检测完成";

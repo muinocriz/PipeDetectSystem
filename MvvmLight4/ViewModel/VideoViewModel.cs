@@ -90,6 +90,8 @@ namespace MvvmLight4.ViewModel
                     }
                 default:
                     {
+                        //将null改为0
+                        p.IsChoose = 0;
                         //选中->未选中
                         //MessageBox.Show("选中->未选中");
                         if (SelectList.Contains(p))

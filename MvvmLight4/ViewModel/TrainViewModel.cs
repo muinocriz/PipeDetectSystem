@@ -354,6 +354,7 @@ namespace MvvmLight4.ViewModel
 
         private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            trainProcessPID = -1;
             // 隐藏终止按钮
             Messenger.Default.Send<string>("hideStopButton", "trainMessage");
 

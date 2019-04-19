@@ -23,7 +23,7 @@ namespace MvvmLight4.Common
             bool data = (bool)value;
             if (!data)
             {
-                return -1;
+                return null;
             }
             return System.Convert.ToInt32(parameter);
         }

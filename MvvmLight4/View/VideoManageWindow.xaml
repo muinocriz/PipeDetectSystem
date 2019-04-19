@@ -19,6 +19,9 @@
         <Grid Margin="10">
             <Grid.Resources>
                 <common:IntToPipeType x:Key="itpt" />
+                <Style BasedOn="{StaticResource MetroDataGridColumnHeader}" TargetType="DataGridColumnHeader">
+                    <Setter Property="HorizontalContentAlignment" Value="Center" />
+                </Style>
             </Grid.Resources>
             <Grid.RowDefinitions>
                 <RowDefinition Height="60" />

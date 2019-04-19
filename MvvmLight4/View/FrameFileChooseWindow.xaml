@@ -19,6 +19,13 @@
             <RowDefinition />
             <RowDefinition Height="40" />
         </Grid.RowDefinitions>
+
+        <Grid.Resources>
+            <Style BasedOn="{StaticResource MetroDataGridColumnHeader}" TargetType="DataGridColumnHeader">
+                <Setter Property="HorizontalContentAlignment" Value="Center" />
+            </Style>
+        </Grid.Resources>
+
         <DataGrid
             x:Name="FrameFileDG"
             AutoGenerateColumns="False"

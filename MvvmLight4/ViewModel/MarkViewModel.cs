@@ -2,6 +2,7 @@
 using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
+using log4net;
 using MvvmLight4.Common;
 using MvvmLight4.Model;
 using MvvmLight4.Service;
@@ -40,9 +41,14 @@ namespace MvvmLight4.ViewModel
 
 
         #region 属性
+        public static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         public BackgroundWorker worker;
+
         public PlayerModel player;
+
         public List<string> imagePath = new List<string>();
+
         public string FolderPath { get; set; }
         //public string TargetPath { get; set; }
         public string SavePath { get; set; }
@@ -343,6 +349,9 @@ namespace MvvmLight4.ViewModel
 
             MarkModel mark = new MarkModel(Convert.ToString(currentFramePosition), AbnormalType.Type, p.X * 1.0 / img.ActualWidth, p.Y * 1.0 / img.ActualHeight, path);
             Marks.Add(mark);
+
+            log.Info(JsonConvert.SerializeObject(mark));
+
             DispatcherHelper.CheckBeginInvokeOnUI(() =>
             {
                 CurrentThumbnailPathNew = BitmapFrame.Create(new Uri(mark.Path + "_1" + ".jpg"), BitmapCreateOptions.None, BitmapCacheOption.OnLoad);

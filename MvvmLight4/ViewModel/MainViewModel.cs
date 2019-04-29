@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
+using log4net;
 using MvvmLight4.Model;
 using MvvmLight4.Service;
 
@@ -21,6 +22,8 @@ namespace MvvmLight4.ViewModel
             AssignCommands();
         }
 
+        public static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         public RelayCommand LoadedCmd { get; private set; }
         private void AssignCommands()
         {
@@ -29,6 +32,7 @@ namespace MvvmLight4.ViewModel
 
         private void ExecuteLoadedCmd()
         {
+            log.Info("program begin");
             string dbName = "data.sqlite";
             if (!File.Exists(dbName))
             {
@@ -36,10 +40,12 @@ namespace MvvmLight4.ViewModel
                 if (result < 0)
                 {
                     Debug.WriteLine("创建出错");
+                    log.Error("database create failed");
                 }
                 else
                 {
                     Debug.WriteLine("创建成功：{0}", result);
+                    log.Info("database create successfully");
                 }
             }
         }

@@ -24,7 +24,7 @@
     </i:Interaction.Triggers>
     <Grid Margin="10">
         <Grid.Resources>
-            <common:IntToBoolConverter x:Key="itbc" />
+            <common:DetectChooseConverter x:Key="dcc" />
             <Style TargetType="{x:Type Label}">
                 <Setter Property="FontFamily" Value="/MvvmLight4;component/Font/#Source Han Sans CN" />
             </Style>
@@ -59,7 +59,7 @@
                                     VerticalAlignment="Center"
                                     Command="{Binding Video.CheckCmd, Source={StaticResource Locator}}"
                                     CommandParameter="{Binding ElementName=VideoDG, Path=SelectedItem}"
-                                    IsChecked="{Binding IsChoose, Converter={StaticResource itbc}, ConverterParameter=1, UpdateSourceTrigger=PropertyChanged}" />
+                                    IsChecked="{Binding IsChoose, Converter={StaticResource dcc}, ConverterParameter=1, UpdateSourceTrigger=PropertyChanged}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>

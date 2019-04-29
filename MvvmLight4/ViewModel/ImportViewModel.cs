@@ -1,9 +1,11 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Messaging;
+using log4net;
 using MvvmLight4.Model;
 using MvvmLight4.Service;
 using MvvmLight4.View;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -28,6 +30,7 @@ namespace MvvmLight4.ViewModel
             Messenger.Default.Register<string>(this, "TailTime", GetTailTime);
         }
 
+        public static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private void GetTailTime(string msg)
         {
             Meta.TailTime = msg;
@@ -122,6 +125,7 @@ namespace MvvmLight4.ViewModel
             if (result == 1)
             {
                 MessageBox.Show("导入成功");
+                log.Info(JsonConvert.SerializeObject(Meta));
                 CleanMetaWhenImported();
             }
         }

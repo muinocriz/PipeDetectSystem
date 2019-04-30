@@ -1,6 +1,7 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Messaging;
+using log4net;
 using MvvmLight4.Common;
 using MvvmLight4.Model;
 using MvvmLight4.Service;
@@ -24,7 +25,10 @@ namespace MvvmLight4.ViewModel
         }
 
         #region 属性
+        public static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         public string[] StringMessage;
+
         private List<ComplexInfoModel> combboxList;
         /// <summary>
         /// 下拉框列表
@@ -93,6 +97,8 @@ namespace MvvmLight4.ViewModel
 
                 MarkWindow sender = new MarkWindow();
                 Messenger.Default.Send<List<string>>(msg, "markMessage");
+
+                log.Info("开始标注\n" + "FramePath：\t" + framePath + "\nSavePath：\t" + SavePath);
                 sender.Show();
             }
         }
@@ -108,6 +114,7 @@ namespace MvvmLight4.ViewModel
             catch (Exception e)
             {
                 MessageBox.Show("读取文件时发生异常,请查看文件夹中分帧文件是否正常存放，在关闭标注窗口后请重新选择文件:\n异常描述：\n" + e.ToString());
+                log.Warn(framePath + "位置文件损坏", e);
                 return false;
             }
         }

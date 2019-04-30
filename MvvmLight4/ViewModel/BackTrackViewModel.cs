@@ -2,6 +2,7 @@
 using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
+using log4net;
 using MvvmLight4.Common;
 using MvvmLight4.Model;
 using MvvmLight4.Service;
@@ -45,7 +46,10 @@ namespace MvvmLight4.ViewModel
         }
 
         #region property
+        public static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         private CancellationTokenSource tokenSource;
+
         private CancellationToken token;
         /// <summary>
         /// 图像列表
@@ -222,14 +226,17 @@ namespace MvvmLight4.ViewModel
             catch (PathTooLongException e)
             {
                 MessageBox.Show("文件路径过长");
+                log.Warn("文件路径过长", e);
             }
             catch (ArgumentException e)
             {
                 MessageBox.Show("该路径下文件错误");
+                log.Warn("该路径下文件错误", e);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 MessageBox.Show("发生异常：" + e.ToString());
+                log.Warn("发生异常", e);
             }
         }
 
@@ -243,6 +250,7 @@ namespace MvvmLight4.ViewModel
             //修改数据库
             int type = Convert.ToInt32(CombboxItem.Key);
             int result = AbnormalService.GetService().UpdateAbnormalType(SelectedAVM.AbnormalId, type);
+            log.Info("修改异常类型" + "\nID：\t" + SelectedAVM.AbnormalId + "\n修改后类型：\t" + type);
             //更改右下角显示
             if (result == 1)
             {

@@ -7,6 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+/// <summary>
+/// 为元数据添加id和选中属性
+/// </summary>
 namespace MvvmLight4.ViewModel
 {
     public class MetaViewModel : ViewModelBase

@@ -397,6 +397,7 @@ namespace MvvmLight4.ViewModel
                 if (winClosedCmd == null)
                     return new RelayCommand(() =>
                     {
+                        log.Info("标注完成\n视频位置：\t" + FolderPath + "\n保存位置：\t" + SavePath);
                         worker.CancelAsync();
                         imagePath.Clear();
                     });

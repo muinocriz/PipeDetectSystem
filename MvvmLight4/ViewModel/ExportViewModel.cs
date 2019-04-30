@@ -2,6 +2,7 @@
 using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
+using log4net;
 using MvvmLight4.Common;
 using MvvmLight4.Model;
 using MvvmLight4.Service;
@@ -30,12 +31,20 @@ namespace MvvmLight4.ViewModel
         }
 
         #region property
+        public static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         private BackgroundWorker worker;
+
         private List<ComplexInfoModel> combboxList;
+
         private Dictionary<string, string> dict;
+
         private List<ExportModel> exportModelsForExcel;
+
         private List<AbnormalViewModel> list;
+
         private Dictionary<int, AbnormalTypeModel> typeDict;
+
         private List<ExportData> exportDatas;
 
         private ObservableCollection<ExportMeta> exportList;
@@ -235,11 +244,13 @@ namespace MvvmLight4.ViewModel
                 l.Add(item as ExportMeta);
             }
 
+            string logString = string.Empty;
             foreach (var item in l)
             {
-                Debug.WriteLine("选择任务：{0}，任务编号：{1}", item.TaskCode, item.VideoId);
+                logString += string.Format("选择任务：{0}，任务编号：{1}", item.TaskCode, item.VideoId);
             }
-            Debug.WriteLine("输出位置:{0}", TargetSource);
+            logString += string.Format("输出位置:{0}", TargetSource);
+            log.Info(logString);
 
             //send Message
             //按钮禁止点击

@@ -2,6 +2,7 @@
 using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
+using log4net;
 using MvvmLight4.Common;
 using MvvmLight4.Model;
 using MvvmLight4.Service;
@@ -37,10 +38,16 @@ namespace MvvmLight4.ViewModel
 
 
         #region property
+        public static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         public BackgroundWorker worker;
+
         public NamedPipeServerStream pipeReader;
+
         public string errorMsg = "";
+
         public bool pipeFlag = true;
+
         //训练进程PID
         public int trainProcessPID = -1;
 
@@ -116,6 +123,26 @@ namespace MvvmLight4.ViewModel
         /// </summary>
         public RelayCommand LoadedCmd { get; private set; }
 
+        public RelayCommand ClosedCmd { get; private set; }
+
+        private void ExecuteClosedCmd()
+        {
+            if (pipeReader != null && pipeReader.IsConnected)
+            {
+                pipeReader.Close();
+            }
+
+            if (worker != null && worker.IsBusy)
+            {
+                worker.CancelAsync();
+            }
+
+            if (trainProcessPID >= 0)
+            {
+                ColseFun(trainProcessPID);
+            }
+        }
+
         /// <summary>
         /// 预处理函数
         /// </summary>
@@ -125,7 +152,7 @@ namespace MvvmLight4.ViewModel
         {
             var t = new Task(() =>
             {
-                Process p = CmdHelper.RunProcess("Util/train.exe", "-pre " + directory);
+                Process p = CmdHelper.RunProcess("Util/main.exe ", ("-pre " + directory));
                 p.Start();
                 Console.WriteLine("pid:" + p.Id);
                 Console.WriteLine("python is start");
@@ -214,7 +241,7 @@ namespace MvvmLight4.ViewModel
 
             var t = new Task(() =>
             {
-                Process p = CmdHelper.RunProcess(@"Util/1.exe", "-train " + json);
+                Process p = CmdHelper.RunProcess(@"Util/main.exe", ("-train " + json));
                 p.Start();
                 trainProcessPID = p.Id;
                 Console.WriteLine("trainProcessPID:" + trainProcessPID);
@@ -406,6 +433,7 @@ namespace MvvmLight4.ViewModel
         /// <param name="trainProcessPID">线程号</param>
         private void ColseFun(int id)
         {
+            log.Info("提前终止了训练");
             Process process = Process.GetProcessById(id);
             ManagementObjectSearcher searcher
                 = new ManagementObjectSearcher("select * from Win32_Process where ParentProcessID=" + id);
@@ -429,6 +457,7 @@ namespace MvvmLight4.ViewModel
             FolderBrowserCmd = new RelayCommand<string>((p) => ExecuteFolderBrowserCmd(p));
             OpenFileCmd = new RelayCommand(() => ExecuteOpenFileCmd());
             StopTrainCmd = new RelayCommand(() => { ColseFun(trainProcessPID); pipeFlag = false; });
+            ClosedCmd = new RelayCommand(() => ExecuteClosedCmd());
         }
         #endregion
     }

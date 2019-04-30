@@ -2,6 +2,7 @@
 using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
+using log4net;
 using MvvmLight4.Common;
 using MvvmLight4.Model;
 using MvvmLight4.Service;
@@ -43,6 +44,7 @@ namespace MvvmLight4.ViewModel
 
 
         #region property
+        public static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         /// <summary>
         /// 后台工作类
         /// </summary>
@@ -279,7 +281,6 @@ namespace MvvmLight4.ViewModel
             List<Video> videos = new List<Video>();
             foreach (var item in VideoList)
             {
-                //dict[(int)item.Id] = item.Meta.FramePath;
                 videos.Add(new Video() { Id = (int)item.Id, Path = item.Meta.FramePath, Head = item.Meta.HeadTime, Tail = item.Meta.TailTime });
             }
 
@@ -314,7 +315,7 @@ namespace MvvmLight4.ViewModel
             catch (Exception e)
             {
                 Console.WriteLine("创建文件失败");
-                Console.WriteLine(e.ToString());
+                log.Warn("创建文件失败", e);
                 return;
             }
 
@@ -387,11 +388,12 @@ namespace MvvmLight4.ViewModel
                 pipeReader.WaitForConnection();
                 Console.WriteLine("byte reader connected");
             }
-            catch (Exception)
+            catch (Exception pipeException)
             {
                 MessageBox.Show("管道连接失败");
                 pipeReader.Close();
                 e.Cancel = true;
+                log.Warn("管道连接失败", pipeException);
                 return;
             }
 
@@ -403,7 +405,7 @@ namespace MvvmLight4.ViewModel
             const int BUFFERSIZE = 256;
             LogText = "";
             errorMsg = "";
-            string log = "";
+            string logMessage = "";
             canBackTrackOrExport = false;
 
             while (!completed)
@@ -451,9 +453,9 @@ namespace MvvmLight4.ViewModel
                                 abnormalModels.Add(abnormalModel);
 
                                 //日志
-                                log = "帧号：\t" + _position + "\t异常类型\t" + _type + "\t缺陷位置\t" + m;
+                                logMessage = "帧号：\t" + _position + "\t异常类型\t" + _type + "\t缺陷位置\t" + m;
 
-                                worker.ReportProgress(progress, log);
+                                worker.ReportProgress(progress, logMessage);
                             }
                             //初筛结束消息
                             else if (messages.Length == 2 && !string.IsNullOrEmpty(messages[1]) && "filter done".Equals(messages[1]))
@@ -479,8 +481,8 @@ namespace MvvmLight4.ViewModel
                                 msg += messages[i] + " ";
                             }
 
-                            log = msg;
-                            worker.ReportProgress(progress, log);
+                            logMessage = msg;
+                            worker.ReportProgress(progress, logMessage);
                             break;
                         case 16:
                             break;
@@ -496,11 +498,12 @@ namespace MvvmLight4.ViewModel
                             break;
                     }
                 }
-                catch (Exception)
+                catch (Exception pipeException)
                 {
                     MessageBox.Show("处理管道数据发生错误");
                     pipeReader.Close();
                     e.Cancel = true;
+                    log.Warn("处理管道数据发生错误", pipeException);
                     return;
                 }
 
